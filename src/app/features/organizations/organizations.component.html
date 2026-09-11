@@ -1,0 +1,104 @@
+<div class="ma-page-header">
+  <div class="ma-page-header__meta">
+    <h2 class="ma-page-title">Add Organization</h2>
+    <p class="ma-page-subtitle">Register a new healthcare organization</p>
+  </div>
+</div>
+
+<article class="ma-card ma-org-form-card">
+  <div class="ma-card__body">
+    <form>
+      <section class="ma-org-form-card__section">
+        <h4 class="ma-org-form-card__section-title">Organization Information</h4>
+        <div class="row g-3">
+          <div class="col-12 col-md-6">
+            <div class="ma-form-group mb-0">
+              <label class="ma-form-label" for="maOrganizationName">Organization Name</label>
+              <input class="form-control" id="maOrganizationName" placeholder="Enter organization name" type="text" appTrimWhitespace maxlength="100">
+            </div>
+          </div>
+          <div class="col-12 col-md-6">
+            <div class="ma-form-group mb-0">
+              <label class="ma-form-label">Enter your email</label>
+              <input class="form-control" placeholder="Enter your email" type="email" appTrimWhitespace maxlength="100">
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="ma-org-form-card__section">
+        <h4 class="ma-org-form-card__section-title">Contact Information</h4>
+        <div class="row g-3">
+          <div class="col-12 col-md-6 col-lg-4">
+            <div class="ma-form-group mb-0">
+              <label class="ma-form-label">Contact Number</label>
+              <input class="form-control" type="text" placeholder="Enter your number" appTrimWhitespace maxlength="14" />
+            </div>
+          </div>
+          <div class="col-12 col-md-6 col-lg-4">
+            <div class="ma-form-group mb-0">
+              <label class="ma-form-label">Contact Person First Name</label>
+              <input class="form-control" type="text" placeholder="Enter your first name" appTrimWhitespace maxlength="100" />
+            </div>
+          </div>
+          <div class="col-12 col-md-6 col-lg-4">
+            <div class="ma-form-group mb-0">
+              <label class="ma-form-label">Contact Person Last Name</label>
+              <input class="form-control" type="text" placeholder="Enter your last name" appTrimWhitespace maxlength="100" />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="ma-org-form-card__section">
+        <h4 class="ma-org-form-card__section-title">Organization Address</h4>
+        <div class="row g-3">
+          <div class="col-12 col-md-6 col-xl-3">
+            <div class="ma-form-group mb-0">
+              <label class="ma-form-label">State</label>
+              <select class="form-select" aria-label="Select state">
+                <option selected>Select state</option>
+                <option value="1">State 1</option>
+                <option value="2">State 2</option>
+                <option value="3">State 3</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-12 col-md-6 col-xl-3">
+            <div class="ma-form-group mb-0">
+              <label class="ma-form-label">City</label>
+              <select class="form-select" aria-label="Select city">
+                <option selected>Select city</option>
+                <option value="1">City 1</option>
+                <option value="2">City 2</option>
+                <option value="3">City 3</option>
+              </select>
+            </div>
+          </div>
+          <div class="col-12 col-md-6 col-xl-3">
+            <div class="ma-form-group mb-0">
+              <label class="ma-form-label">Zip Code</label>
+              <input class="form-control" type="text" placeholder="Enter zip code" appTrimWhitespace maxlength="10">
+            </div>
+          </div>
+          <div class="col-12 col-md-6 col-xl-3">
+            <div class="ma-form-group mb-0">
+              <label class="ma-form-label">Address</label>
+              <input class="form-control" type="text" placeholder="Enter address" appTrimWhitespace maxlength="250">
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div class="alert alert-warning ma-org-form-card__alert" role="alert">
+        <i class="fa-solid fa-circle-info"></i> An invitation email with portal login link and initial credentials will
+        be sent automatically after creation.
+      </div>
+
+      <div class="ma-org-form-card__footer">
+        <button class="btn ma-btn btn-outline-primary btn-grey-btn" type="reset">Cancel</button>
+        <button class="btn ma-btn btn-primary" type="submit">Add Organization</button>
+      </div>
+    </form>
+  </div>
+</article>

@@ -1,0 +1,395 @@
+<main class="claim-analyst-page">
+  <div class="ma-page-header">
+    <h2 class="ma-page-title">Claim Analyst - {{ claim()?.claim_id }}</h2>
+  </div>
+
+  <!-- SECTION 1: STEPPER CARD -->
+  <div class="ma-stepper-scroll mb-3">
+    <div class="ma-stepper">
+      <div class="ma-step" [class.completed]="stepIndex() > 1" [class.current]="stepIndex() === 1">
+        <div class="ma-step-circle">
+          @if (stepIndex() > 1) {
+            <i class="fa-solid fa-check"></i>
+          } @else {
+            1
+          }
+        </div>
+        <div class="ma-step-label">Uploaded</div>
+      </div>
+      <div class="ma-step-line" [class.completed]="stepIndex() > 2"></div>
+      <div class="ma-step" [class.completed]="stepIndex() > 2" [class.current]="stepIndex() === 2">
+        <div class="ma-step-circle">
+          @if (stepIndex() > 2) {
+            <i class="fa-solid fa-check"></i>
+          } @else {
+            2
+          }
+        </div>
+        <div class="ma-step-label">Doc Processed</div>
+      </div>
+      <div class="ma-step-line" [class.completed]="stepIndex() > 3"></div>
+      <div class="ma-step" [class.completed]="stepIndex() > 3 && !isAiFailed()" [class.failed]="isAiFailed()" [class.current]="stepIndex() === 3">
+        <div class="ma-step-circle">
+          @if (isAiFailed()) {
+            <i class="fa-solid fa-xmark"></i>
+          } @else if (stepIndex() > 3) {
+            <i class="fa-solid fa-check"></i>
+          } @else {
+            3
+          }
+        </div>
+        <div class="ma-step-label">AI Validated</div>
+      </div>
+      <div class="ma-step-line" [class.completed]="stepIndex() > 4"></div>
+      <div class="ma-step" [class.completed]="stepIndex() > 4" [class.current]="stepIndex() === 4" [class.pending]="stepIndex() < 4">
+        <div class="ma-step-circle">
+          @if (stepIndex() > 4) {
+            <i class="fa-solid fa-check"></i>
+          } @else {
+            4
+          }
+        </div>
+        <div class="ma-step-label">Reviewer Pending</div>
+      </div>
+      <!-- `stepIndex()` tops out at 5, so this must test `> 4` like the others. -->
+      <div class="ma-step-line" [class.completed]="stepIndex() > 4"></div>
+      <div class="ma-step" [class.completed]="stepIndex() === 5 && !isReviewFailed() && !isReviewPassed()" [class.passed]="isReviewPassed()" [class.failed]="isReviewFailed()" [class.current]="stepIndex() === 5 && !isReviewPassed() && !isReviewFailed()" [class.pending]="stepIndex() < 5">
+        <div class="ma-step-circle">
+          @if (isReviewFailed()) {
+            <i class="fa-solid fa-xmark"></i>
+          } @else if (stepIndex() === 5 && !isReviewFailed()) {
+            <i class="fa-solid fa-check"></i>
+          } @else {
+            5
+          }
+        </div>
+        <div class="ma-step-label">Pass / Failed</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 2: TWO COLUMN GRID -->
+  <div class="row g-4 mb-4">
+    <!-- LEFT: PATIENT INFORMATION -->
+    <div class="col-lg-6">
+      <div class="ma-card h-100">
+        <div class="ma-card-header">
+          <div class="chart-card__header mb-0">
+            <h3 class="chart-card__title">Patient Information</h3>
+          </div>
+        </div>
+        <div class="ma-card-body">
+          <div class="row g-3">
+            <div class="col-sm-6">
+              <div class="ma-label-value">
+                <span class="ma-label">Claim ID</span>
+                <span class="ma-value">{{ claim()?.claim_id }}</span>
+              </div>
+              <div class="ma-label-value">
+                <span class="ma-label">Provider Name</span>
+                <span class="ma-value">{{ claim()?.provider_name }}</span>
+              </div>
+              <div class="ma-label-value">
+                <span class="ma-label">Review Status</span>
+                <span class="ma-badge" [class]="claim()?.review_status | badgeClass">{{
+                  claim()?.review_status
+                }}</span>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="ma-label-value">
+                <span class="ma-label">Patient Name</span>
+                <span class="ma-value">{{ claim()?.patient_name }}</span>
+              </div>
+              <div class="ma-label-value">
+                <span class="ma-label">Upload Date</span>
+                <span class="ma-value">{{
+                  claim()?.uploaded_at ? (claim()?.uploaded_at | date: 'MM-dd-yyyy') : '-'
+                }}</span>
+              </div>
+              <div class="ma-label-value">
+                <span class="ma-label">AI Status</span>
+                <span class="ma-badge" [class]="claim()?.ai_status | badgeClass">{{
+                  claim()?.ai_status
+                }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- RIGHT: UPLOADED DOCUMENTS -->
+    <div class="col-lg-6">
+      <div class="ma-card h-100">
+        <div class="ma-card-header">
+          <div class="chart-card__header mb-0">
+            <h3 class="chart-card__title">Uploaded Documents</h3>
+          </div>
+        </div>
+        <div class="ma-card-body">
+          @if (documentGroups().length) {
+            <div class="row g-3">
+              @for (group of documentGroups(); track group.category) {
+                <div class="col-md-4">
+                  <div class="ma-doc-group">
+                    <h6 class="ma-doc-heading">{{ group.category }}</h6>
+                    @for (doc of group.documents; track doc.file_name) {
+                      <div class="ma-document-item">
+                        <span class="ma-doc-icon"><i class="fa-solid fa-file-lines"></i></span>
+                        <span class="ma-doc-name">{{ doc.file_name }}</span>
+                        <button
+                          type="button"
+                          class="ma-doc-action"
+                          (click)="downloadDocument(doc)"
+                          [disabled]="isDownloading(doc)"
+                          aria-label="Download"
+                        >
+                          @if (isDownloading(doc)) {
+                            <i class="fa-solid fa-spinner fa-spin"></i>
+                          } @else {
+                            <i class="fa-solid fa-download"></i>
+                          }
+                        </button>
+                      </div>
+                    }
+                  </div>
+                </div>
+              }
+            </div>
+          } @else {
+            <app-empty-state
+              title="No Documents"
+              message="No documents have been uploaded for this claim."
+            />
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 3: AI FINDINGS & ANALYSIS -->
+  <div class="ma-table-card h-100">
+    <div class="ma-table-card-head">
+      <h2 class="ma-table-title">AI Findings & Analysis</h2>
+      @if (claim()?.compliance_score != null) {
+        <button class="btn ma-btn btn-outline-primary btn-sm" style="pointer-events: none;">
+          <span class="ma-grey-text">Compliance Score</span>{{ claim()?.compliance_score }}%
+        </button>
+      }
+    </div>
+    <!-- TABS -->
+    <div class="ma-tabs mb-0">
+      <div class="ma-tabs-header">
+        <button
+          class="ma-tab-button"
+          [class.active]="activeTab() === 'all'"
+          (click)="setActiveTab('all')"
+        >
+          All Result
+          <span class="ma-tab-badge ma-tab-badge--success">{{ ruleCounts().all }}</span>
+        </button>
+        <button
+          class="ma-tab-button"
+          [class.active]="activeTab() === 'high'"
+          (click)="setActiveTab('high')"
+        >
+          High
+          <span class="ma-tab-badge ma-tab-badge--danger">{{ ruleCounts().high }}</span>
+        </button>
+        <button
+          class="ma-tab-button"
+          [class.active]="activeTab() === 'medium'"
+          (click)="setActiveTab('medium')"
+        >
+          Medium
+          <span class="ma-tab-badge ma-tab-badge--warning">{{ ruleCounts().medium }}</span>
+        </button>
+        <button
+          class="ma-tab-button"
+          [class.active]="activeTab() === 'low'"
+          (click)="setActiveTab('low')"
+        >
+          Low
+          <span class="ma-tab-badge ma-tab-badge--info">{{ ruleCounts().low }}</span>
+        </button>
+      </div>
+      <div class="ma-tab-pane active">
+        <div class="table-responsive ma-table-bnone">
+          <table class="table align-middle ma-data-table ma-findings-table">
+            <thead>
+              <tr>
+                <th width="110">Rule ID</th>
+                <th width="180">Rule Name</th>
+                <th width="90">Status</th>
+                <th width="110">Red Flags</th>
+                <th>Failure Reason</th>
+                <th>Recommendation</th>
+                <th width="110" class="text-center">Failed Notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (rule of filteredRules(); track rule.rule_id) {
+                <tr>
+                  <td data-label="Rule ID">{{ rule.rule_id }}</td>
+                  <td data-label="Rule Name">{{ rule.rule_name }}</td>
+                  <td data-label="Status">
+                    <span class="ma-badge" [class]="rule.status | badgeClass">{{
+                      rule.status
+                    }}</span>
+                  </td>
+                  <td data-label="Red Flags">
+                    @if (rule.priority) {
+                      <span class="ma-badge" [class]="rule.priority | badgeClass: 'priority'">
+                        <i class="fa-regular fa-flag"></i> {{ rule.priority | uppercase }}
+                      </span>
+                    } @else {
+                      ——
+                    }
+                  </td>
+                  <td data-label="Failure Reason">
+                    @if (rule.failure_reason) {
+                      <div class="ma-finding">
+                        <!-- Markdown-rendered and clamped to 6 lines; the full
+                             text lives on the Failed Notes drill-down page. -->
+                        <div
+                          class="ma-finding__reason ma-markdown ma-clamp-6"
+                          [innerHTML]="rule.failure_reason | markdown"
+                        ></div>
+                        <button
+                          type="button"
+                          class="btn btn-link btn-sm ma-read-more"
+                          (click)="viewFailedNotes(rule.rule_id)"
+                        >
+                          Read more
+                        </button>
+                      </div>
+                    } @else {
+                      ——
+                    }
+                  </td>
+                  <td data-label="Recommendation">
+                    @if (rule.recommendation) {
+                      <div class="ma-finding__recommendation">
+                        <i class="fa-regular fa-lightbulb"></i>
+                        <div class="ma-markdown" [innerHTML]="rule.recommendation | markdown"></div>
+                      </div>
+                    } @else {
+                      ——
+                    }
+                  </td>
+                  <td data-label="Failed Notes" class="text-center">
+                    @if (rule.failure_reason || rule.failed_notes?.length) {
+                      <button
+                        type="button"
+                        class="btn btn-sm ma-icon-btn"
+                        title="View Failed Notes"
+                        (click)="viewFailedNotes(rule.rule_id)"
+                      >
+                        <i class="fa-regular fa-eye"></i>
+                      </button>
+                    } @else {
+                      ——
+                    }
+                  </td>
+                </tr>
+              } @empty {
+                <tr class="ma-empty-state">
+                  <td colspan="7" class="text-center justify-content-center py-5">No records found.</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- SECTION 4: REVIEWER ACTION(S) -->
+  @if (isReadOnly()) {
+    <div class="ma-card mt-4">
+      <div class="ma-card-header">
+        <div class="chart-card__header mb-0">
+          <h3 class="chart-card__title">Reviewer Action</h3>
+        </div>
+      </div>
+      <div class="ma-card-body">
+        <div class="ma-form-group mb-3">
+          <label class="form-label">Reviewer Notes</label>
+          <div class="form-control ma-readonly-field">{{ claim()?.reviewer_notes || '—' }}</div>
+        </div>
+
+        <div class="ma-form-group mb-0">
+          <label class="form-label d-block">Review Status</label>
+          <span class="ma-badge" [class]="claim()?.review_status | badgeClass">{{ claim()?.review_status || '-' }}</span>
+        </div>
+      </div>
+    </div>
+  } @else {
+    <div class="ma-card mt-4">
+      <div class="ma-card-header">
+        <div class="chart-card__header mb-0">
+          <h3 class="chart-card__title">Reviewer Actions</h3>
+        </div>
+      </div>
+      <div class="ma-card-body">
+        <form [formGroup]="reviewForm" (ngSubmit)="approveClaim()" appFocusFirstInput>
+          <div class="ma-form-group mb-3">
+            <label for="reviewerNotes" class="form-label">Reviewer Notes</label>
+            <textarea
+              class="form-control"
+              id="reviewerNotes"
+              rows="5"
+              maxlength="1000"
+              appTrimWhitespace
+              formControlName="reviewer_notes"
+              placeholder="Add your review notes here..."
+              [class.is-invalid]="isSubmitted() && f['reviewer_notes'].errors"
+            ></textarea>
+            @if (isSubmitted() && f['reviewer_notes'].errors) {
+              <div class="invalid-feedback d-block">Reviewer notes cannot exceed 250 characters.</div>
+            }
+            <div class="ma-btn-group justify-content-end mt-2">
+              <button
+                type="button"
+                class="btn ma-btn btn-primary"
+                (click)="saveNotes()"
+                [disabled]="savingNotes() || submitting() || !isAiComplete()"
+              >
+                {{ savingNotes() ? 'Saving...' : 'Save Notes' }}
+              </button>
+            </div>
+          </div>
+
+          <div class="ma-form-group mb-3">
+            <label for="reviewStatus" class="form-label">
+              Review Status <span class="ma-required">*</span>
+            </label>
+            <select
+              class="form-select"
+              id="reviewStatus"
+              formControlName="review_status"
+              [class.is-invalid]="isSubmitted() && f['review_status'].errors"
+            >
+              <option value="" disabled>Select Status</option>
+              @for (option of visibleReviewStatusOptions; track option.value) {
+                <option [value]="option.value">{{ option.label }}</option>
+              }
+            </select>
+            @if (isSubmitted() && f['review_status'].errors) {
+              <div class="invalid-feedback d-block">Review status is required.</div>
+            }
+          </div>
+
+          <div class="ma-btn-group">
+            <button type="button" class="btn ma-btn btn-outline-primary btn-grey-btn" (click)="cancelReview()">
+              Cancel
+            </button>
+            <!-- Disabled until AI validation has finished and a status is picked. -->
+            <button type="submit" class="btn ma-btn btn-primary" [disabled]="!canApprove()">
+              {{ submitting() ? 'Approving...' : 'Approve Claim' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
+</main>

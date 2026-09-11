@@ -1,0 +1,32 @@
+.ma-settings-hint {
+  font-size: 0.8rem;
+  color: #6c757d;
+  margin: 0.25rem 0 0.75rem;
+}
+
+.ma-settings-input {
+  max-width: 220px;
+}
+
+// Plain, uncolored reference note — deliberately not a Bootstrap alert variant.
+.ma-settings-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  padding: 0.85rem 1rem;
+  font-size: 0.85rem;
+  color: #495057;
+  margin: 1rem 0 1.5rem;
+
+  i {
+    margin-top: 0.15rem;
+    color: #adb5bd;
+  }
+}
+
+.ma-settings-footer {
+  display: flex;
+}

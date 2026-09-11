@@ -1,0 +1,71 @@
+/* ==========================================================================
+   COMMON SECTION / PAGE HEADER UTILITIES
+   ========================================================================== */
+
+.ma-page-header {
+  .ma-page-header__meta {
+    min-width: 0;
+  }
+
+  .ma-back-header {
+    @include maFlex(flex-start, center);
+    gap: 2px 12px;
+    flex-wrap: wrap;
+  }
+
+  .ma-back-link {
+    @include maFlex(flex-start, center);
+    gap: 6px;
+    font-size: $font14;
+    font-weight: $fontMedium;
+    color: $textSecondary;
+    text-decoration: none;
+
+    &:hover {
+      color: $primary;
+    }
+  }
+
+  .ma-page-crumb {
+    @include maFlex(flex-start, center);
+    gap: 8px;
+    margin-bottom: 6px;
+    font-size: $font12;
+    font-weight: $fontMedium;
+    color: $textSecondary;
+
+    a {
+      color: $textSecondary;
+
+      &:hover {
+        color: $primary;
+      }
+    }
+
+    span {
+      color: $textPrimary;
+      font-weight: $fontSemiBold;
+    }
+
+    i {
+      color: $textSecondary;
+      font-size: $font12;
+    }
+  }
+
+  .ma-page-add-btn {
+    min-height: 42px;
+    padding: 8px 16px;
+    border-radius: $borderRadius8;
+    @include maFlex(center, center);
+    gap: 8px;
+  }
+}
+
+@include maMedia($lg) {
+  .ma-page-header {
+    .ma-page-add-btn {
+      width: 100%;
+    }
+  }
+}

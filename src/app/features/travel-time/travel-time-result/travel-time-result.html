@@ -1,0 +1,98 @@
+<main class="claim-analyst-page">
+<!-- ══ Header ════════════════════════════════════════════════════════ -->
+<div class="ma-page-header">
+  <div class="ma-page-header__meta">
+    <div class="ma-back-header">
+      <h2 class="ma-page-title">Travel Time Justification – Result</h2>
+    </div>
+    <p class="ma-page-subtitle d-flex align-items-center gap-2 flex-wrap">
+      <span>Travel Batch ID: <strong>{{ batchLabel() || '-' }}</strong></span>
+      <span>Provider Name: <strong>{{ providerName() || '-' }}</strong></span>
+    </p>
+  </div>
+</div>
+
+<!-- ══ KPI Cards ═════════════════════════════════════════════════════ -->
+<div class="ma-stat-grid" style="grid-template-columns: repeat(2, 1fr)">
+  <article class="ma-stat-card">
+    <div class="ma-stat-content">
+      <p class="ma-stat-title">Total Notes</p>
+      <h2 class="ma-stat-value">{{ totalNotes() }}</h2>
+    </div>
+  </article>
+  <article class="ma-stat-card">
+    <div class="ma-stat-content">
+      <p class="ma-stat-title">Invalid Travel Time</p>
+      <h2 class="ma-stat-value">{{ invalidTravelTime() }}</h2>
+    </div>
+  </article>
+</div>
+
+<!-- ══ Travel Time Result table ═════════════════════════════════════ -->
+<section class="ma-surface-card ma-users-section-card ma-user-list-card mt-3">
+  <div class="table-responsive">
+    <kendo-grid class="ma-kendo-grid table ma-master-table--travel-time-result" [data]="resultsGridData()"
+      [sortable]="false" [pageable]="false" [scrollable]="'none'">
+      <kendo-grid-column title="Sr. No." [width]="70" [filterable]="false" [sortable]="false">
+        <ng-template kendoGridCellTemplate let-rowIndex="rowIndex">
+          {{ rowIndex + 1 }}
+        </ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column field="visit_date" title="Visit Date" [width]="120" [filterable]="false">
+        <ng-template kendoGridCellTemplate let-dataItem>{{ dataItem.visit_date || '-' }}</ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column title="Visit ID's" [width]="140" [filterable]="false" [sortable]="false">
+        <ng-template kendoGridCellTemplate let-dataItem>{{ joinValues(dataItem.visit_ids) }}</ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column title="Patient Name's" [width]="180" [filterable]="false" [sortable]="false">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div class="ma-cell-wrap" [ngbTooltip]="joinValues(dataItem.patient_names)">{{ joinValues(dataItem.patient_names) }}</div>
+        </ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column title="Visit 1" [width]="220" [filterable]="false" [sortable]="false">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div class="ma-visit-cell">
+            <div><strong>Time:</strong> {{ dataItem.visit_1?.time || '-' }}</div>
+            <div><strong>Patient:</strong> {{ dataItem.visit_1?.patient_name_id || '-' }}</div>
+            <div><strong>Location:</strong> {{ dataItem.visit_1?.location || '-' }}</div>
+            <div><strong>Address:</strong> {{ dataItem.visit_1?.address || '-' }}</div>
+          </div>
+        </ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column title="Visit 2" [width]="220" [filterable]="false" [sortable]="false">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div class="ma-visit-cell">
+            <div><strong>Time:</strong> {{ dataItem.visit_2?.time || '-' }}</div>
+            <div><strong>Patient:</strong> {{ dataItem.visit_2?.patient_name_id || '-' }}</div>
+            <div><strong>Location:</strong> {{ dataItem.visit_2?.location || '-' }}</div>
+            <div><strong>Address:</strong> {{ dataItem.visit_2?.address || '-' }}</div>
+          </div>
+        </ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column field="travel_time_taken" title="Travel Time Taken" [width]="150" [filterable]="false">
+        <ng-template kendoGridCellTemplate let-dataItem>{{ dataItem.travel_time_taken || '-' }}</ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column field="actual_time" title="Actual Time" [width]="140" [filterable]="false">
+        <ng-template kendoGridCellTemplate let-dataItem>{{ dataItem.actual_time || '-' }}</ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column field="result" title="Result" [width]="160" [filterable]="false" [sortable]="false">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <span class="ma-badge" [class]="dataItem.result | badgeClass">{{ dataItem.result || '-' }}</span>
+        </ng-template>
+      </kendo-grid-column>
+
+      <ng-template kendoGridNoRecordsTemplate>
+        <div class="ma-grid-empty">No visit pairs were analysed for this provider.</div>
+      </ng-template>
+    </kendo-grid>
+  </div>
+</section>
+</main>

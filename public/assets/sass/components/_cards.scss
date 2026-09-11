@@ -1,0 +1,195 @@
+/* ==========================================================================
+   CARD
+   ========================================================================== */
+
+.ma-card {
+  background: $white;
+  border: 1px solid $borderColor;
+  border-radius: $borderRadius12;
+  overflow: hidden;
+  @include maTransition();
+
+  /* ==========================================================================
+    Card Inner Sections
+    ========================================================================== */
+  &__header {
+    padding: 20px;
+    border-bottom: 1px solid $borderColor;
+  }
+  &__body {
+    padding: 20px;
+  }
+  &__footer {
+    padding: 20px;
+    border-top: 1px solid $borderColor;
+  }
+  &__title {
+    margin-bottom: 8px;
+    font-size: $font20;
+    font-weight: $fontSemiBold;
+    color: $textPrimary;
+  }
+  &__subtitle {
+    font-size: $font14;
+    color: $textSecondary;
+  }
+  &__text {
+    color: $textSecondary;
+  }
+  &__image {
+    overflow: hidden;
+    img {
+      width: 100%;
+      height: auto;
+      display: block;
+      @include maTransition();
+    }
+  }
+}
+
+/* ==========================================================================
+   CARD STRUCTURAL ELEMENTS
+   Used by: ma-card-header, ma-card-body, ma-card-footer, ma-card-title-wrap, ma-card-title
+   ========================================================================== */
+
+.ma-card-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid $borderColor;
+}
+
+.ma-card-body {
+  padding: 20px;
+}
+
+.ma-card-footer {
+  padding: 14px 20px;
+  border-top: 1px solid $borderColor;
+}
+
+.ma-card-title-wrap {
+  margin-bottom: 0;
+}
+
+.ma-card-title {
+  font-size: $font16;
+  font-weight: $fontSemiBold;
+  color: $textPrimary;
+  margin: 0;
+}
+
+
+/* ==========================================================================
+   SECTION CARD
+   ========================================================================== */
+
+.ma-section-card {
+  @extend .ma-surface-card;
+  margin-bottom: 16px;
+  overflow: hidden;
+  .table-responsive {
+    box-shadow: none;
+    border: none;
+  }
+}
+
+.ma-users-section-card {
+  @extend .ma-section-card;
+}
+
+.ma-section-card-head {
+  padding: 18px 20px;
+  border-bottom: 1px solid $borderColor;
+}
+
+.ma-section-card-title {
+  margin: 0;
+  color: $textPrimary;
+  font-size: $font18;
+  font-weight: $fontSemiBold;
+}
+
+.ma-section-card-subtitle {
+  margin: 0;
+  color: $textSecondary;
+  font-size: $font14;
+}
+
+/* ==========================================================================
+   ROLE CARD
+   ========================================================================== */
+
+.ma-role-card {
+  .ma-card__body {
+    padding: 20px;
+  }
+
+  &__footer {
+    @include maFlex(flex-end, center);
+    gap: 12px;
+    margin-top: 20px;
+  }
+}
+
+@include maMedia($sm) {
+  .ma-section-card-head {
+    padding: 14px;
+  }
+
+  .ma-role-card {
+    .ma-card__body {
+      padding: 14px;
+    }
+
+    &__footer {
+      justify-content: stretch;
+      flex-direction: column;
+
+      .ma-btn {
+        width: 100%;
+      }
+    }
+  }
+}
+
+/* ==========================================================================
+   CARD HOVER
+   ========================================================================== */
+
+.ma-card-hover {
+  &:hover {
+    transform: translateY(-4px);
+    box-shadow: $shadowLg;
+  }
+}
+
+/* ==========================================================================
+   CARD BORDERLESS
+   ========================================================================== */
+
+.ma-card-borderless {
+  border: 0;
+}
+
+/* ==========================================================================
+   CARD SHADOW
+   ========================================================================== */
+
+.ma-card-shadow {
+  box-shadow: $shadowSm;
+}
+
+/* ==========================================================================
+   CARD CENTER
+   ========================================================================== */
+
+.ma-card-center {
+  text-align: center;
+}
+
+/* ==========================================================================
+   CARD FULL HEIGHT
+   ========================================================================== */
+
+.ma-card-full-height {
+  height: 100%;
+}

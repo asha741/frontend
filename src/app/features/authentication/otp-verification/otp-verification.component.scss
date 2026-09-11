@@ -1,0 +1,53 @@
+// Same disabled treatment as the login button — dimmed while a verify request
+// is in flight or the lockout countdown is running.
+.ma-auth-submit:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+// Style the ng-otp-input boxes to match the auth form controls. The inputs live
+// inside the ng-otp-input child component, so reach them with :host ::ng-deep.
+:host ::ng-deep {
+  .ma-otp-container {
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    margin-top: 6px;
+
+    @media (max-width: 400px) {
+      gap: 9px;
+    }
+
+    input.ma-otp-box {
+      width: 48px !important;
+      height: 52px !important;
+      margin: 0 8px !important;
+      padding: 0;
+      font-size: 20px;
+      font-weight: 600;
+      text-align: center;
+      color: #1e293b;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      background: #fff;
+      transition: border-color 0.15s ease, box-shadow 0.15s ease;
+
+      &:focus {
+        outline: none;
+        border-color: #4a76fd;
+        box-shadow: 0 0 0 3px rgba(74, 118, 253, 0.15);
+      }
+
+      @media (max-width: 400px) {
+        width: 40px !important;
+        height: 46px !important;
+        font-size: 18px;
+      }
+    }
+  }
+
+  // // Turn the boxes red when the submitted OTP is invalid.
+  // .ng-invalid.ng-touched .ma-otp-container input.ma-otp-box {
+  //   border-color: #dc3545;
+  // }
+}

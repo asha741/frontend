@@ -1,0 +1,41 @@
+// Component styles
+
+.ma-audit-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+@media (max-width: 767.98px) {
+  .ma-audit-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+
+  .ma-audit-verify-btn {
+    grid-column: 1;
+    grid-row: 1;
+    width: 100%;
+  }
+
+  .ma-audit-export {
+    grid-column: 2;
+    grid-row: 1;
+    width: 100%;
+  }
+
+  .ma-audit-export .btn {
+    width: 100%;
+  }
+
+  .ma-audit-integrity {
+    grid-column: 1;
+    grid-row: 2;
+    width: 100%;
+    white-space: normal;
+    justify-content: flex-start;
+    text-align: left;
+  }
+}

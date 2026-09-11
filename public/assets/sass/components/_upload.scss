@@ -1,0 +1,304 @@
+/* ==========================================================================
+   UPLOAD COMPONENT
+   ========================================================================== */
+
+.ma-upload-label {
+    display: block;
+    font-size: $font14;
+    font-weight: $fontMedium;
+    color: $textPrimary;
+    margin-bottom: 8px;
+
+    .ma-required {
+        color: $danger;
+        margin-left: 2px;
+    }
+}
+
+// ============================================================
+// UPLOAD WRAPPER (CONTAINER)
+// ============================================================
+.ma-upload-wrapper {
+    width: 100%;
+}
+
+// ============================================================
+// UPLOAD BOX (DRAG & DROP AREA)
+// ============================================================
+.ma-upload-box {
+    @include maFlexColumn(center, center);
+    height: 150px;
+    padding: 20px 12px;
+    background: rgba($primary, 0.01);
+    border: 2px dashed $blueBg;
+    border-radius: $borderRadius12;
+    cursor: pointer;
+    @include maTransition;
+    position: relative;
+
+    &.is-dragover {
+        border-color: $primary;
+        background: rgba($primary, 0.05);
+        box-shadow: 0 0 0 3px rgba($primary, 0.1);
+    }
+
+    input[type="file"] {
+        display: none;
+    }
+}
+
+.ma-upload-instruction {
+    font-size: $font14;
+    font-weight: $fontMedium;
+    color: $textPrimary;
+    text-align: center;
+    margin: 0;
+    line-height: 1.4;
+}
+
+.ma-upload-info {
+    font-size: $font12;
+    color: $textSecondary;
+    text-align: center;
+    margin: 0;
+    margin-top: 4px;
+}
+
+// ============================================================
+// UPLOAD PREVIEWS GRID
+// ============================================================
+.ma-upload-previews {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+    margin-top: 14px;
+    width: 100%;
+    display: none; 
+
+    @include maMedia($lg) {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    @include maMedia($md) {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    @include maMedia($sm) {
+        grid-template-columns: 1fr;
+    }
+}
+
+// ============================================================
+// PREVIEW CARD
+// ============================================================
+.ma-preview-card {
+    @include maFlexColumn(flex-start, flex-start);
+    gap: 12px;
+    padding: 14px;
+    background: $light;
+    border: 1px solid $borderColor;
+    border-radius: $borderRadius8;
+    @include maTransition;
+    overflow: hidden;
+
+    &:hover {
+        box-shadow: $shadowSm;
+        border-color: rgba($primary, 0.2);
+    }
+}
+
+.ma-preview-thumbnail {
+    width: 100%;
+    height: 120px;
+    background: $white;
+    border: 1px solid $borderColor;
+    border-radius: $borderRadius8;
+    @include maFlex(center, center);
+    overflow: hidden;
+    position: relative;
+
+    img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .ma-preview-file-icon {
+        font-size: 40px;
+        color: $primary;
+    }
+
+    .ma-icon-pdf {
+        color: #E8453C;
+    }
+
+    .ma-icon-doc {
+        color: #4A76FD;
+    }
+
+    .ma-icon-image {
+        color: #10B981;
+    }
+}
+
+.ma-preview-info {
+    @include maFlexColumn(flex-start, flex-start);
+    gap: 6px;
+    width: 100%;
+}
+
+.ma-preview-name {
+    font-size: $font13;
+    font-weight: $fontMedium;
+    color: $textPrimary;
+    @include maTextEllipsis;
+    width: 100%;
+    word-break: break-word;
+}
+
+.ma-preview-size {
+    font-size: $font12;
+    color: $textSecondary;
+}
+
+.ma-preview-status {
+    font-size: $font11;
+    font-weight: $fontMedium;
+    color: $success;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+
+    &.uploading {
+        color: $primary;
+    }
+
+    &.error {
+        color: $danger;
+    }
+}
+
+.ma-preview-actions {
+    @include maFlex(center, center);
+    gap: 8px;
+    width: 100%;
+    padding-top: 8px;
+    border-top: 1px solid $borderColor;
+
+    button {
+        @include maFlex(center, center);
+        width: 28px;
+        height: 28px;
+        padding: 0;
+        background: $white;
+        border: 1px solid $borderColor;
+        border-radius: $borderRadius6;
+        color: $textSecondary;
+        cursor: pointer;
+        font-size: $font12;
+        @include maTransition;
+
+        &:hover {
+            background: $blueBg;
+            border-color: $primary;
+            color: $primary;
+        }
+
+        &.ma-btn-remove {
+            &:hover {
+                background: $lightRed;
+                border-color: $danger;
+                color: $danger;
+            }
+        }
+
+        i {
+            display: block;
+        }
+    }
+}
+
+// ============================================================
+// UPLOAD SECTION SPACING
+// ============================================================
+.ma-upload-section {
+    margin-bottom: 24px;
+
+    &:last-child {
+        margin-bottom: 0;
+    }
+}
+
+// ============================================================
+// VALIDATION ERROR MESSAGE
+// ============================================================
+.ma-upload-error {
+    padding: 12px 14px;
+    margin-top: 12px;
+    background: $lightRed;
+    border: 1px solid rgba($danger, 0.2);
+    border-radius: $borderRadius8;
+    font-size: $font12;
+    color: $danger;
+    line-height: 1.5;
+    animation: slideDown 0.3s ease-out;
+
+    strong {
+        font-weight: $fontMedium;
+        display: block;
+        margin-bottom: 4px;
+    }
+
+    br {
+        line-height: 1.8;
+    }
+}
+
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+// Legacy support - old upload file preview (deprecated, keep for backward compatibility)
+.ma-upload-file-preview {
+    @include maDocumentCard;
+    margin-top: 12px;
+    padding: 10px 14px;
+    background: $light;
+
+    .ma-file-info {
+        @include maFlexColumn(flex-start);
+        gap: 4px;
+        flex: 1;
+    }
+
+    .ma-file-name {
+        font-size: $font14;
+        font-weight: $fontMedium;
+        color: $textPrimary;
+        @include maTextEllipsis;
+    }
+
+    .ma-file-size {
+        font-size: $font12;
+        color: $textSecondary;
+    }
+
+    .ma-file-remove {
+        background: none;
+        border: none;
+        color: $danger;
+        cursor: pointer;
+        font-size: $font16;
+        @include maTransition;
+
+        &:hover {
+            opacity: 0.7;
+        }
+    }
+}

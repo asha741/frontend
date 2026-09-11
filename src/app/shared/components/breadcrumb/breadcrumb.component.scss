@@ -1,0 +1,65 @@
+.ma-breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-size: 0.95rem;
+  line-height: 1;
+  min-width: 0;
+
+  li {
+    display: inline-flex;
+    align-items: center;
+    min-width: 0;
+  }
+}
+
+.ma-crumb-link {
+  a {
+    color: var(--bs-primary, #0d6efd);
+    text-decoration: none;
+    transition: color 0.15s ease;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
+}
+
+// The leading "Super Admin" root is plain, muted text (no link).
+.ma-crumb-root {
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.ma-crumb-icon {
+  color: #9ca3af;
+  font-size: 0.7rem;
+}
+
+.ma-crumb-current {
+  color: var(--bs-dark, #212529);
+  font-weight: 600;
+}
+
+// On narrow screens there isn't room for the whole trail on one line, so
+// let it wrap to a second line instead of forcing ellipsis or overflow —
+// the topbar grows to fit (see .ma-topbar height rules in styles.scss) so
+// the icon/avatar on either side stay pinned and vertically centered
+// against the taller row rather than being clipped or pushed off-screen.
+@media (max-width: 767px) {
+  .ma-breadcrumb {
+    row-gap: 0.15rem;
+    font-size: 0.85rem;
+  }
+}
+
+.ma-breadcrumb-subtitle {
+  margin-top: 0.15rem;
+  color: #6b7280;
+  font-size: 0.8rem;
+  line-height: 1.2;
+}

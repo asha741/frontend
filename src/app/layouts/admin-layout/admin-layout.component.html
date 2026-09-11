@@ -1,0 +1,15 @@
+<div class="ma-dashboard" [class.is-sidebar-collapsed]="sidebarCollapsed()" [class.is-sidebar-open]="sidebarOpen()">
+  <app-sidebar (close)="closeSidebar()" />
+  <div class="ma-sidebar-overlay" (click)="closeSidebar()" aria-hidden="true"></div>
+  <div class="ma-main">
+    <app-header (sidebarToggle)="toggleSidebar()" />
+    <main class="ma-content">
+      <!-- Mobile / tablet only: the topbar breadcrumb is hidden below $lg and
+           rendered here instead, so it reads as part of the page content. -->
+      <div class="ma-content-breadcrumb">
+        <app-breadcrumb />
+      </div>
+      <router-outlet />
+    </main>
+  </div>
+</div>

@@ -1,0 +1,33 @@
+// Fit the non-scrollable grid to the viewport: with a fixed table layout the
+// declared column widths act as proportional weights inside 100% width, so the
+// table never forces a horizontal scroll. Cell text is clamped to one line via
+// .k-text-ellipsis in the templates; headers get the same treatment here.
+:host ::ng-deep .ma-master-table--bhs {
+  table {
+    table-layout: fixed;
+    width: 100%;
+  }
+
+  th .k-column-title {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  td {
+    overflow: hidden;
+  }
+}
+
+// Wider ICD-10 tooltip: default Bootstrap tooltip max-width (200px) forces the
+// long comma-separated code list into a tall, narrow single-column stack.
+// Widen it (capped to the viewport so it can never spill outside the page)
+// and left-align so it reads as normal wrapped text.
+::ng-deep .ma-tooltip-wide {
+  .tooltip-inner {
+    max-width: min(420px, calc(100vw - 32px));
+    text-align: left;
+    white-space: normal;
+    word-break: break-word;
+  }
+}

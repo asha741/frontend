@@ -1,0 +1,302 @@
+<div class="ma-page-header">
+  <div class="ma-page-header__meta">
+    <div class="ma-back-header">
+      <h2 class="ma-page-title">Provider Patient Claims</h2>
+    </div>
+  </div>
+</div>
+
+<!-- ══ Provider Information ══════════════════════════════════════════ -->
+<div class="row">
+  <div class="col-md-12">
+    <div class="ma-card h-100">
+      <div class="ma-card-header">
+        <div class="ma-card-title-wrap">
+          <h2 class="ma-card-title">Provider Information</h2>
+        </div>
+      </div>
+      <div class="ma-card-body">
+        <div class="ma-provider-info">
+          <div class="ma-info-group">
+            <span class="ma-info-label">Provider Name</span>
+            <span class="ma-info-value">{{ provider()?.provider_name || '-' }}</span>
+          </div>
+          <div class="ma-info-group">
+            <span class="ma-info-label">Provider ID</span>
+            <span class="ma-info-value">{{ provider()?.provider_id || '-' }}</span>
+          </div>
+          <div class="ma-info-group">
+            <span class="ma-info-label">License</span>
+            <span class="ma-info-value">{{ provider()?.license || '-' }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ KPI cards ═════════════════════════════════════════════════════ -->
+<div class="row mt-3">
+  <div class="col-12 col-md-4 mb-3 mb-md-0">
+    <article class="ma-stat-card h-100">
+      <span class="ma-stat-icon ma-is-blue">
+        <img src="assets/images/icons/user-access.svg" alt="Total Claims Icon" class="ma-svg" />
+      </span>
+      <div class="ma-stat-content">
+        <p class="ma-stat-title">Total Claims</p>
+        <h2 class="ma-stat-value">{{ kpis().total_claims }}</h2>
+      </div>
+    </article>
+  </div>
+  <div class="col-12 col-md-4 mb-3 mb-md-0">
+    <article class="ma-stat-card h-100">
+      <span class="ma-stat-icon ma-is-green_v2">
+        <img src="assets/images/icons/ai-validation-completed.svg" alt="Total Claims Passed Icon" class="ma-svg" />
+      </span>
+      <div class="ma-stat-content">
+        <p class="ma-stat-title">Total Claims Passed</p>
+        <h2 class="ma-stat-value">{{ kpis().total_passed }}</h2>
+      </div>
+    </article>
+  </div>
+  <div class="col-12 col-md-4">
+    <article class="ma-stat-card h-100">
+      <span class="ma-stat-icon ma-is-skyblue">
+        <img src="assets/images/icons/ocr-processed.svg" alt="Total Claims Failed Icon" class="ma-svg" />
+      </span>
+      <div class="ma-stat-content">
+        <p class="ma-stat-title">Total Claims Failed</p>
+        <h2 class="ma-stat-value">{{ kpis().total_failed }}</h2>
+      </div>
+    </article>
+  </div>
+</div>
+
+<!-- ══ Provider Claim Performance Trend ══════════════════════════════ -->
+<div class="ma-card mt-3">
+  <div class="ma-card-header">
+    <div class="chart-card__header">
+      <h2 class="chart-card__title">Provider Claim Performance Trend</h2>
+    </div>
+  </div>
+  <div class="ma-card-body">
+    <div class="ma-chart-wrap w-100">
+      <kendo-chart>
+        <kendo-chart-tooltip [visible]="true" format="{0}"></kendo-chart-tooltip>
+        <kendo-chart-legend position="top"></kendo-chart-legend>
+        <kendo-chart-category-axis>
+          <kendo-chart-category-axis-item
+            [categories]="chartCategories()"
+            [majorGridLines]="{ visible: false }"
+            [labels]="{ rotation: 'auto' }"
+            [title]="{ text: 'Months' }">
+          </kendo-chart-category-axis-item>
+        </kendo-chart-category-axis>
+        <kendo-chart-value-axis>
+          <kendo-chart-value-axis-item 
+            [labels]="{ format: '{0:n0}' }" 
+            [majorGridLines]="{ visible: true }"
+            [title]="{ text: 'Performance Score' }">
+          </kendo-chart-value-axis-item>
+        </kendo-chart-value-axis>
+        <kendo-chart-series>
+          <kendo-chart-series-item name="Claims" type="column" [data]="claimsSeries()" color="#5b7fed" [gap]="1.5" [spacing]="0.2">
+          </kendo-chart-series-item>
+          <kendo-chart-series-item name="Passed" type="column" [data]="passedSeries()" color="#b7c6fb" [gap]="1.5" [spacing]="0.2">
+          </kendo-chart-series-item>
+          <kendo-chart-series-item name="Failed" type="column" [data]="failedSeries()" color="#7b96f2" [gap]="1.5" [spacing]="0.2">
+          </kendo-chart-series-item>
+        </kendo-chart-series>
+      </kendo-chart>
+    </div>
+  </div>
+</div>
+
+<!-- ══ Filters ═══════════════════════════════════════════════════════ -->
+<section class="ma-filter-wrap mt-3">
+  <div class="row g-2 align-items-center ma-filter-grid">
+    <div class="col-12 col-lg-3">
+      <div class="ma-input-group ma-filter-item ma-filter-item--search">
+        <i class="fa-solid fa-magnifying-glass ma-input-icon"></i>
+        <input
+          type="text"
+          class="form-control"
+          placeholder="Search claims..."
+          aria-label="Search claims"
+          [(ngModel)]="search"
+          appTrimWhitespace
+          maxlength="100"
+          (keydown.enter)="onSearch()"
+        />
+      </div>
+    </div>
+
+
+    <div class="col-12 col-sm-6 col-lg-2">
+      <div class="ma-input-group is-calendar ma-filter-item ma-filter-item--date">
+        <input
+          class="form-control bg-white"
+          placeholder="From date"
+          aria-label="From date"
+          name="claimsDateFrom"
+          readonly
+          ngbDatepicker
+          #fromPicker="ngbDatepicker"
+          [(ngModel)]="fromDate"
+          [maxDate]="$any(toDate)"
+          (click)="fromPicker.toggle()"
+        />
+        <i class="fa-regular fa-calendar ma-input-icon" role="button" aria-label="Open from-date picker" (click)="fromPicker.toggle()"></i>
+      </div>
+    </div>
+
+    <div class="col-12 col-sm-6 col-lg-2">
+      <div class="ma-input-group is-calendar ma-filter-item ma-filter-item--date">
+        <input
+          class="form-control bg-white"
+          placeholder="To date"
+          aria-label="To date"
+          name="claimsDateTo"
+          readonly
+          ngbDatepicker
+          #toPicker="ngbDatepicker"
+          [(ngModel)]="toDate"
+          [minDate]="$any(fromDate)"
+          (click)="toPicker.toggle()"
+        />
+        <i class="fa-regular fa-calendar ma-input-icon" role="button" aria-label="Open to-date picker" (click)="toPicker.toggle()"></i>
+      </div>
+    </div>
+
+    <div class="col-12 col-lg-auto d-flex gap-2">
+      <button type="button" class="btn ma-btn btn-primary" (click)="onSearch()" style="min-height: 45px; padding: 0 20px">
+        Search
+      </button>
+      <button type="button" class="btn ma-btn btn-outline-secondary" (click)="clearSearch()" style="min-height: 45px; padding: 0 20px">
+        Reset
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- ══ Claims grid ═══════════════════════════════════════════════════ -->
+<section class="ma-surface-card ma-users-section-card ma-user-list-card mt-4">
+  <div class="table-responsive">
+    <kendo-grid
+      class="ma-kendo-grid table"
+      [data]="claimsData()"
+      [pageSize]="state.take"
+      [skip]="state.skip"
+      [sortable]="true"
+      [sort]="state.sort"
+      filterable="menu"
+      [filter]="state.filter"
+      [pageable]="{ buttonCount: 3, type: 'numeric', pageSizes: pageSizes }"
+      [scrollable]="'none'"
+      (dataStateChange)="dataStateChange($event)"
+    >
+      <kendo-grid-column title="Sr. No." [width]="80" [filterable]="false" [sortable]="false">
+        <ng-template kendoGridCellTemplate let-rowIndex="rowIndex">
+          {{ rowIndex + 1 }}
+        </ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column field="claim_id" title="Claim ID" [width]="150" [filterable]="false">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div class="text-truncate" [ngbTooltip]="dataItem.claim_id">{{ dataItem.claim_id || '-' }}</div>
+        </ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column field="patient_name" title="Patient Name" [width]="180" [filterable]="false">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div class="text-truncate" [ngbTooltip]="dataItem.patient_name">{{ dataItem.patient_name || '-' }}</div>
+        </ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column field="document_count" title="Total Documents" [width]="150" [sortable]="true" [filterable]="false">
+        <ng-template kendoGridCellTemplate let-dataItem>{{ dataItem.document_count ?? '-' }}</ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column field="compliance_score" title="Compliance Score" [width]="160" [sortable]="true" [filterable]="false">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          {{ dataItem.compliance_score != null ? dataItem.compliance_score + '%' : '-' }}
+        </ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column field="ai_status" title="AI Status" [width]="130" [sortable]="false">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <span class="ma-badge" [class]="dataItem.ai_status | badgeClass">{{ dataItem.ai_status || '-' }}</span>
+        </ng-template>
+        <ng-template
+          kendoGridFilterMenuTemplate
+          let-filter
+          let-column="column"
+          let-filterService="filterService"
+        >
+          <dropdownlist-filter
+            [isPrimitive]="true"
+            [field]="column.field"
+            [currentFilter]="filter"
+            [filterService]="filterService"
+            textField="label"
+            valueField="value"
+            [data]="aiStatusOptions"
+          >
+          </dropdownlist-filter>
+        </ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column field="uploaded_at" title="Upload Date" [width]="150" [filterable]="false" [sortable]="true">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          {{ dataItem.uploaded_at ? (dataItem.uploaded_at | date: 'MM-dd-yyyy') : '' }}
+        </ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column field="review_status" title="Review Status" [width]="140" [sortable]="false">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <span class="ma-badge" [class]="dataItem.review_status | badgeClass">{{ dataItem.review_status || '-' }}</span>
+        </ng-template>
+        <ng-template
+          kendoGridFilterMenuTemplate
+          let-filter
+          let-column="column"
+          let-filterService="filterService"
+        >
+          <dropdownlist-filter
+            [isPrimitive]="true"
+            [field]="column.field"
+            [currentFilter]="filter"
+            [filterService]="filterService"
+            textField="label"
+            valueField="value"
+            [data]="reviewStatusOptions"
+          >
+          </dropdownlist-filter>
+        </ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column title="Action" [width]="100" [filterable]="false" [sortable]="false" [hidden]="!perms.canAccessMenu(MenuType.Claim)">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div class="ma-table-actions">
+            @if (perms.canAccessMenu(MenuType.Claim)) {
+              <button
+                class="ma-btn-icon-sm"
+                type="button"
+                ngbTooltip="View Details"
+                placement="top"
+                [attr.aria-label]="'View details for ' + (dataItem.claim_id || '')"
+                (click)="viewDetails(dataItem)"
+              >
+                <i class="fa-regular fa-eye"></i>
+              </button>
+            }
+          </div>
+        </ng-template>
+      </kendo-grid-column>
+
+      <ng-template kendoGridNoRecordsTemplate>
+        <div class="ma-grid-empty">No validated claims are available for this provider.</div>
+      </ng-template>
+    </kendo-grid>
+  </div>
+</section>

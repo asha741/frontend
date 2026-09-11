@@ -1,0 +1,23 @@
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb ma-breadcrumb mb-0">
+    @for (crumb of breadcrumbs(); track $index; let first = $first; let last = $last) {
+      @if (!first) {
+        <li class="ma-crumb-icon is-middle"><i class="fa-solid fa-angle-right" aria-hidden="true"></i></li>
+      }
+      @if (last) {
+        <li class="ma-crumb-current" aria-current="page">{{ crumb.label }}</li>
+      } @else if (first) {
+        <li class="ma-crumb-link ma-crumb-root">{{ crumb.label }}</li>
+      } @else {
+        <li class="ma-crumb-link">
+          <a [routerLink]="crumb.url">{{ crumb.label }}</a>
+        </li>
+      }
+    }
+  </ol>
+  <!--
+  @if (subTitle()) {
+    <p class="ma-breadcrumb-subtitle mb-0">{{ subTitle() }}</p>
+  }
+  -->
+</nav>

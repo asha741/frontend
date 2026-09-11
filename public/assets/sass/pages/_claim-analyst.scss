@@ -1,0 +1,489 @@
+/* ==========================================================================
+   CLAIM ANALYST PAGE
+   ========================================================================== */
+
+.claim-analyst-page {
+  // ============================================================
+  // STEPPER
+  // ============================================================
+  .ma-stepper-scroll {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  .ma-stepper {
+    @include maFlex(flex-start, flex-start);
+    gap: 0;
+    min-width: 100%;
+    padding: 0;
+    margin: 0;
+
+    @include maMedia($sm) {
+      min-width: 520px;
+    }
+  }
+
+  .ma-step {
+    @include maFlexColumn(center, center);
+    text-align: center;
+    flex: 1;
+    gap: 8px;
+    min-width: 80px;
+
+    @include maMedia($md) {
+      min-width: 70px;
+    }
+
+    @include maMedia($sm) {
+      min-width: 80px;
+    }
+  }
+
+  .ma-step-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: $light;
+    color: $textSecondary;
+    @include maFlexCenter;
+    font-size: $font14;
+    font-weight: $fontBold;
+    @include maTransition;
+    flex-shrink: 0;
+    border: 2px solid $borderColor;
+
+    @include maMedia($md) {
+      width: 36px;
+      height: 36px;
+      font-size: $font12;
+    }
+
+    @include maMedia($sm) {
+      width: 32px;
+      height: 32px;
+      font-size: $font12;
+    }
+  }
+
+  .ma-step-label {
+    font-size: $font12;
+    color: $textSecondary;
+    font-weight: $fontMedium;
+    white-space: nowrap;
+
+    @include maMedia($md) {
+      font-size: 11px;
+    }
+
+    @include maMedia($sm) {
+      font-size: 10px;
+    }
+  }
+
+  .ma-step-line {
+    flex: 1;
+    height: 2px;
+    background: $borderColor;
+    @include maTransition;
+    align-self: auto;
+    margin-top: 20px;
+
+    @include maMedia($md) {
+      margin-top: 18px;
+    }
+
+    @include maMedia($sm) {
+      margin-top: 16px;
+    }
+  }
+
+  .ma-step.completed {
+    .ma-step-circle {
+      background: $primary;
+      border-color: $primary;
+      color: $white;
+    }
+
+    .ma-step-label {
+      color: $primary;
+    }
+  }
+
+  .ma-step.current {
+    .ma-step-circle {
+      background: $white;
+      border-color: $primary;
+      color: $primary;
+    }
+
+    .ma-step-label {
+      color: $primary;
+      font-weight: $fontSemiBold;
+    }
+  }
+
+  .ma-step.pending {
+    .ma-step-circle {
+      background: $light;
+      border-color: $borderColor;
+      color: $textSecondary;
+    }
+
+    .ma-step-label {
+      color: $textSecondary;
+    }
+  }
+
+  .ma-step-line.completed {
+    background: $primary;
+  }
+
+  .ma-step-line.pending {
+    background: $borderColor;
+  }
+
+  // ============================================================
+  // PATIENT INFORMATION
+  // ============================================================
+  .ma-label-value {
+    @include maFlexColumn(flex-start);
+    margin-bottom: 16px;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  .ma-label {
+    font-size: 10px;
+    color: $textSecondary;
+    font-weight: $fontMedium;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+  }
+
+  .ma-value {
+    font-size: $font14;
+    color: $textPrimary;
+    font-weight: $fontSemiBold;
+  }
+
+  // ============================================================
+  // UPLOADED DOCUMENTS
+  // ============================================================
+  .ma-doc-group {
+    @include maFlexColumn(flex-start);
+    gap: 12px;
+  }
+
+  .ma-doc-heading {
+    font-size: $font12;
+    font-weight: $fontRegular;
+    color: $textSecondary;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 0;
+    padding-bottom: 0;
+  }
+
+  .ma-document-item {
+    @include maFlex(flex-start, center);
+    gap: 8px;
+    padding: 8px 10px;
+    background: $white;
+    border-radius: $borderRadius6;
+    border: 1px solid $borderColor;
+    @include maTransition;
+    // The row itself has no click handler — only the download button does —
+    // so it must not show a pointer/hand cursor; that was misleading and
+    // stayed visible even while the download button was disabled/loading.
+    cursor: default;
+
+    &:hover {
+      border-color: rgba($primary, 0.5);
+      background: rgba($primary, 0.03);
+    }
+  }
+
+  .ma-doc-icon {
+    font-size: $font16;
+    color: $textSecondary;
+    flex-shrink: 0;
+    width: 18px;
+    text-align: center;
+  }
+
+  .ma-doc-name {
+    font-size: $font14;
+    color: $textPrimary;
+    @include maTextEllipsis;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .ma-doc-action {
+    @include maResetButton;
+    color: $textSecondary;
+    font-size: $font14;
+    padding: 2px 4px;
+    @include maTransition;
+    flex-shrink: 0;
+
+    &:hover:not(:disabled) {
+      color: $primary;
+    }
+
+    &:disabled {
+      cursor: not-allowed;
+      opacity: .6;
+    }
+  }
+
+  // ============================================================
+  // AI FINDINGS CARD
+  // ============================================================
+  .ma-table-card {
+    background: $white;
+    border-radius: $borderRadius12;
+    border: 1px solid $borderColor;
+    box-shadow: $shadowSm;
+    margin-bottom: 24px;
+    overflow: hidden;
+    .ma-tabs {
+      padding: 0;
+      border: none;
+      border-radius: 0;
+      width: 100%;
+      background: transparent;
+      box-shadow: none;
+    }
+  }
+
+  .ma-table-card-head {
+    @include maFlex(space-between, center);
+    gap: 12px;
+    padding: 16px 20px;
+    border-bottom: 1px solid $borderColor;
+    flex-wrap: wrap;
+
+    @include maMedia($sm) {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 10px;
+    }
+  }
+
+  .ma-table-title {
+    font-size: $font16;
+    font-weight: $fontSemiBold;
+    color: $textPrimary;
+    margin: 0;
+  }
+
+  // ============================================================
+  // FILTER TABS
+  // ============================================================
+  .ma-tabs-header {
+    @include maFlex(flex-start, center);
+    gap: 0;
+    border-bottom: 1px solid $borderColor;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    flex-wrap: nowrap;
+    margin-bottom: 0;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+  .ma-tab-button {
+    @include maResetButton;
+    @include maFlex(flex-start, center);
+    gap: 0;
+    padding: 12px 16px;
+    font-size: $font14;
+    color: $textPrimary;
+    border-bottom: 2px solid transparent;
+    @include maTransition;
+    white-space: nowrap;
+    flex-shrink: 0;
+
+    @include maMedia($md) {
+      padding: 10px 14px;
+      font-size: $font14;
+    }
+
+    @include maMedia($sm) {
+      padding: 10px 12px;
+      font-size: $font12;
+    }
+
+    &:hover {
+      color: $primary;
+    }
+
+    &.active {
+      color: $primary;
+      border-bottom-color: $primary;
+      font-weight: $fontMedium;
+    }
+  }
+
+  .ma-tab-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+    padding: 2px 2px;
+    border-radius: $borderRadius4;
+    font-size: $font12;
+    font-weight: $fontSemiBold;
+    background: rgba($primary, 0.1);
+    color: $primary;
+
+    &--danger {
+      background: rgba($danger, 0.12);
+      color: $danger;
+    }
+
+    &--warning {
+      background: rgba($warning, 0.12);
+      color: darken($warning, 15%);
+    }
+
+    &--success {
+      background: rgba($success, 0.12);
+      color: $darkGreen;
+    }
+
+    &--info {
+      background: rgba($primary, 0.12);
+      color: $primary;
+    }
+  }
+
+  .ma-tab-pane {
+    display: none;
+
+    &.active {
+      display: block;
+    }
+  }
+
+  // ============================================================
+  // TABLE
+  // ============================================================
+  .table-responsive {
+    @include maScrollbar;
+  }
+
+  .ma-table {
+    margin-bottom: 0;
+    width: 100%;
+
+    thead tr th {
+      font-size: $font12;
+      font-weight: $fontSemiBold;
+      color: $textSecondary;
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      padding: 10px 16px;
+      background: rgba($primary, 0.03);
+      border-bottom: 1px solid $borderColor;
+      white-space: nowrap;
+    }
+
+    tbody tr {
+      @include maTransition;
+
+      &:hover {
+        background: rgba($primary, 0.02);
+      }
+
+      td {
+        font-size: $font14;
+        color: $textPrimary;
+        padding: 12px 16px;
+        border-color: $borderColor;
+        vertical-align: middle;
+      }
+    }
+  }
+
+  .ma-findings-table {
+    table-layout: fixed;
+
+    thead {
+      th {
+        white-space: normal;
+      }
+    }
+
+    tbody {
+      td {
+        white-space: normal;
+        word-break: break-word;
+      }
+    }
+  }
+
+  .ma-empty-state td {
+    color: $textSecondary;
+    font-size: $font14;
+  }
+
+  // ============================================================
+  // REVIEWER ACTIONS FORM
+  // ============================================================
+  .ma-form-group {
+    .form-label {
+      font-size: $font14;
+      font-weight: $fontMedium;
+      color: $textPrimary;
+      margin-bottom: 6px;
+    }
+
+    .form-control,
+    .form-select {
+      border: 1px solid $borderColor;
+      border-radius: $borderRadius8;
+      font-size: $font14;
+      color: $textPrimary;
+      @include maTransition;
+      width: 100%;
+
+      &:focus {
+        border-color: $primary;
+        box-shadow: 0 0 0 3px rgba($primary, 0.1);
+      }
+    }
+
+    textarea.form-control {
+      resize: vertical;
+      min-height: 100px;
+    }
+  }
+
+  // ============================================================
+  // CHART CARD HEADER (used for Patient Info, Docs, Reviewer headings)
+  // ============================================================
+  .chart-card__header {
+    display: flex;
+    align-items: center;
+  }
+
+  .chart-card__title {
+    font-size: $font16;
+    font-weight: $fontSemiBold;
+    color: $textPrimary;
+    margin: 0;
+  }
+}

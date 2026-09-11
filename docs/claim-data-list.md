@@ -1,0 +1,413 @@
+As an Organization Admin,
+
+I want to upload monthly claims data files, allow the AI to analyse the uploaded data, generate provider and claim analytics, identify consecutive working day patterns, and review detailed claim records,
+
+So that I can monitor organizational claim performance, identify operational risks, detect unusual provider work patterns, and improve compliance and reporting.
+
+The Organization Admin shall be able to:
+
+View all previously uploaded claim data files. 
+
+Import new claim data files (Excel/CSV). 
+
+Download a sample import template. 
+
+Track uploaded files with summary information. 
+
+Access AI-generated Claim Analytics. 
+
+Access AI-generated Claim Data. 
+
+Access AI-generated Consecutive Day Analysis. 
+
+Export reports where applicable. 
+
+Filter uploaded claim records using date filters.
+
+Claim Data Upload Flow
+
+View Claim Data List
+
+User navigates to Claim Data Analytics from the left navigation menu.
+
+System displays all previously uploaded claim datasets.
+
+User can:
+
+Search uploaded files.
+
+Filter records using Uploaded Date (From–To).
+
+Download Sample File.
+
+Import new Claim Data.
+
+The Data will be Shown in:
+
+Analysis
+
+Claim Data
+
+Consecutive Days
+
+Table supports pagination.
+
+Import Claim Data
+
+User clicks Import.
+
+Upload Claim Data page opens.
+
+User enters:
+
+File Title
+
+Year
+
+Month
+
+User uploads a single file.
+
+Supported formats:
+
+Excel (.xlsx)
+
+CSV (.csv)
+
+User clicks Submit for Analysis.
+
+System uploads and validates the file.
+
+AI processing begins automatically.
+
+System:
+
+Extracts claim records.
+
+Generates provider statistics.
+
+Generates service statistics.
+
+Creates analytics datasets.
+
+Generates consecutive day analysis.
+
+User is redirected to the Claim Data Analytics List.
+
+Newly uploaded record is displayed.
+
+Validation
+
+File Title is mandatory.
+
+Year is mandatory.
+
+Month is mandatory.
+
+Upload File is mandatory.
+
+Only one file can be uploaded.
+
+Supported formats:
+
+.xlsx
+
+.csv
+
+Invalid files display inline validation messages.
+
+Duplicate uploads (same title, month, year) are prevented unless replaced.
+
+Business Rules
+
+AI processing starts immediately after successful upload.
+
+Each upload creates a unique analysis record.
+
+Analytics are generated independently for each uploaded file.
+
+Uploaded datasets remain available for historical reporting.
+
+Processing status shall be maintained until completion.
+
+Business Logic
+
+Validate uploaded file structure.
+
+Store original file securely.
+
+Extract claim records.
+
+Generate analytics dataset.
+
+Generate provider statistics.
+
+Generate service statistics.
+
+Generate payment statistics.
+
+Generate consecutive day analysis.
+
+Create summary KPIs.
+
+Analysis
+
+The Organization Admin shall be able to review AI-generated claim analytics for every uploaded claim dataset.
+
+Flow
+
+User selects Analysis from the uploaded claim record.
+
+System opens the Claim Analysis page.
+
+System displays:
+
+File Title
+
+Year
+
+Month
+
+Uploaded Date
+
+KPI summary is displayed:
+
+Total Providers
+
+Total Claims
+
+Total Patients
+
+Total Paid
+
+Total Pending
+
+Total Denied
+
+AI-generated analytics are displayed:
+
+Provider Session Volume
+
+Session Duration Distribution
+
+Payment Status by Service Type
+
+Consecutive Working Day Summary
+
+User may click View Full Analysis to open the Consecutive Day Analysis page.
+
+Business Rules
+
+Analytics are generated from uploaded claim records only.
+
+KPI’s & Charts are read-only.
+
+Business Logic
+
+System calculates:
+
+Session duration distribution
+
+Payment status distribution
+
+Consecutive work patterns
+
+Organizational summary KPIs
+
+Claim Data
+
+The Organization Admin shall be able to search, filter, review, and update payment status for processed claim records.
+
+Flow
+
+User selects Claim Data.
+
+System displays processed claim records.
+
+User may search using keyword search.
+
+User may filter by:
+
+Provider
+
+Service Type
+
+Provider Paid Status
+
+Service Date
+
+Location
+
+Claim Status
+
+User clicks Apply Filters.
+
+Matching claim records are displayed.
+
+User selects View.
+
+Claim Detail page opens.
+
+Patient Information
+
+Consumer Name
+
+Provider Information
+
+Provider Name
+
+Service Information
+
+Service ID
+
+Service Date
+
+Service Type
+
+CPT Code
+
+Modifier
+
+Program
+
+Location
+
+Recipient
+
+Duration
+
+Base Units
+
+Billing Information
+
+Base Rate
+
+Billing Rate
+
+Claim Information
+
+Claim ID
+
+Batch Date
+
+Transfer Date
+
+Last Insurance Paid
+
+Approval User
+
+Approval Date
+
+Status
+
+Provider Payment Status
+
+Dropdown:
+
+Pending
+
+Paid
+
+Denied
+
+Actions:
+
+Save Status
+
+Cancel
+
+Validation
+
+Payment Status is mandatory before saving.
+
+Only one payment status can be selected.
+
+Default status is Pending.
+
+Business Rules
+
+Claim information is read-only except Provider Payment Status.
+
+Updating payment status creates an audit log.
+
+Historical claim information cannot be edited.
+
+Business Logic
+
+System stores:
+
+Payment Status
+
+Updated By
+
+Updated Date
+
+Audit Trail
+
+Consecutive Day Analysis
+
+The Organization Admin shall be able to review provider consecutive working day analysis generated by AI.
+
+Flow
+
+User selects Consecutive Days.
+
+System opens the Consecutive Day Analysis page.
+
+System displays:
+
+File Name
+
+Month
+
+Year
+
+Consecutive Day Threshold (Read Only)
+
+User may export the report.
+
+KPI summary is displayed:
+
+Total Providers
+
+Flagged Providers
+
+Maximum Consecutive Streak
+
+Provider analysis table is displayed.
+
+Pagination is supported.
+
+Validation
+
+Analysis is available only after AI processing completes.
+
+Threshold value is read-only and retrieved from Organization Settings.
+
+Business Rules
+
+Consecutive day analysis uses the configured threshold from Organization Settings.
+
+Providers exceeding the threshold are automatically flagged.
+
+Threshold updates affect future analyses only.
+
+Reports are exportable.
+
+Business Logic
+
+System calculates:
+
+Provider working streak
+
+Active working days
+
+Maximum consecutive streak
+
+Threshold comparison
+
+Provider status:
+
+Within Acceptable Range
+
+⚠ Flagged (Exceeds Threshold)

@@ -1,0 +1,54 @@
+/* ==========================================================================
+   PROVIDER PATIENT CLAIMS PAGE
+   ========================================================================== */
+
+.ma-provider-info {
+  @include maFlex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.ma-info-group {
+  @include maFlexColumn(flex-start);
+  flex: auto;
+  text-align: left;
+
+  .ma-info-label {
+    font-size: $font12;
+    color: $textSecondary;
+    font-weight: $fontMedium;
+    text-transform: uppercase;
+    min-width: 80px;
+  }
+
+  .ma-info-value {
+    font-size: $font14;
+    color: $textPrimary;
+    font-weight: $fontMedium;
+  }
+
+  @include maMedia($md) {
+    flex-direction: column;
+  }
+}
+
+.ma-chart-wrap {
+  position: relative;
+  width: 100%;
+
+  kendo-chart {
+    height: 320px;
+  }
+
+  @include maMedia($md) {
+    kendo-chart {
+      height: 280px;
+    }
+  }
+
+  @include maMedia($sm) {
+    kendo-chart {
+      height: 260px;
+    }
+  }
+}

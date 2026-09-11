@@ -1,0 +1,673 @@
+<div class="ma-page-header">
+  <div class="ma-page-header__meta">
+    <div class="ma-back-header">
+      <!-- <a routerLink="/claim-data-list" class="ma-btn-icon-sm" aria-label="Back to Claim's Data List">
+        <i class="fa-solid fa-arrow-left"></i>
+      </a> -->
+      <h2 class="ma-page-title">{{ analytics()?.file_title || "Claim Data Analysis" }}</h2>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- ══ Tabs ══════════════════════════════════════════════════════════ -->
+<div class="ma-tabs mb-3">
+  <ul class="nav nav-tabs" id="claimBatchDetailTab" role="tablist">
+    <li class="nav-item" role="presentation">
+      <button
+        type="button"
+        id="claimBatchAnalysisTab"
+        class="nav-link"
+        [class.active]="activeTab() === 'analysis'"
+        (click)="setActiveTab('analysis')"
+        role="tab"
+        aria-controls="claimBatchAnalysisPane"
+        [attr.aria-selected]="activeTab() === 'analysis'"
+      >
+        Analysis
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button
+        type="button"
+        id="claimBatchClaimDataTab"
+        class="nav-link"
+        [class.active]="activeTab() === 'claim-data'"
+        (click)="setActiveTab('claim-data')"
+        role="tab"
+        aria-controls="claimBatchClaimDataPane"
+        [attr.aria-selected]="activeTab() === 'claim-data'"
+      >
+        Claim Data
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button
+        type="button"
+        id="claimBatchConsecutiveDaysTab"
+        class="nav-link"
+        [class.active]="activeTab() === 'consecutive-days'"
+        (click)="setActiveTab('consecutive-days')"
+        role="tab"
+        aria-controls="claimBatchConsecutiveDaysPane"
+        [attr.aria-selected]="activeTab() === 'consecutive-days'"
+      >
+        Consecutive Days
+      </button>
+    </li>
+  </ul>
+</div>
+
+<!-- ══ Analysis tab ══════════════════════════════════════════════════ -->
+@if (activeTab() === 'analysis') {
+  <div class="ma-card ma-batch-summary-card mb-3">
+  <div class="ma-card-body">
+    <div class="ma-batch-summary">
+      <div class="ma-batch-summary__item">
+        <span class="ma-batch-summary__label">File Title</span>
+        <span class="ma-batch-summary__value" [title]="analytics()?.file_title || ''">{{ analytics()?.file_title || '-' }}</span>
+      </div>
+      <div class="ma-batch-summary__item">
+        <span class="ma-batch-summary__label">Year</span>
+        <span class="ma-batch-summary__value">{{ analytics()?.year || '-' }}</span>
+      </div>
+      <div class="ma-batch-summary__item">
+        <span class="ma-batch-summary__label">Month</span>
+        <span class="ma-batch-summary__value">{{ analytics()?.month || '-' }}</span>
+      </div>
+      <div class="ma-batch-summary__item">
+        <span class="ma-batch-summary__label">Uploaded Date</span>
+        <span class="ma-batch-summary__value">{{ analytics()?.uploaded_at ? (analytics()?.uploaded_at | date: 'MM-dd-yyyy') : '-' }}</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <div class="ma-stat-grid">
+    <article class="ma-stat-card">
+      <div class="ma-stat-content">
+        <p class="ma-stat-title">Total Providers</p>
+        <h2 class="ma-stat-value">{{ analytics()?.total_providers ?? 0 }}</h2>
+      </div>
+    </article>
+    <article class="ma-stat-card">
+      <div class="ma-stat-content">
+        <p class="ma-stat-title">Total Claims</p>
+        <h2 class="ma-stat-value">{{ analytics()?.total_claims ?? 0 }}</h2>
+      </div>
+    </article>
+    <article class="ma-stat-card">
+      <div class="ma-stat-content">
+        <p class="ma-stat-title">Total Patients</p>
+        <h2 class="ma-stat-value">{{ analytics()?.total_patients ?? 0 }}</h2>
+      </div>
+    </article>
+    <article class="ma-stat-card">
+      <div class="ma-stat-content">
+        <p class="ma-stat-title">Provider Paid</p>
+        <h2 class="ma-stat-value">{{ analytics()?.total_paid ?? 0 }}</h2>
+      </div>
+    </article>
+    <article class="ma-stat-card">
+      <div class="ma-stat-content">
+        <p class="ma-stat-title">Pending Payment</p>
+        <h2 class="ma-stat-value">{{ analytics()?.total_pending ?? 0 }}</h2>
+      </div>
+    </article>
+    <article class="ma-stat-card">
+      <div class="ma-stat-content">
+        <p class="ma-stat-title">Denied</p>
+        <h2 class="ma-stat-value">{{ analytics()?.total_denied ?? 0 }}</h2>
+      </div>
+    </article>
+  </div>
+
+  <div class="row mt-3">
+    <div class="col-lg-6">
+      <div class="ma-card h-100">
+        <div class="ma-card-header">
+          <div class="chart-card__header mb-0">
+            <h3 class="chart-card__title">Provider Session Volume</h3>
+          </div>
+        </div>
+        <div class="ma-card-body">
+          <div class="ma-chart-wrapper" style="overflow-x: auto;">
+            <kendo-chart style="height: 330px;" [style.min-width]="sessionVolumeChartWidth()">
+              <kendo-chart-tooltip background="transparent" [border]="{ width: 0 }" [padding]="0">
+                <ng-template kendoChartSeriesTooltipTemplate let-category="category" let-value="value" let-series="series">
+                  <div class="ma-chart-tooltip">
+                    <div class="ma-chart-tooltip__title">{{ category }}</div>
+                    <div class="ma-chart-tooltip__row">
+                      <span class="ma-chart-tooltip__dot" [style.background]="series.color"></span>
+                      <span class="ma-chart-tooltip__label">{{ series.name }}</span>
+                      <span class="ma-chart-tooltip__value">{{ value }}</span>
+                    </div>
+                  </div>
+                </ng-template>
+              </kendo-chart-tooltip>
+              <kendo-chart-legend position="bottom" [margin]="{ top: 12 }"></kendo-chart-legend>
+              <kendo-chart-category-axis>
+                <kendo-chart-category-axis-item [categories]="sessionVolumeCategories()" [majorGridLines]="{ visible: false }" [labels]="{ rotation: 'auto' }">
+                </kendo-chart-category-axis-item>
+              </kendo-chart-category-axis>
+              <kendo-chart-series>
+                <kendo-chart-series-item name="Sessions" type="column" [data]="sessionVolumeSeries()" color="#5b7fed"></kendo-chart-series-item>
+              </kendo-chart-series>
+            </kendo-chart>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-6">
+      <div class="ma-card h-100">
+        <div class="ma-card-header">
+          <div class="chart-card__header mb-0">
+            <h3 class="chart-card__title">Session Duration Distribution</h3>
+          </div>
+        </div>
+        <div class="ma-card-body">
+          <div class="ma-chart-wrapper">
+            <kendo-chart style="height: 330px;">
+              <kendo-chart-tooltip background="transparent" [border]="{ width: 0 }" [padding]="0">
+                <ng-template kendoChartSeriesTooltipTemplate let-category="category" let-value="value" let-series="series">
+                  <div class="ma-chart-tooltip">
+                    <div class="ma-chart-tooltip__title">{{ category }}</div>
+                    <div class="ma-chart-tooltip__row">
+                      <span class="ma-chart-tooltip__dot" [style.background]="series.color"></span>
+                      <span class="ma-chart-tooltip__label">{{ series.name }}</span>
+                      <span class="ma-chart-tooltip__value">{{ value }}</span>
+                    </div>
+                  </div>
+                </ng-template>
+              </kendo-chart-tooltip>
+              <kendo-chart-legend position="bottom" [margin]="{ top: 12 }"></kendo-chart-legend>
+              <kendo-chart-category-axis>
+                <kendo-chart-category-axis-item [categories]="durationCategories()" [majorGridLines]="{ visible: false }" [labels]="{ rotation: 'auto' }">
+                </kendo-chart-category-axis-item>
+              </kendo-chart-category-axis>
+              <kendo-chart-series>
+                <kendo-chart-series-item name="Claims" type="column" [data]="durationSeries()" color="#5b7fed"></kendo-chart-series-item>
+              </kendo-chart-series>
+            </kendo-chart>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mt-3">
+    <div class="col-12">
+      <div class="ma-card h-100">
+        <div class="ma-card-header">
+          <div class="chart-card__header mb-0">
+            <h3 class="chart-card__title">Payment Status by Service Type</h3>
+          </div>
+        </div>
+        <div class="ma-card-body">
+          <div class="ma-chart-wrapper" style="overflow-x: auto;">
+            <kendo-chart style="height: 330px;" [style.min-width]="serviceTypeChartWidth()">
+              <kendo-chart-tooltip [shared]="true" background="transparent" [border]="{ width: 0 }" [padding]="0">
+                <ng-template kendoChartSharedTooltipTemplate let-category="category" let-points="points">
+                  <div class="ma-chart-tooltip">
+                    <div class="ma-chart-tooltip__title">{{ category }}</div>
+                    @for (point of points; track point.series.name) {
+                      <div class="ma-chart-tooltip__row">
+                        <span class="ma-chart-tooltip__dot" [style.background]="point.series.color"></span>
+                        <span class="ma-chart-tooltip__label">{{ point.series.name }}</span>
+                        <span class="ma-chart-tooltip__value">{{ point.value }}</span>
+                      </div>
+                    }
+                    <div class="ma-chart-tooltip__row ma-chart-tooltip__row--total">
+                      <span class="ma-chart-tooltip__label">Total</span>
+                      <span class="ma-chart-tooltip__value">{{ serviceTypeTotal(category) }}</span>
+                    </div>
+                  </div>
+                </ng-template>
+              </kendo-chart-tooltip>
+              <kendo-chart-legend position="bottom" [margin]="{ top: 12 }"></kendo-chart-legend>
+              <kendo-chart-category-axis>
+                <kendo-chart-category-axis-item [categories]="serviceTypeCategories()" [majorGridLines]="{ visible: false }" [labels]="{ rotation: 'auto' }">
+                </kendo-chart-category-axis-item>
+              </kendo-chart-category-axis>
+              <kendo-chart-value-axis>
+                <kendo-chart-value-axis-item [min]="0" [labels]="{ format: '{0:n0}' }">
+                </kendo-chart-value-axis-item>
+              </kendo-chart-value-axis>
+              <kendo-chart-series>
+                <kendo-chart-series-item
+                  name="Paid" type="column" [stack]="{ group: 'paymentStatus' }" [gap]="1.2"
+                  [data]="paidByServiceType()" color="#10b981">
+                </kendo-chart-series-item>
+                <kendo-chart-series-item
+                  name="Pending" type="column" [stack]="{ group: 'paymentStatus' }" [gap]="1.2"
+                  [data]="pendingByServiceType()" color="#f59e0b">
+                </kendo-chart-series-item>
+                <kendo-chart-series-item
+                  name="Denied" type="column" [stack]="{ group: 'paymentStatus' }" [gap]="1.2"
+                  [data]="deniedByServiceType()" color="#e8453c">
+                </kendo-chart-series-item>
+              </kendo-chart-series>
+            </kendo-chart>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="row mt-3">
+    <div class="col-12">
+      <div class="ma-card h-100">
+        <div class="ma-card-header">
+          <div class="chart-card__header mb-0">
+            <h3 class="chart-card__title">Consecutive Working Day Summary</h3>
+          </div>
+        </div>
+        <div class="ma-card-body">
+          <div class="table-responsive">
+            <table class="table ma-preview-table">
+              <thead>
+                <tr>
+                  <th>Sr. No.</th>
+                  <th>Provider Name</th>
+                  <th>Consecutive Streak</th>
+                  <th>Active Days</th>
+                  <th>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (item of consecutiveDayPreview(); track item.provider_id; let i = $index) {
+                  <tr>
+                    <td>{{ i + 1 }}</td>
+                    <td>{{ item.provider_name || '-' }}</td>
+                    <td>{{ item.working_streak }} days</td>
+                    <td>{{ item.active_working_days }} / {{ getDaysInMonth(analytics()?.month, analytics()?.year) }}</td>
+                    <td>
+                      <span class="ma-badge" [class]="item.is_flagged | badgeClass: 'flag'">
+                        {{ item.status || (item.is_flagged ? 'Flagged (Exceeds Threshold)' : 'Within Acceptable Range') }}
+                      </span>
+                    </td>
+                  </tr>
+                } @empty {
+                  <tr>
+                    <td colspan="7" class="ma-grid-empty text-center">No provider streak data is available for this batch.</td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+          <div class="text-end mt-2">
+            <button type="button" class="btn ma-btn btn-outline-primary btn-sm" (click)="setActiveTab('consecutive-days')">
+              View Full Analysis
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- @if (analytics()?.ai_insights) {
+    <div class="ma-card mt-3">
+      <div class="ma-card-header">
+        <div class="chart-card__header mb-0">
+          <h3 class="chart-card__title">AI Insights</h3>
+        </div>
+      </div>
+      <div class="ma-card-body">
+        <p class="mb-0">{{ analytics()?.ai_insights }}</p>
+      </div>
+    </div>
+  } -->
+}
+
+<!-- ══ Claim Data tab ════════════════════════════════════════════════ -->
+@if (activeTab() === 'claim-data') {
+  <section class="ma-filter-wrap">
+    <div class="row g-2 align-items-center ma-filter-grid">
+      <div class="col-12 col-lg-3">
+        <div class="ma-input-group ma-filter-item ma-filter-item--search">
+          <i class="fa-solid fa-magnifying-glass ma-input-icon"></i>
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Search claims..."
+            aria-label="Search claim records"
+            [(ngModel)]="claimSearch"
+            appTrimWhitespace
+            maxlength="100"
+            (keydown.enter)="applyClaimFilters()"
+          />
+        </div>
+      </div>
+      <!-- <div class="col-12 col-sm-6 col-lg-2">
+        <input type="text" class="form-control" placeholder="Location" aria-label="Location" [(ngModel)]="claimLocation" appTrimWhitespace maxlength="100" />
+      </div> -->
+
+      <div class="col-12 col-lg-auto d-flex gap-2">
+        <button type="button" class="btn ma-btn btn-primary" (click)="applyClaimFilters()" style="min-height: 45px; padding: 0 20px">
+          Search
+        </button>
+        <button type="button" class="btn ma-btn btn-outline-secondary" (click)="resetClaimFilters()" style="min-height: 45px; padding: 0 20px">
+          Reset
+        </button>
+      </div>
+
+      <!-- @if (perms.can(PERMISSION_MODULE.Claimdata, PERMISSION_ACTION.Export)) {
+        <div class="col-12 col-lg-auto ms-lg-auto">
+          <button type="button" class="btn ma-btn btn-outline-primary btn-grey-btn" (click)="exportClaimData()" [disabled]="exporting()" style="min-height: 45px">
+            {{ exporting() ? 'Exporting…' : 'Export' }} <i class="fa-solid fa-file-export ms-2"></i>
+          </button>
+        </div>
+      } -->
+    </div>
+  </section>
+
+  <section class="ma-surface-card ma-users-section-card ma-user-list-card mt-3">
+    <div class="table-responsive">
+      <kendo-grid
+        class="ma-kendo-grid table"
+        [data]="claimRecordsData()"
+        [pageSize]="claimRecordsState.take"
+        [skip]="claimRecordsState.skip"
+        [sortable]="true"
+        [sort]="claimRecordsState.sort"
+        filterable="menu"
+        [filter]="claimRecordsState.filter"
+        [pageable]="{ buttonCount: 3, type: 'numeric', pageSizes: pageSizes }"
+        [scrollable]="'none'"
+        (dataStateChange)="claimRecordsStateChange($event)"
+      >
+        <kendo-grid-column title="Sr. No." [width]="80" [filterable]="false" [sortable]="false">
+          <ng-template kendoGridCellTemplate let-rowIndex="rowIndex">
+            {{ rowIndex + 1 }}
+          </ng-template>
+        </kendo-grid-column>
+
+        <kendo-grid-column field="service_id" title="Service ID" [width]="130" [filterable]="false">
+          <ng-template kendoGridCellTemplate let-dataItem>
+            <div class="ma-cell-wrap">{{ dataItem.service_id || '-' }}</div>
+          </ng-template>
+        </kendo-grid-column>
+        <kendo-grid-column field="claim_id" title="Claim ID" [width]="130" [filterable]="false">
+          <ng-template kendoGridCellTemplate let-dataItem>
+            <div class="ma-cell-wrap">{{ dataItem.claim_id || '-' }}</div>
+          </ng-template>
+        </kendo-grid-column>
+        <kendo-grid-column field="service_type" title="Service Type" [width]="150">
+          <ng-template kendoGridCellTemplate let-dataItem>
+            <div class="ma-cell-wrap">{{ dataItem.service_type || '-' }}</div>
+          </ng-template>
+          <ng-template
+            kendoGridFilterMenuTemplate
+            let-filter
+            let-column="column"
+            let-filterService="filterService"
+          >
+            <kendo-grid-string-filter-menu
+              [extra]="false"
+              [column]="column"
+              [filter]="filter"
+              [filterService]="filterService"
+              operator="contains"
+            >
+              <kendo-filter-contains-operator></kendo-filter-contains-operator>
+            </kendo-grid-string-filter-menu>
+          </ng-template>
+        </kendo-grid-column>
+        <kendo-grid-column field="consumer_name" title="Consumer Name" [width]="170" [filterable]="false">
+          <ng-template kendoGridCellTemplate let-dataItem>
+            <div class="ma-cell-wrap">{{ dataItem.consumer_name || '-' }}</div>
+          </ng-template>
+        </kendo-grid-column>
+        <kendo-grid-column field="provider" title="Provider" [width]="170">
+          <ng-template kendoGridCellTemplate let-dataItem>
+            <div class="ma-cell-wrap">{{ dataItem.provider_name || '-' }}</div>
+          </ng-template>
+          <ng-template
+            kendoGridFilterMenuTemplate
+            let-filter
+            let-column="column"
+            let-filterService="filterService"
+          >
+            <kendo-grid-string-filter-menu
+              [extra]="false"
+              [column]="column"
+              [filter]="filter"
+              [filterService]="filterService"
+              operator="contains"
+            >
+              <kendo-filter-contains-operator></kendo-filter-contains-operator>
+            </kendo-grid-string-filter-menu>
+          </ng-template>
+        </kendo-grid-column>
+        <kendo-grid-column field="cpt_code" title="CPT Code" [width]="110" [filterable]="false">
+          <ng-template kendoGridCellTemplate let-dataItem>
+            <div class="ma-cell-wrap">{{ dataItem.cpt_code || '-' }}</div>
+          </ng-template>
+        </kendo-grid-column>
+        <kendo-grid-column field="location" title="Location" [width]="150" [filterable]="false">
+          <ng-template kendoGridCellTemplate let-dataItem>
+            <div class="ma-cell-wrap">{{ dataItem.location || '-' }}</div>
+          </ng-template>
+        </kendo-grid-column>
+        <kendo-grid-column field="base_units" title="Base Units" [width]="110" [filterable]="false">
+          <ng-template kendoGridCellTemplate let-dataItem>
+            {{ dataItem.base_units ?? '-' }}
+          </ng-template>
+        </kendo-grid-column>
+        <kendo-grid-column field="duration" title="Duration" [width]="110" [filterable]="false">
+          <ng-template kendoGridCellTemplate let-dataItem>
+            {{ dataItem.duration ?? '-' }}
+          </ng-template>
+        </kendo-grid-column>
+        <kendo-grid-column field="service_date" title="Service Date" [width]="150" filter="date">
+          <ng-template kendoGridCellTemplate let-dataItem>
+            {{ dataItem.service_date ? (dataItem.service_date | date: 'MM-dd-yyyy') : '-' }}
+          </ng-template>
+          <ng-template
+            kendoGridFilterMenuTemplate
+            let-filter
+            let-column="column"
+            let-filterService="filterService"
+          >
+            <kendo-grid-date-filter-menu
+              [extra]="false"
+              [column]="column"
+              [filter]="filter"
+              [filterService]="filterService"
+              operator="eq"
+            >
+              <kendo-filter-eq-operator></kendo-filter-eq-operator>
+            </kendo-grid-date-filter-menu>
+          </ng-template>
+        </kendo-grid-column>
+        <kendo-grid-column field="status" title="Status" [width]="130">
+          <ng-template kendoGridCellTemplate let-dataItem>
+            <span class="ma-badge" [class]="dataItem.status | badgeClass">{{ dataItem.status || '-' }}</span>
+          </ng-template>
+          <ng-template
+            kendoGridFilterMenuTemplate
+            let-filter
+            let-column="column"
+            let-filterService="filterService"
+          >
+            <dropdownlist-filter
+              [isPrimitive]="true"
+              [field]="column.field"
+              [currentFilter]="filter"
+              [filterService]="filterService"
+              textField="label"
+              valueField="value"
+              [data]="claimStatusOptions"
+            >
+            </dropdownlist-filter>
+          </ng-template>
+        </kendo-grid-column>
+        <kendo-grid-column field="provider_payment_status" title="Provider Paid" [width]="150">
+          <ng-template kendoGridCellTemplate let-dataItem>
+            <span class="ma-badge" [class]="dataItem.provider_payment_status | badgeClass">{{ dataItem.provider_payment_status || '-' }}</span>
+          </ng-template>
+          <ng-template
+            kendoGridFilterMenuTemplate
+            let-filter
+            let-column="column"
+            let-filterService="filterService"
+          >
+            <dropdownlist-filter
+              [isPrimitive]="true"
+              [field]="column.field"
+              [currentFilter]="filter"
+              [filterService]="filterService"
+              textField="label"
+              valueField="value"
+              [data]="paymentStatusOptions"
+            >
+            </dropdownlist-filter>
+          </ng-template>
+        </kendo-grid-column>
+
+        <kendo-grid-column title="Actions" [width]="100" [filterable]="false" [sortable]="false">
+          <ng-template kendoGridCellTemplate let-dataItem>
+            <div class="ma-table-actions">
+              <button
+                class="ma-btn-icon-sm"
+                type="button"
+                ngbTooltip="View"
+                placement="top"
+                [attr.aria-label]="'View claim ' + (dataItem.claim_id || '')"
+                (click)="viewClaimRecord(dataItem)"
+              >
+                <i class="fa-regular fa-eye"></i>
+              </button>
+            </div>
+          </ng-template>
+        </kendo-grid-column>
+
+        <ng-template kendoGridNoRecordsTemplate>
+          <div class="ma-grid-empty">No claim records match your current filters.</div>
+        </ng-template>
+      </kendo-grid>
+    </div>
+  </section>
+}
+
+<!-- ══ Consecutive Days tab ══════════════════════════════════════════ -->
+@if (activeTab() === 'consecutive-days') {
+  <div class="ma-card ma-batch-summary-card mb-3">
+    <div class="ma-card-body">
+      <div class="ma-batch-summary">
+        <div class="ma-batch-summary__item">
+          <span class="ma-batch-summary__label">File Name</span>
+          <span class="ma-batch-summary__value" [title]="consecutiveDays()?.file_name || ''">{{ consecutiveDays()?.file_name || '-' }}</span>
+        </div>
+        <div class="ma-batch-summary__item">
+          <span class="ma-batch-summary__label">Month</span>
+          <span class="ma-batch-summary__value">{{ consecutiveDays()?.month || '-' }}</span>
+        </div>
+        <div class="ma-batch-summary__item">
+          <span class="ma-batch-summary__label">Year</span>
+          <span class="ma-batch-summary__value">{{ consecutiveDays()?.year || '-' }}</span>
+        </div>
+        <div class="ma-batch-summary__item">
+          <span class="ma-batch-summary__label">Consecutive Day Threshold</span>
+          <span class="ma-batch-summary__value">{{ consecutiveDays()?.consecutive_day_threshold ?? '-' }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="d-flex align-items-stretch gap-3 mb-3 ma-stat-grid-row">
+    <div class="ma-stat-grid flex-grow-1 mb-0">
+      <article class="ma-stat-card">
+        <div class="ma-stat-content">
+          <p class="ma-stat-title">Total Providers</p>
+          <h2 class="ma-stat-value">{{ consecutiveDays()?.total_providers ?? 0 }}</h2>
+        </div>
+      </article>
+      <article class="ma-stat-card">
+        <div class="ma-stat-content">
+          <p class="ma-stat-title">Flagged Providers</p>
+          <h2 class="ma-stat-value">{{ consecutiveDays()?.flagged_providers ?? 0 }}</h2>
+        </div>
+      </article>
+      <article class="ma-stat-card">
+        <div class="ma-stat-content">
+          <p class="ma-stat-title">Maximum Consecutive Streak</p>
+          <h2 class="ma-stat-value">{{ consecutiveDays()?.max_consecutive_streak ?? 0 }}</h2>
+        </div>
+      </article>
+    </div>
+    @if (perms.can(PERMISSION_MODULE.Claimdata, PERMISSION_ACTION.Export)) {
+      <button
+        type="button"
+        class="btn ma-btn btn-outline-primary btn-grey-btn ma-consecutive-days-export"
+        (click)="exportConsecutiveDays()"
+        [disabled]="exporting()"
+      >
+        {{ exporting() ? 'Exporting…' : 'Export' }} <i class="fa-solid fa-file-export ms-2"></i>
+      </button>
+    }
+  </div>
+
+  <section class="ma-surface-card ma-users-section-card ma-user-list-card mt-3">
+    <div class="table-responsive">
+      <kendo-grid
+        class="ma-kendo-grid table"
+        [data]="consecutiveDaysData()"
+        [pageSize]="consecutiveDaysState.take"
+        [skip]="consecutiveDaysState.skip"
+        [pageable]="{ buttonCount: 3, type: 'numeric', pageSizes: pageSizes }"
+        [scrollable]="'none'"
+        (dataStateChange)="consecutiveDaysStateChange($event)"
+      >
+        <kendo-grid-column title="Sr. No." [width]="80" [filterable]="false" [sortable]="false">
+          <ng-template kendoGridCellTemplate let-rowIndex="rowIndex">
+            {{ rowIndex + 1 }}
+          </ng-template>
+        </kendo-grid-column>
+        <!-- <kendo-grid-column field="provider_id" title="Provider ID" [width]="130">
+          <ng-template kendoGridCellTemplate let-dataItem>
+            {{ dataItem.provider_id || '-' }}
+          </ng-template>
+        </kendo-grid-column> -->
+        <kendo-grid-column field="provider_name" title="Provider Name" [width]="200">
+          <ng-template kendoGridCellTemplate let-dataItem>
+            {{ dataItem.provider_name || '-' }}
+          </ng-template>
+        </kendo-grid-column>
+        <!-- <kendo-grid-column field="license" title="License" [width]="120">
+          <ng-template kendoGridCellTemplate let-dataItem>
+            {{ dataItem.license || '-' }}
+          </ng-template>
+        </kendo-grid-column> -->
+        <kendo-grid-column field="working_streak" title="Consecutive Streak" [width]="170">
+          <ng-template kendoGridCellTemplate let-dataItem>
+            {{ dataItem.working_streak }} days
+          </ng-template>
+        </kendo-grid-column>
+        <kendo-grid-column field="active_working_days" title="Active Days" [width]="150">
+          <ng-template kendoGridCellTemplate let-dataItem>
+            <span class="text-nowrap">
+              {{ dataItem.active_working_days }} / {{ getDaysInMonth(consecutiveDays()?.month, consecutiveDays()?.year) }}
+            </span>
+          </ng-template>
+        </kendo-grid-column>
+        <kendo-grid-column field="status" title="Status" [width]="220">
+          <ng-template kendoGridCellTemplate let-dataItem>
+            <span class="ma-badge" [class]="dataItem.is_flagged | badgeClass: 'flag'">
+              <!-- @if (dataItem.is_flagged) {
+                <i class="fa-solid fa-triangle-exclamation"></i>
+              } -->
+              {{ dataItem.status || (dataItem.is_flagged ? 'Flagged (Exceeds Threshold)' : 'Within Acceptable Range') }}
+            </span>
+          </ng-template>
+        </kendo-grid-column>
+
+        <ng-template kendoGridNoRecordsTemplate>
+          <div class="ma-grid-empty">No provider streak data is available for this batch.</div>
+        </ng-template>
+      </kendo-grid>
+    </div>
+  </section>
+}

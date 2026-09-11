@@ -1,0 +1,341 @@
+/* ==========================================================================
+   TABLE
+   ========================================================================== */
+
+.table {
+    margin-bottom: 0;
+    vertical-align: middle;
+    color: $textPrimary;
+}
+
+/* ==========================================================================
+   TABLE HEADER
+   ========================================================================== */
+
+.table {
+    > :not(caption) {
+        > * {
+            > * {
+                padding: 12px 16px;
+            }
+        }    
+    }
+}
+
+.table {
+    thead {
+        th {
+            font-size: $font12;
+            font-weight: $fontBold;
+            color: $textSecondary;
+            background-color: $lightBlue;
+            border-width: 0;
+            white-space: nowrap;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+    }
+}
+
+/* ==========================================================================
+   TABLE BODY
+   ========================================================================== */
+
+.table {
+    tbody {
+        tr {
+            td {
+                font-size: $font14;
+                color: $textSecondary;
+                vertical-align: middle;
+                white-space: nowrap;
+                @include maMedia($lg) {
+                    white-space: normal;
+                }
+                &.ma-td-large {
+                    color: $textPrimary;
+                    font-size: $font15;
+                }
+            }
+        }
+    }
+}
+
+/* ==========================================================================
+   TABLE HOVER
+   ========================================================================== */
+
+.table-hover {
+    tbody {
+        tr {
+            @include maTransition();
+        }
+    }
+    &:hover {
+        background-color: rgba($primary, .04);
+    }
+}
+
+/* ==========================================================================
+   TABLE RESPONSIVE
+   ========================================================================== */
+
+/* ==========================================================================
+   TABLE ACTIONS
+   ========================================================================== */
+
+.ma-table-actions {
+    @include maFlex(flex-start, center);
+    gap: 8px;
+    .ma-btn-icon-sm {
+        width: 32px;
+        height: 32px;
+        background: $white;
+        font-size: $font16;
+        border: solid 1px rgba($dark, .2);
+    }
+}
+
+.ma-user-cell {
+    @include maFlex(flex-start, center);
+    gap: 10px;
+
+    .ma-user-avatar {
+        @include maIconWrapper(34px, $borderRadius50);
+        background: rgba($primary, .12);
+        border: 1px solid rgba($primary, .16);
+        color: $primary;
+        font-size: $font12;
+        font-weight: $fontBold;
+    }
+
+    .ma-user-name-wrap {
+        min-width: 0;
+        display: block;
+    }
+
+    .ma-user-cell-name {
+        display: block;
+        color: $textPrimary;
+        font-size: $font14;
+        font-weight: $fontSemiBold;
+        line-height: 1.2;
+    }
+
+    .ma-user-cell-id {
+        display: block;
+        margin-top: 4px;
+        color: $textSecondary;
+        font-size: $font12;
+        line-height: 1;
+    }
+}
+
+.ma-role-permission-table {
+    table-layout: fixed;
+
+    th,
+    td {
+        white-space: nowrap;
+        vertical-align: middle;
+    }
+
+    thead {
+        th {
+            color: $primary;
+        }
+    }
+
+    .ma-permission-head {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        margin: 0;
+        color: inherit;
+        font-size: inherit;
+        font-weight: inherit;
+        line-height: 1;
+        cursor: pointer;
+    }
+
+    th.text-center,
+    td.text-center {
+        text-align: center;
+    }
+}
+
+/* ==========================================================================
+   DATA TABLE
+   ========================================================================== */
+
+.table-responsive {
+    max-height: 540px;
+    @include maScrollbar(rgba($primary, .24), rgba($primary, .05));
+    @include maCard(0, $borderRadius8, $borderColor, $white, 0 4px 20px rgba($dark, .05));
+    .ma-data-table {
+        margin: 0;
+
+        thead {
+            th {
+                position: sticky;
+                top: 0;
+                z-index: 2;
+            }
+        }
+
+        tbody {
+            tr {
+                td {
+                    vertical-align: middle;
+                }
+                &:last-child {
+                        td {
+                            border-bottom: none;
+                        }
+                    }
+            }
+        }
+        &.ma-role-permission-table {
+            thead {
+                th {
+                    text-transform: none;
+                    font-size: $font15;
+                    color: $primary;
+                    font-weight: $fontSemiBold;
+                    .ma-permission-head {
+                        @include maFlex(center, center);
+                        gap: 12px;
+                        .ma-permission-checkbox {
+                            border-color: $primary;
+                            background-color: transparent;
+                            &:focus {
+                                box-shadow: none;
+                            }
+                            &:checked {
+                                background-image: url("../images/icons/check-blue.svg");
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    &.ma-table-bnone {
+        border: none;
+        box-shadow: none;
+        border-radius: 0;
+    }
+}
+
+/* ==========================================================================
+   TABLE IMAGE
+   ========================================================================== */
+
+.ma-table-image {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+/* ==========================================================================
+   TABLE STATUS
+   ========================================================================== */
+
+.ma-table-status {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 10px;
+    border-radius: 30px;
+    font-size: $font12;
+    font-weight: $fontMedium;
+    &--success {
+        color: $success;
+        background: rgba($success, .1);
+    }
+
+    &--danger {
+        color: $danger;
+        background: rgba($danger, .1);
+    }
+
+    &--warning {
+        color: darken($warning, 20%);
+        background: rgba($warning, .15);
+    }
+
+    &--info {
+        color: $info;
+        background: rgba($info, .1);
+    }
+}
+
+/* ==========================================================================
+   EMPTY TABLE
+   ========================================================================== */
+
+.ma-table-empty {
+    padding: 40px 20px;
+    text-align: center;
+    color: $textMuted;
+}
+
+@include maMedia($sm) {
+    .ma-data-table {
+        min-width: 0;
+
+        thead {
+            display: none;
+        }
+
+        tbody {
+            tr {
+                display: block;
+                border-bottom: 1px solid $borderColor;
+                padding: 10px 12px;
+            }
+
+            td {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: 8px;
+                width: 100%;
+                border: 0;
+                font-size: $font14;
+                font-weight: $fontRegular;
+                color: $textPrimary;
+                padding: 6px 0;
+                text-align: right;
+
+                &::before {
+                    content: attr(data-label);
+                    color: $textSecondary;
+                    font-size: $font14;
+                    font-weight: $fontLight;
+                    text-align: left;
+                }
+
+                &.text-end,
+                &.text-center {
+                    justify-content: space-between;
+                    text-align: right;
+                }
+            }
+        }
+    }
+
+    .ma-user-cell {
+        justify-content: flex-end;
+        text-align: right;
+
+        .ma-user-name-wrap {
+            text-align: right;
+        }
+    }
+
+    .ma-table-actions {
+        justify-content: flex-end;
+    }
+}

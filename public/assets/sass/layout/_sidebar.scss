@@ -1,0 +1,261 @@
+/* ==========================================================================
+   SIDEBAR COMPONENT
+   ========================================================================== */
+
+.ma-dashboard {
+    .am-svg {
+        display: inline-flex;
+        vertical-align: middle;
+        object-fit: contain;
+        flex-shrink: 0;
+        width: $font20;
+        height: $font20;
+
+        &.am-svg--lg {
+            width: $font24;
+            height: $font24;
+        }
+
+        &.am-svg--sm {
+            width: $font16;
+            height: $font16;
+        }
+    }
+
+    .ma-sidebar {
+        width: $sidebarWidthExpanded;
+        min-height: 100vh;
+        background: $primary;
+        color: $white;
+        position: fixed;
+        left: 0;
+        top: 0;
+        z-index: $zFixed;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 12px 26px rgba($primary, .28);
+        @include maTransition(all .28s ease);
+
+        .ma-sidebar-head {
+            padding: 16px 20px;
+            border-bottom: 1px solid rgba($white, .18);
+            position: relative;
+
+            .ma-brand {
+                @include maFlex(flex-start, center);
+                gap: 12px;
+                color: $white;
+                font-weight: $fontBold;
+                font-size: $font20;
+                @include maTransition(all .22s ease);
+
+                .ma-brand-logo {
+                    display: block;
+                    height: 36px;
+                    width: auto;
+
+                    &.ma-brand-sm {
+                        display: none;
+                        height: 36px;
+                    }
+                }
+
+                .ma-brand-icon {
+                    @include maIconWrapper(32px, $borderRadius8);
+                    background: rgba($white, .22);
+                    color: $white;
+                }
+            }
+
+            .ma-sidebar-close {
+                position: absolute;
+                top: 50%;
+                right: 16px;
+                transform: translateY(-50%);
+                @include maIconWrapper(36px, $borderRadius8);
+                border: 0;
+                background: rgba($white, .12);
+                color: $white;
+                @include maTransition(all .2s ease);
+                display: none;
+                @include maMedia($lg) {
+                    display: block;
+                }
+                &:hover,
+                &:focus-visible {
+                    background: rgba($white, .2);
+                }
+            }
+        }
+
+        .ma-sidebar-nav {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            @include maScrollbar(rgba($white, .3), rgba($white, .05));
+
+            .ma-nav-item {
+                margin-bottom: 4px;
+            }
+        }
+
+        .ma-nav-link {
+            min-height: 40px;
+            padding: 8px 16px;
+            border-radius: $borderRadius4;
+            color: $white;
+            font-size: $font14;
+            font-weight: $fontRegular;
+            white-space: nowrap;
+            @include maFlex(flex-start, center);
+            gap: 12px;
+            @include maTransition(all .22s ease);
+
+            i,
+            .am-svg {
+                width: $font20;
+                min-width: $font20;
+                text-align: center;
+                color: inherit;
+            }
+
+            svg.am-svg {
+                * {
+                    fill: currentColor;
+                }
+            }
+
+            &:hover,
+            &:focus-visible {
+                background: rgba($white, .12);
+                color: $white;
+            }
+
+            &.active {
+                background: $white;
+                color: $primary;
+                box-shadow: 0 8px 16px rgba($dark, .12);
+                font-weight: $fontMedium;
+            }
+        }
+
+        .ma-sidebar-foot {
+            padding: 20px;
+            border-top: 1px solid rgba($white, .15);
+
+            .ma-nav-link {
+                @include maFlex(flex-start, center);
+                gap: 12px;
+            }
+        }
+    }
+
+    .ma-sidebar-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: $zOffcanvas;
+        background: rgba($dark, .55);
+        opacity: 0;
+        visibility: hidden;
+        pointer-events: none;
+        @include maTransition(opacity .22s ease);
+    }
+}
+
+.ma-dashboard {
+    &.is-sidebar-collapsed {
+        .ma-sidebar {
+            width: $sidebarWidthCollapsed;
+
+            .ma-sidebar-head {
+                padding: 16px 10px;
+
+                .ma-brand {
+                    justify-content: center;
+
+                    .ma-brand-logo {
+                        display: none;
+
+                        &.ma-brand-sm {
+                            display: block;
+                        }
+                    }
+
+                    span:not(.ma-brand-icon) {
+                        display: none;
+                    }
+                }
+            }
+
+            .ma-nav-link {
+                justify-content: center;
+                width: 40px;
+                min-height: 40px;
+                height: 40px;
+                padding: 0;
+                margin: 0 auto;
+                gap: 0;
+
+                i,
+                .am-svg {
+                    width: $font20;
+                    min-width: $font20;
+                    margin: 0;
+                }
+
+                span {
+                    opacity: 0;
+                    width: 0;
+                    overflow: hidden;
+                }
+            }
+
+            .ma-sidebar-foot {
+                padding: 14px 10px;
+            }
+        }   
+    }
+}
+
+@media (min-width: 1200px) {
+    .ma-dashboard {
+        .ma-sidebar {
+            transform: translateX(0);
+        }
+
+        .ma-sidebar-close,
+        .ma-sidebar-overlay {
+            display: none;
+        }
+    }
+}
+
+@include maMedia($lg) {
+    .ma-dashboard {
+        .ma-sidebar {
+            width: $sidebarWidthExpanded;
+            transform: translateX(-100%);
+            z-index: $zOffcanvas + 1;
+        }
+
+        .ma-main {
+            margin-left: 0;
+        }
+
+        .ma-sidebar-close {
+            display: inline-flex;
+        }
+
+        &.is-sidebar-open {
+            .ma-sidebar {
+                transform: translateX(0);
+            }
+
+            .ma-sidebar-overlay {
+                opacity: 1;
+                visibility: visible;
+                pointer-events: auto;
+            }
+        }
+    }
+}

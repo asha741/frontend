@@ -1,0 +1,246 @@
+<div class="ma-page-header">
+  <div class="ma-page-header__meta">
+    <h2 class="ma-page-title">Claim Analyst</h2>
+    <p class="ma-page-subtitle">Manage and review claims</p>
+  </div>
+</div>
+<!-- ══ Filters ══════════════════════════════════════════════════════ -->
+<section class="ma-filter-wrap mt-3">
+  <div class="row g-2 align-items-center ma-filter-grid">
+    <!-- Search input -->
+    <div class="col-12 col-lg-3">
+      <div class="ma-input-group ma-filter-item ma-filter-item--search">
+        <i class="fa-solid fa-magnifying-glass ma-input-icon"></i>
+        <input
+          id="claimSearchInput"
+          type="text"
+          class="form-control"
+          placeholder="Search"
+          aria-label="Search claims"
+          [(ngModel)]="search"
+          appTrimWhitespace
+          maxlength="100"
+          (keydown.enter)="onSearch()"
+        />
+      </div>
+    </div>
+
+    <!-- Provider filter (type-ahead: nothing loads until 3+ characters) -->
+    <div class="col-12 col-sm-6 col-lg-3">
+      <div class="ma-filter-item">
+        <app-search-autocomplete
+          [endpoint]="API_ROUTES.GET_PROVIDER_LOOKUP"
+          placeholder="Search provider"
+          [(ngModel)]="providerId"
+        ></app-search-autocomplete>
+      </div>
+    </div>
+
+    <!-- Search & Reset buttons -->
+    <div class="col-12 col-lg-auto d-flex gap-2">
+      <button
+        type="button"
+        class="btn ma-btn btn-primary"
+        (click)="onSearch()"
+        style="min-height: 45px; padding: 0 20px"
+      >
+        Search
+      </button>
+      <button
+        type="button"
+        class="btn ma-btn btn-outline-secondary"
+        (click)="clearSearch()"
+        style="min-height: 45px; padding: 0 20px"
+      >
+        Reset
+      </button>
+    </div>
+    <!-- Validate Claim -->
+    @if (perms.can(PERMISSION_MODULE.Claim, PERMISSION_ACTION.Create)) {
+      <div class="col-12 col-lg-auto ms-lg-auto">
+        <div class="ma-filter-actions ma-filter-item ma-filter-item--action">
+          <a
+            routerLink="/claim-analyst/validate-claim"
+            class="btn ma-btn btn-primary ma-btn-inline-icon"
+            aria-label="Validate Claim"
+            style="white-space: nowrap; min-height: 45px"
+          >
+            <span>Validate Claim</span>
+            <i class="fa-solid fa-plus" aria-hidden="true"></i>
+          </a>
+        </div>
+      </div>
+    }
+  </div>
+</section>
+
+<!-- ══ Claims grid ═══════════════════════════════════════════════ -->
+<section class="ma-surface-card ma-users-section-card ma-user-list-card mt-4">
+  <div class="table-responsive">
+    <kendo-grid
+      class="ma-kendo-grid table ma-master-table--claim-analyst"
+      [data]="claimsData()"
+      [pageSize]="state.take"
+      [skip]="state.skip"
+      [sortable]="true"
+      [sort]="state.sort"
+      filterable="menu"
+      [filter]="state.filter"
+      [pageable]="{ buttonCount: 3, type: 'numeric', pageSizes: pageSizes }"
+      [scrollable]="'none'"
+      (dataStateChange)="dataStateChange($event)"
+    >
+      <!-- ── Sr. No. ──────────────────────────────────────────────── -->
+      <kendo-grid-column title="Sr. No." [width]="80" [filterable]="false" [sortable]="false">
+        <ng-template kendoGridCellTemplate let-rowIndex="rowIndex">
+          {{ rowIndex + 1 }}
+        </ng-template>
+      </kendo-grid-column>
+
+      <!-- ── Claim ID ──────────────────────────────────────── -->
+      <kendo-grid-column
+        field="claim_id"
+        title="Claim ID"
+        [width]="140"
+        [filterable]="false"
+      >
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div class="text-truncate" [ngbTooltip]="dataItem.claim_id">
+            {{ dataItem.claim_id }}
+          </div>
+        </ng-template>
+      </kendo-grid-column>
+
+      <!-- ── Patient Name ────────────────────────────────────── -->
+      <kendo-grid-column field="patient_name" title="Patient Name" [width]="200" [filterable]="false">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div class="text-truncate" [ngbTooltip]="dataItem.patient_name">{{ dataItem.patient_name }}</div>
+        </ng-template>
+      </kendo-grid-column>
+
+      <!-- ── Provider Name ────────────────────────────────────────────────── -->
+      <!-- Provider is filtered from the top bar, so no column filter here. -->
+      <kendo-grid-column field="provider_name" title="Provider Name" [width]="220" [filterable]="false">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div class="k-text-ellipsis" [ngbTooltip]="dataItem.provider_name">{{ dataItem.provider_name }}</div>
+        </ng-template>
+      </kendo-grid-column>
+
+      <!-- ── Documents ───────────────────────────────────────── -->
+      <kendo-grid-column
+        field="document_count"
+        title="Documents"
+        [width]="120"
+        [filterable]="false"
+        [sortable]="true"
+      >
+        <ng-template kendoGridCellTemplate let-dataItem>
+          {{ dataItem.document_count }}
+        </ng-template>
+      </kendo-grid-column>
+
+      <!-- ── AI Status ────────────────────────────────────────────── -->
+      <kendo-grid-column field="ai_status" title="AI Status" [width]="150" [sortable]="false">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <span class="ma-badge" [class]="dataItem.ai_status | badgeClass">{{ dataItem.ai_status }}</span>
+        </ng-template>
+        <ng-template
+          kendoGridFilterMenuTemplate
+          let-filter
+          let-column="column"
+          let-filterService="filterService"
+        >
+          <dropdownlist-filter
+            [isPrimitive]="true"
+            [field]="column.field"
+            [currentFilter]="filter"
+            [filterService]="filterService"
+            textField="label"
+            valueField="value"
+            [data]="aiStatusOptions"
+          >
+          </dropdownlist-filter>
+        </ng-template>
+      </kendo-grid-column>
+
+      <!-- ── Compliance Score ─────── -->
+      <kendo-grid-column field="compliance_score" title="Compliance Score" [width]="160" [filterable]="false" [sortable]="true">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          {{ dataItem.compliance_score != null ? dataItem.compliance_score + '%' : '-' }}
+        </ng-template>
+      </kendo-grid-column>
+
+      <!-- ── Review Status ────────────────────────────────────── -->
+      <kendo-grid-column
+        field="review_status"
+        title="Review Status"
+        [width]="150"
+        [sortable]="false"
+      >
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <span class="ma-badge" [class]="dataItem.review_status | badgeClass">{{ dataItem.review_status }}</span>
+        </ng-template>
+        <ng-template
+          kendoGridFilterMenuTemplate
+          let-filter
+          let-column="column"
+          let-filterService="filterService"
+        >
+          <dropdownlist-filter
+            [isPrimitive]="true"
+            [field]="column.field"
+            [currentFilter]="filter"
+            [filterService]="filterService"
+            textField="label"
+            valueField="value"
+            [data]="reviewStatusOptions"
+          >
+          </dropdownlist-filter>
+        </ng-template>
+      </kendo-grid-column>
+
+      <!-- ── Upload Date ────────────────────────────────────── -->
+      <kendo-grid-column
+        field="uploaded_at"
+        title="Upload Date"
+        [width]="160"
+        [filterable]="false"
+        [sortable]="true"
+      >
+        <ng-template kendoGridCellTemplate let-dataItem>
+          {{ dataItem.uploaded_at ? (dataItem.uploaded_at | date: 'MM-dd-yyyy') : '' }}
+        </ng-template>
+      </kendo-grid-column>
+
+      <!-- ── Actions ──────────────────────────────────────────────── -->
+      <kendo-grid-column title="Action" [width]="130" [filterable]="false" [sortable]="false">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div class="ma-table-actions">
+            <button
+              class="ma-btn-icon-sm"
+              type="button"
+              (click)="viewClaim(dataItem)"
+              [ngbTooltip]="'View details'"
+            >
+              <i class="fa-regular fa-eye"></i>
+            </button>
+            @if (perms.can(PERMISSION_MODULE.Claim, PERMISSION_ACTION.Delete)) {
+            <button
+              class="ma-btn-icon-sm"
+              type="button"
+              (click)="deleteClaim(dataItem)"
+              [ngbTooltip]="'Delete claim'"
+            >
+              <i class="fa-regular fa-trash-can"></i>
+            </button>
+            }
+          </div>
+        </ng-template>
+      </kendo-grid-column>
+
+      <ng-template kendoGridNoRecordsTemplate>
+        <div class="ma-grid-empty">No claims match your current filters.</div>
+      </ng-template>
+    </kendo-grid>
+  </div>
+</section>

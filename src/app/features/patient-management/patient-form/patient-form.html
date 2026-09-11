@@ -1,0 +1,493 @@
+  <div class="ma-page-header">
+    <div class="ma-page-header__meta">
+      <div class="ma-back-header">
+        <h2 class="ma-page-title">{{ isEdit() ? 'Edit Patient' : 'Add Patient' }}</h2>
+      </div>
+    </div>
+  </div>
+<form class="ma-form" [formGroup]="form" (ngSubmit)="onSave()" novalidate appFocusFirstInput>
+  <div class="ma-card mb-3">
+    <div class="ma-card-header">
+      <div class="ma-card-title-wrap">
+        <h2 class="ma-card-title">Basic Information</h2>
+      </div>
+    </div>
+    <div class="ma-card-body">
+      <div class="row g-3">
+        <div class="col-12 col-md-6">
+          <div class="ma-form-group mb-0">
+            <label class="ma-form-label" for="maPatientPatientId">Patient ID <span class="ma-required">*</span></label>
+            <input
+              id="maPatientPatientId"
+              type="text"
+              class="form-control"
+              formControlName="patient_id"
+              placeholder="e.g. PAT-EHR-001"
+              appTrimWhitespace
+              maxlength="16"
+              [readonly]="isEdit()"
+              [class.is-invalid]="isSubmitted() && f['patient_id'].errors"
+            />
+            @if (isSubmitted() && f['patient_id'].errors) {
+              <div class="invalid-feedback d-block">
+                @if (f['patient_id'].hasError('required') || f['patient_id'].hasError('whitespace')) { Patient ID is required. }
+                @else if (f['patient_id'].hasError('maxlength')) { Maximum 16 characters allowed. }
+                @else { Please enter a valid Patient ID. }
+              </div>
+            }
+          </div>
+        </div>
+        <div class="col-12 col-md-6">
+          <div class="ma-form-group mb-0">
+            <label class="ma-form-label" for="maPatientExternalId">External ID</label>
+            <input
+              id="maPatientExternalId"
+              type="text"
+              class="form-control"
+              formControlName="external_id"
+              placeholder="e.g. EXT-001"
+              appTrimWhitespace
+              maxlength="16"
+              [class.is-invalid]="isSubmitted() && f['external_id'].errors"
+            />
+            @if (isSubmitted() && f['external_id'].errors) {
+              <div class="invalid-feedback d-block">
+                @if (f['external_id'].hasError('maxlength')) { Maximum 16 characters allowed. }
+                @else { Please enter a valid External ID. }
+              </div>
+            }
+          </div>
+        </div>
+        <div class="col-12 col-md-4">
+          <div class="ma-form-group mb-0">
+            <label class="ma-form-label" for="maPatientFirstName">First Name <span class="ma-required">*</span></label>
+            <input
+              id="maPatientFirstName"
+              type="text"
+              class="form-control"
+              formControlName="first_name"
+              placeholder="Enter first name"
+              appTrimWhitespace
+              maxlength="50"
+              [class.is-invalid]="isSubmitted() && f['first_name'].errors"
+            />
+            @if (isSubmitted() && f['first_name'].errors) {
+              <div class="invalid-feedback d-block">
+                @if (f['first_name'].hasError('required') || f['first_name'].hasError('whitespace')) { First Name is required. }
+                @else if (f['first_name'].hasError('minlength')) { Minimum 2 characters required. }
+                @else if (f['first_name'].hasError('maxlength')) { Maximum 50 characters allowed. }
+                @else { Please enter a valid First Name. }
+              </div>
+            }
+          </div>
+        </div>
+        <div class="col-12 col-md-4">
+          <div class="ma-form-group mb-0">
+            <label class="ma-form-label" for="maPatientMiddleInitial">Middle Initial</label>
+            <input
+              id="maPatientMiddleInitial"
+              type="text"
+              class="form-control"
+              formControlName="middle_initial"
+              placeholder="Enter middle initial"
+              appTrimWhitespace
+              maxlength="1"
+              [class.is-invalid]="isSubmitted() && f['middle_initial'].errors"
+            />
+            @if (isSubmitted() && f['middle_initial'].errors) {
+              <div class="invalid-feedback d-block">Middle Initial must be exactly 1 character.</div>
+            }
+          </div>
+        </div>
+        <div class="col-12 col-md-4">
+          <div class="ma-form-group mb-0">
+            <label class="ma-form-label" for="maPatientLastName">Last Name <span class="ma-required">*</span></label>
+            <input
+              id="maPatientLastName"
+              type="text"
+              class="form-control"
+              formControlName="last_name"
+              placeholder="Enter last name"
+              appTrimWhitespace
+              maxlength="50"
+              [class.is-invalid]="isSubmitted() && f['last_name'].errors"
+            />
+            @if (isSubmitted() && f['last_name'].errors) {
+              <div class="invalid-feedback d-block">
+                @if (f['last_name'].hasError('required') || f['last_name'].hasError('whitespace')) { Last Name is required. }
+                @else if (f['last_name'].hasError('minlength')) { Minimum 2 characters required. }
+                @else if (f['last_name'].hasError('maxlength')) { Maximum 50 characters allowed. }
+                @else { Please enter a valid Last Name. }
+              </div>
+            }
+          </div>
+        </div>
+        <div class="col-12 col-md-4">
+          <div class="ma-form-group mb-0">
+            <label class="ma-form-label">Gender <span class="ma-required">*</span></label>
+            <div class="ma-radio-group">
+              @for (option of genderOptions; track option.value) {
+                <div class="form-check form-check-inline">
+                  <input
+                    class="form-check-input"
+                    type="radio"
+                    [id]="'maPatientGender_' + option.value"
+                    formControlName="gender"
+                    [value]="option.value"
+                    [class.is-invalid]="isSubmitted() && f['gender'].errors"
+                  />
+                  <label class="form-check-label" [for]="'maPatientGender_' + option.value">
+                    {{ option.label }}
+                  </label>
+                </div>
+              }
+            </div>
+            @if (isSubmitted() && f['gender'].errors) {
+              <div class="invalid-feedback d-block">Please select a Gender.</div>
+            }
+          </div>
+        </div>
+        <div class="col-12 col-md-4">
+          <div class="ma-form-group mb-0">
+            <label class="ma-form-label" for="maPatientDob">Date of Birth <span class="ma-required">*</span></label>
+            <div class="ma-input-group is-calendar">
+              <input
+                id="maPatientDob"
+                class="form-control bg-white"
+                placeholder="MM-DD-YYYY"
+                formControlName="date_of_birth"
+                readonly
+                ngbDatepicker
+                container="body"
+                #dobPicker="ngbDatepicker"
+                [minDate]="minDob"
+                [maxDate]="today"
+                (click)="dobPicker.toggle()"
+                [class.is-invalid]="isSubmitted() && f['date_of_birth'].errors"
+              />
+              <i class="fa-regular fa-calendar ma-input-icon" role="button" aria-label="Open date of birth picker" (click)="dobPicker.toggle()"></i>
+            </div>
+            @if (isSubmitted() && f['date_of_birth'].errors) {
+              <div class="invalid-feedback d-block">Date of Birth is required.</div>
+            }
+          </div>
+        </div>
+        <div class="col-12 col-md-4">
+          <div class="ma-form-group mb-0">
+            <label class="ma-form-label" for="maPatientEmail">Email Address <span class="ma-required">*</span></label>
+            <input
+              id="maPatientEmail"
+              type="email"
+              class="form-control"
+              formControlName="email"
+              placeholder="Enter email address"
+              appTrimWhitespace
+              maxlength="100"
+              [class.is-invalid]="isSubmitted() && f['email'].errors"
+            />
+            @if (isSubmitted() && f['email'].errors) {
+              <div class="invalid-feedback d-block">
+                @if (f['email'].hasError('required')) { Email Address is required. }
+                @else if (f['email'].hasError('emailExists')) { Email address already exists. }
+                @else if (f['email'].hasError('maxlength')) { Maximum 100 characters allowed. }
+                @else { Please enter a valid Email Address. }
+              </div>
+            }
+          </div>
+        </div>
+        <div class="col-12 col-md-4">
+          <div class="ma-form-group mb-0">
+            <label class="ma-form-label" for="maPatientContact">Contact Number <span class="ma-required">*</span></label>
+            <input
+              id="maPatientContact"
+              type="tel"
+              class="form-control"
+              formControlName="contact_number"
+              placeholder="(123) 456-7890"
+              appPhoneMask
+              maxlength="14"
+              [class.is-invalid]="isSubmitted() && f['contact_number'].errors"
+            />
+            @if (isSubmitted() && f['contact_number'].errors) {
+              <div class="invalid-feedback d-block">Contact Number is required.</div>
+            }
+          </div>
+        </div>
+        <div class="col-12 col-md-4">
+          <div class="ma-form-group mb-0">
+            <label class="ma-form-label" for="maPatientHomePhone">Home Phone</label>
+            <input
+              id="maPatientHomePhone"
+              type="tel"
+              class="form-control"
+              formControlName="home_phone"
+              placeholder="(123) 456-7890"
+              appPhoneMask
+              maxlength="14"
+              [class.is-invalid]="isSubmitted() && f['home_phone'].errors"
+            />
+            @if (isSubmitted() && f['home_phone'].errors) {
+              <div class="invalid-feedback d-block">Please enter a valid Home Phone.</div>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ma-card mb-3">
+    <div class="ma-card-header">
+      <div class="ma-card-title-wrap">
+        <h2 class="ma-card-title">Patient Address Details</h2>
+      </div>
+    </div>
+    <div class="ma-card-body">
+      <div class="row g-3">
+        <div class="col-12">
+          <div class="ma-form-group mb-0">
+            <label class="ma-form-label" for="maPatientAddress1">Address 1 <span class="ma-required">*</span></label>
+            <input
+              id="maPatientAddress1"
+              type="text"
+              class="form-control"
+              formControlName="address_1"
+              placeholder="Enter address 1"
+              appTrimWhitespace
+              maxlength="250"
+              [class.is-invalid]="isSubmitted() && f['address_1'].errors"
+            />
+            @if (isSubmitted() && f['address_1'].errors) {
+              <div class="invalid-feedback d-block">
+                @if (f['address_1'].hasError('required') || f['address_1'].hasError('whitespace')) { Address 1 is required. }
+                @else if (f['address_1'].hasError('minlength')) { Minimum 5 characters required. }
+                @else if (f['address_1'].hasError('maxlength')) { Maximum 250 characters allowed. }
+                @else { Please enter a valid Address 1. }
+              </div>
+            }
+          </div>
+        </div>
+        <div class="col-12">
+          <div class="ma-form-group mb-0">
+            <label class="ma-form-label" for="maPatientAddress2">Address 2</label>
+            <input
+              id="maPatientAddress2"
+              type="text"
+              class="form-control"
+              formControlName="address_2"
+              placeholder="Enter address 2"
+              appTrimWhitespace
+              maxlength="250"
+              [class.is-invalid]="isSubmitted() && f['address_2'].errors"
+            />
+            @if (isSubmitted() && f['address_2'].errors) {
+              <div class="invalid-feedback d-block">Maximum 250 characters allowed.</div>
+            }
+          </div>
+        </div>
+        <div class="col-12 col-md-4">
+          <div class="ma-form-group mb-0">
+            <label class="ma-form-label" for="maPatientState">State <span class="ma-required">*</span></label>
+            <input
+              id="maPatientState"
+              type="text"
+              class="form-control"
+              formControlName="state"
+              placeholder="Enter state"
+              appTrimWhitespace
+              maxlength="100"
+              [class.is-invalid]="isSubmitted() && f['state'].errors"
+            />
+            @if (isSubmitted() && f['state'].errors) {
+              <div class="invalid-feedback d-block">
+                @if (f['state'].hasError('required') || f['state'].hasError('whitespace')) { State is required. }
+                @else if (f['state'].hasError('minlength')) { Minimum 2 characters required. }
+                @else if (f['state'].hasError('maxlength')) { Maximum 100 characters allowed. }
+                @else { Please enter a valid State. }
+              </div>
+            }
+          </div>
+        </div>
+        <div class="col-12 col-md-4">
+          <div class="ma-form-group mb-0">
+            <label class="ma-form-label" for="maPatientCity">City <span class="ma-required">*</span></label>
+            <input
+              id="maPatientCity"
+              type="text"
+              class="form-control"
+              formControlName="city"
+              placeholder="Enter city"
+              appTrimWhitespace
+              maxlength="100"
+              [class.is-invalid]="isSubmitted() && f['city'].errors"
+            />
+            @if (isSubmitted() && f['city'].errors) {
+              <div class="invalid-feedback d-block">
+                @if (f['city'].hasError('required') || f['city'].hasError('whitespace')) { City is required. }
+                @else if (f['city'].hasError('minlength')) { Minimum 2 characters required. }
+                @else if (f['city'].hasError('maxlength')) { Maximum 100 characters allowed. }
+                @else { Please enter a valid City. }
+              </div>
+            }
+          </div>
+        </div>
+        <div class="col-12 col-md-4">
+          <div class="ma-form-group mb-0">
+            <label class="ma-form-label" for="maPatientPinCode">Pin Code <span class="ma-required">*</span></label>
+            <input
+              id="maPatientPinCode"
+              type="text"
+              inputmode="numeric"
+              class="form-control"
+              formControlName="pin_code"
+              placeholder="Enter pin code"
+              appTrimWhitespace
+              maxlength="10"
+              (keypress)="blockNonDigit($event)"
+              [class.is-invalid]="isSubmitted() && f['pin_code'].errors"
+            />
+            @if (isSubmitted() && f['pin_code'].errors) {
+              <div class="invalid-feedback d-block">
+                @if (f['pin_code'].hasError('required')) { Pin Code is required. }
+                @else if (f['pin_code'].hasError('minlength')) { Minimum 3 digits required. }
+                @else if (f['pin_code'].hasError('maxlength')) { Maximum 10 digits allowed. }
+                @else if (f['pin_code'].hasError('pattern')) { Pin Code must contain digits only. }
+                @else { Please enter a valid Pin Code. }
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ma-card mb-3">
+    <div class="ma-card-header">
+      <div class="ma-card-title-wrap">
+        <h2 class="ma-card-title">Diagnosis</h2>
+      </div>
+    </div>
+    <div class="ma-card-body">
+      <div class="row g-3">
+        <div class="col-12 col-md-6">
+          <div class="ma-form-group mb-0">
+            <label class="ma-form-label" for="maPatientDiagnosis1">Problem 1</label>
+            <input
+              id="maPatientDiagnosis1"
+              type="text"
+              class="form-control"
+              formControlName="diagnosis_problem_1"
+              placeholder="Enter diagnosis problem 1"
+              appTrimWhitespace
+              maxlength="250"
+              [class.is-invalid]="isSubmitted() && f['diagnosis_problem_1'].errors"
+            />
+            @if (isSubmitted() && f['diagnosis_problem_1'].errors) {
+              <div class="invalid-feedback d-block">Maximum 250 characters allowed.</div>
+            }
+          </div>
+        </div>
+        <div class="col-12 col-md-6">
+          <div class="ma-form-group mb-0">
+            <label class="ma-form-label" for="maPatientDiagnosis2">Problem 2</label>
+            <input
+              id="maPatientDiagnosis2"
+              type="text"
+              class="form-control"
+              formControlName="diagnosis_problem_2"
+              placeholder="Enter diagnosis problem 2"
+              appTrimWhitespace
+              maxlength="250"
+              [class.is-invalid]="isSubmitted() && f['diagnosis_problem_2'].errors"
+            />
+            @if (isSubmitted() && f['diagnosis_problem_2'].errors) {
+              <div class="invalid-feedback d-block">Maximum 250 characters allowed.</div>
+            }
+          </div>
+        </div>
+        <div class="col-12 col-md-6">
+          <div class="ma-form-group mb-0">
+            <label class="ma-form-label" for="maPatientDiagnosis3">Problem 3</label>
+            <input
+              id="maPatientDiagnosis3"
+              type="text"
+              class="form-control"
+              formControlName="diagnosis_problem_3"
+              placeholder="Enter diagnosis problem 3"
+              appTrimWhitespace
+              maxlength="250"
+              [class.is-invalid]="isSubmitted() && f['diagnosis_problem_3'].errors"
+            />
+            @if (isSubmitted() && f['diagnosis_problem_3'].errors) {
+              <div class="invalid-feedback d-block">Maximum 250 characters allowed.</div>
+            }
+          </div>
+        </div>
+        <div class="col-12 col-md-6">
+          <div class="ma-form-group mb-0">
+            <label class="ma-form-label" for="maPatientDiagnosis4">Problem 4</label>
+            <input
+              id="maPatientDiagnosis4"
+              type="text"
+              class="form-control"
+              formControlName="diagnosis_problem_4"
+              placeholder="Enter diagnosis problem 4"
+              appTrimWhitespace
+              maxlength="250"
+              [class.is-invalid]="isSubmitted() && f['diagnosis_problem_4'].errors"
+            />
+            @if (isSubmitted() && f['diagnosis_problem_4'].errors) {
+              <div class="invalid-feedback d-block">Maximum 250 characters allowed.</div>
+            }
+          </div>
+        </div>
+        <div class="col-12 col-md-6">
+          <div class="ma-form-group mb-0">
+            <label class="ma-form-label" for="maPatientDiagnosis5">Problem 5</label>
+            <input
+              id="maPatientDiagnosis5"
+              type="text"
+              class="form-control"
+              formControlName="diagnosis_problem_5"
+              placeholder="Enter diagnosis problem 5"
+              appTrimWhitespace
+              maxlength="250"
+              [class.is-invalid]="isSubmitted() && f['diagnosis_problem_5'].errors"
+            />
+            @if (isSubmitted() && f['diagnosis_problem_5'].errors) {
+              <div class="invalid-feedback d-block">Maximum 250 characters allowed.</div>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ma-card">
+    <div class="ma-card-header">
+      <div class="ma-card-title-wrap">
+        <h2 class="ma-card-title">Status</h2>
+      </div>
+    </div>
+    <div class="ma-card-body">
+      <div class="form-check form-switch">
+        <input
+          class="form-check-input"
+          type="checkbox"
+          role="switch"
+          id="maPatientActive"
+          formControlName="status"
+        />
+        <label class="form-check-label" for="maPatientActive">
+          {{ f['status'].value ? 'Active' : 'Inactive' }}
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <div class="ma-btn-group justify-content-end mt-3">
+    <a routerLink="/patient-management" class="btn ma-btn btn-outline-primary btn-grey-btn">Cancel</a>
+    <button type="submit" class="btn ma-btn btn-primary" [disabled]="submitting()">
+      {{ 'Save' }}
+    </button>
+  </div>
+</form>

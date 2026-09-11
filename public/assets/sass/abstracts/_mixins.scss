@@ -1,0 +1,581 @@
+/* ==========================================================================
+   TRANSITION
+   ========================================================================== */
+
+@mixin maTransition($transition: all .25s ease) {
+    transition: $transition;
+}
+
+/* ==========================================================================
+   HEADING
+   ========================================================================== */
+
+@mixin maHeading {
+    font-weight: $fontBold;
+    line-height: 1.5;
+    color: $textPrimary;
+    margin-bottom: 0;
+}
+
+/* ==========================================================================
+   FLEX
+   ========================================================================== */
+
+@mixin maFlex($justify: flex-start, $align: stretch, $direction: row, $wrap: nowrap) {
+    display: flex;
+    justify-content: $justify;
+    align-items: $align;
+    flex-direction: $direction;
+    flex-wrap: $wrap;
+}
+
+/* ==========================================================================
+   FLEX CENTER
+   ========================================================================== */
+
+@mixin maFlexCenter {
+    @include maFlex(center, center);
+}
+
+/* ==========================================================================
+   ICON WRAPPER
+   ========================================================================== */
+
+@mixin maIconWrapper($size, $radius: $borderRadius50) {
+    width: $size;
+    height: $size;
+    border-radius: $radius;
+    @include maFlexCenter;
+    flex-shrink: 0;
+}
+
+/* ==========================================================================
+   DROPDOWN PANEL
+   ========================================================================== */
+
+@mixin maDropdownPanel($minWidth: 240px) {
+    min-width: $minWidth;
+    border-radius: $borderRadius8;
+    border: 1px solid rgba($primary, .2);
+    box-shadow: $shadowLg;
+    padding: 8px;
+    margin-top: 8px;
+    display: block;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(8px);
+    pointer-events: none;
+    @include maTransition(all .2s ease);
+
+    &.show {
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+    }
+}
+
+/* ==========================================================================
+   CUSTOM SCROLLBAR
+   ========================================================================== */
+
+@mixin maScrollbar($thumbColor: rgba($white, .28), $trackColor: transparent) {
+    scrollbar-width: thin;
+    scrollbar-color: $thumbColor $trackColor;
+
+    &::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: $thumbColor;
+        border-radius: $borderRadius30;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: $trackColor;
+    }
+}
+
+/* ==========================================================================
+   TEXT ELLIPSIS
+   ========================================================================== */
+
+@mixin maTextEllipsis {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* ==========================================================================
+   MULTI LINE CLAMP
+   ========================================================================== */
+
+@mixin maLineClamp($lines: 2) {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: $lines;
+    -webkit-box-orient: vertical;
+}
+
+/* ==========================================================================
+   ABSOLUTE CENTER
+   ========================================================================== */
+
+@mixin maAbsoluteCenter {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/* ==========================================================================
+   LIST RESET
+   ========================================================================== */
+
+@mixin maListReset {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+/* ==========================================================================
+   IMAGE COVER
+   ========================================================================== */
+
+@mixin maImgCover {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* ==========================================================================
+   IMAGE CONTAIN
+   ========================================================================== */
+
+@mixin maImgContain {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+/* ==========================================================================
+   PLACEHOLDER
+   ========================================================================== */
+
+@mixin maPlaceholder {
+    &::placeholder {
+        @content;
+    }
+}
+
+/* ==========================================================================
+   AFTER / BEFORE
+   ========================================================================== */
+
+@mixin maAfterBefore {
+    content: "";
+    position: absolute;
+    display: block;
+    pointer-events: none;
+}
+
+/* ==========================================================================
+   MEDIA QUERY
+   ========================================================================== */
+
+@mixin maMedia($breakpoint) {
+    @media (max-width: $breakpoint) {
+        @content;
+    }
+}
+
+/* ==========================================================================
+   CARD MIXIN
+   ========================================================================== */
+
+@mixin maCard($padding: 16px, $radius: $borderRadius12, $border: $borderColor, $bg: $white, $shadow: $shadowSm) {
+    padding: $padding;
+    background: $bg;
+    border: 1px solid $border;
+    border-radius: $radius;
+    box-shadow: $shadow;
+}
+
+/* ==========================================================================
+   FLEX BETWEEN
+   ========================================================================== */
+
+@mixin maFlexBetween {
+    @include maFlex(space-between, center);
+}
+
+/* ==========================================================================
+   FLEX COLUMN
+   ========================================================================== */
+
+@mixin maFlexColumn($justify: flex-start, $align: stretch) {
+    @include maFlex($justify, $align, column);
+}
+
+/* ==========================================================================
+   GRID LAYOUT
+   ========================================================================== */
+
+@mixin maGrid($columns: auto, $gap: 16px, $rows: auto) {
+    display: grid;
+    grid-template-columns: $columns;
+    grid-template-rows: $rows;
+    gap: $gap;
+}
+
+/* ==========================================================================
+   INPUT MIXIN
+   ========================================================================== */
+
+@mixin maInput($padding: 8px 12px, $radius: $borderRadius8, $border: $borderColor, $bg: $white) {
+    padding: $padding;
+    background: $bg;
+    border: 1px solid $border;
+    border-radius: $radius;
+    font-size: $font14;
+    font-family: $fontFamilyPrimary;
+    @include maTransition;
+
+    &:focus {
+        border-color: $primary;
+        box-shadow: 0 0 0 3px rgba($primary, 0.1);
+    }
+
+    &:disabled {
+        background: $disabledBg;
+        color: $disabledText;
+        cursor: not-allowed;
+    }
+}
+
+/* ==========================================================================
+   SELECT MIXIN
+   ========================================================================== */
+
+@mixin maSelect {
+    appearance: none;
+    cursor: pointer;
+}
+
+/* ==========================================================================
+   TEXTAREA MIXIN
+   ========================================================================== */
+
+@mixin maTextarea {
+    resize: vertical;
+}
+
+/* ==========================================================================
+   BUTTON MIXIN
+   ========================================================================== */
+
+@mixin maButton($padding: 8px 16px, $radius: $borderRadius8, $bg: $primary, $color: $white, $fontSize: $font14) {
+    padding: $padding;
+    background: $bg;
+    color: $color;
+    border: none;
+    border-radius: $radius;
+    font-size: $fontSize;
+    font-weight: $fontMedium;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    @include maTransition;
+
+    &:hover:not(:disabled) {
+        opacity: 0.9;
+        transform: translateY(-1px);
+    }
+
+    &:disabled {
+        background: $disabledBg;
+        color: $disabledText;
+        cursor: not-allowed;
+    }
+}
+
+/* ==========================================================================
+   BADGE MIXIN
+   ========================================================================== */
+
+@mixin maBadge($bg: $lightBlue, $color: $darkBlue, $padding: $badgePaddingY $badgePaddingX, $radius: $borderRadius4) {
+    display: inline-flex;
+    align-items: center;
+    padding: $padding;
+    background: $bg;
+    color: $color;
+    font-size: $badgeFontSize;
+    font-weight: $fontMedium;
+    border-radius: $radius;
+    white-space: nowrap;
+}
+
+/* ==========================================================================
+   UPLOAD BOX MIXIN
+   ========================================================================== */
+
+@mixin maUploadBox($padding: 32px 24px, $radius: $borderRadius12, $borderColor: $uploadBorderColor, $bgColor: $uploadBgColor) {
+    @include maFlexCenter;
+    flex-direction: column;
+    padding: $padding;
+    border: $uploadBorderStyle rgba($primary, 0.6);
+    border-radius: $radius;
+    background: rgba($primary, 0.01);
+    cursor: pointer;
+    @include maTransition;
+}
+
+/* ==========================================================================
+   TABLE CELL MIXIN
+   ========================================================================== */
+
+@mixin maTableCell($padding: $tablePaddingVertical $tablePaddingHorizontal) {
+    padding: $padding;
+    vertical-align: middle;
+}
+
+/* ==========================================================================
+   PAGINATION ITEM MIXIN
+   ========================================================================== */
+
+@mixin maPaginationItem($size: $paginationSize, $bg: $paginationBg) {
+    width: $size;
+    height: $size;
+    @include maFlexCenter;
+    border-radius: $borderRadius4;
+    background: $bg;
+    border: 1px solid $borderColor;
+    cursor: pointer;
+    font-weight: $fontMedium;
+    @include maTransition;
+
+    &:hover:not(.disabled, .active) {
+        background: $paginationHoverBg;
+    }
+
+    &.active {
+        background: $paginationActiveBg;
+        color: $white;
+        border-color: $paginationActiveBg;
+    }
+
+    &.disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+}
+
+/* ==========================================================================
+   SEARCH MIXIN
+   ========================================================================== */
+
+@mixin maSearch($width: $filterInputWidth) {
+    width: $width;
+    position: relative;
+
+    input {
+        @include maInput;
+        padding-left: 32px;
+        width: 100%;
+    }
+
+    .search-icon {
+        position: absolute;
+        left: 10px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: $textSecondary;
+    }
+}
+
+/* ==========================================================================
+   STATUS PILL MIXIN
+   ========================================================================== */
+
+@mixin maStatusPill($bg, $color, $padding: 4px 8px) {
+    display: inline-flex;
+    align-items: center;
+    padding: $padding;
+    background: $bg;
+    color: $color;
+    border-radius: $borderRadius20;
+    font-size: $font12;
+    font-weight: $fontMedium;
+}
+
+/* ==========================================================================
+   STEPPER MIXIN
+   ========================================================================== */
+
+@mixin maStepper($gap: $stepperGap) {
+    @include maFlex(space-between, center);
+    gap: $gap;
+
+    .stepper-item {
+        @include maFlexColumn(center, center);
+        flex: 1;
+        position: relative;
+
+        &::after {
+            content: "";
+            position: absolute;
+            width: 100%;
+            height: $stepperLineHeight;
+            background: $borderColor;
+            top: calc($stepperCircleSize / 2 - $stepperLineHeight / 2);
+            left: calc(50% + $stepperCircleSize / 2);
+            z-index: -1;
+        }
+
+        &:last-child::after {
+            display: none;
+        }
+    }
+
+    .stepper-circle {
+        width: $stepperCircleSize;
+        height: $stepperCircleSize;
+        @include maFlexCenter;
+        border-radius: 50%;
+        border: 2px solid $borderColor;
+        background: $white;
+        font-weight: $fontBold;
+        color: $textSecondary;
+        position: relative;
+        z-index: 1;
+    }
+
+    .stepper-item.completed .stepper-circle {
+        background: $primary;
+        color: $white;
+        border-color: $primary;
+
+        &::before {
+            content: "✓";
+            font-size: 18px;
+        }
+    }
+
+    .stepper-item.current .stepper-circle {
+        border-color: $primary;
+        color: $primary;
+    }
+
+    .stepper-label {
+        margin-top: 8px;
+        font-size: $font12;
+        font-weight: $fontMedium;
+        text-align: center;
+    }
+}
+
+/* ==========================================================================
+   CHART WRAPPER MIXIN
+   ========================================================================== */
+
+@mixin maChartWrapper($padding: $chartPadding, $height: $chartHeight) {
+    padding: $padding;
+    height: $height;
+    position: relative;
+    background: $white;
+    border-radius: $borderRadius12;
+    border: 1px solid $borderColor;
+    box-shadow: $shadowSm;
+
+    canvas {
+        height: 100%;
+    }
+}
+
+/* ==========================================================================
+   SECTION SPACING MIXIN
+   ========================================================================== */
+
+@mixin maSectionSpacing($space: $sectionSpaceMd) {
+    padding: $space 0;
+}
+
+/* ==========================================================================
+   RESPONSIVE COLUMNS MIXIN
+   ========================================================================== */
+
+@mixin maResponsiveColumns($desktop: 4, $tablet: 2, $mobile: 1) {
+    display: grid;
+    grid-template-columns: repeat($desktop, 1fr);
+    gap: 16px;
+
+    @include maMedia($md) {
+        grid-template-columns: repeat($tablet, 1fr);
+    }
+
+    @include maMedia($sm) {
+        grid-template-columns: repeat($mobile, 1fr);
+    }
+}
+
+/* ==========================================================================
+   DOCUMENT CARD MIXIN
+   ========================================================================== */
+
+@mixin maDocumentCard($padding: 12px 16px) {
+    @include maFlexBetween;
+    padding: $padding;
+    background: $light;
+    border: 1px solid $borderColor;
+    border-radius: $borderRadius8;
+    @include maTransition;
+
+    &:hover {
+        box-shadow: $shadowSm;
+    }
+}
+
+/* ==========================================================================
+   STATISTICS CARD MIXIN
+   ========================================================================== */
+
+@mixin maStatCard($padding: 16px) {
+    @include maCard($padding);
+    @include maFlexColumn(flex-start);
+    gap: 8px;
+}
+
+/* ==========================================================================
+   FILTER ROW MIXIN
+   ========================================================================== */
+
+@mixin maFilterRow($gap: $filterRowGap) {
+    @include maFlex(flex-start, center);
+    gap: $gap;
+    flex-wrap: wrap;
+    padding: 16px;
+    background: $light;
+    border-radius: $borderRadius12;
+}
+
+/* ==========================================================================
+   RESET BUTTON
+   ========================================================================== */
+
+@mixin maResetButton {
+    padding: 0;
+    margin: 0;
+    border: none;
+    background: none;
+    cursor: pointer;
+    outline: none;
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+    appearance: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}

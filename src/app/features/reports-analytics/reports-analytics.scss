@@ -1,0 +1,35 @@
+// Let the non-scrollable report grids grow to their content instead of
+// inheriting Kendo's fixed height + inner scroll area. Same treatment the
+// claim-data-list / claim-batch-detail grids need.
+::ng-deep .ma-kendo-grid {
+  height: auto !important;
+  max-height: none !important;
+
+  .k-grid-content,
+  .k-grid-content-locked {
+    overflow-y: visible !important;
+    height: auto !important;
+    max-height: none !important;
+  }
+}
+
+// Global Filters row: Year/Month/Week carry a real label above their
+// select, so they're taller than the OR separator, date inputs, and
+// buttons (which have none). Giving each of those a matching invisible
+// label — forced onto its own line, same as the real labels wrap above
+// their wide <select> — lines every item up on one baseline at every
+// breakpoint.
+.ma-visually-hidden-label {
+  display: block;
+  visibility: hidden;
+}
+
+.ma-filter-sep {
+  min-height: 45px;
+}
+
+// .ma-btn has no min-height of its own (line-height + padding lands a
+// couple px short of the 45px .form-control/.form-select min-height).
+.ma-form-group .ma-btn {
+  min-height: 45px;
+}

@@ -1,0 +1,399 @@
+/* ==========================================================================
+   DASHBOARD PAGE
+   ========================================================================== */
+
+.ma-dashboard {
+    min-height: 100vh;
+    background: $light;
+
+    .ma-main {
+        margin-left: $sidebarWidthExpanded;
+        min-height: 100vh;
+        @include maTransition(all .28s ease);
+    }
+
+    .ma-content {
+        padding: 20px;
+    }
+}
+
+.ma-dashboard.is-sidebar-collapsed {
+    .ma-main {
+        margin-left: $sidebarWidthCollapsed;
+    }
+}
+
+.ma-page-header {
+    @include maFlex(space-between, center);
+    gap: 12px;
+    margin-bottom: 16px;
+
+    .ma-page-title {
+        margin: 0;
+        font-size: $font20;
+        font-weight: $fontBold;
+        color: $textPrimary;
+    }
+
+    .ma-page-subtitle {
+        color: $textSecondary;
+        font-size: $font14;
+        margin: 4px 0 0;
+        width: 100%;
+    }
+
+    .ma-date-filter {
+        max-width: 190px;
+    }
+}
+
+.ma-surface-card {
+    @include maCard(0, $borderRadius8, $borderColor, $white, 0 4px 20px rgba($dark, .05));
+}
+
+.ma-stat-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+    &.ma-stat-grid--three {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+.ma-stat-card {
+    @extend .ma-surface-card;
+    height: 100%;
+    padding: 12px 16px 12px 16px;
+    @include maFlex(flex-start, flex-start, wrap);
+    gap: 12px;
+
+    .ma-stat-content {
+        width: 100%;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        flex: 1;
+    }
+
+    .ma-stat-title {
+        margin: 0;
+        font-size: $font14;
+        color: $textSecondary;
+        font-weight: $fontMedium;
+    }
+
+    .ma-stat-icon {
+        width: 45px;
+        height: 45px;
+        border-radius: $borderRadius12;
+        @include maFlex(center, center);
+        font-size: $font18;
+        flex: none;
+
+        .ma-svg {
+            width: $font24;
+            height: $font24;
+        }
+
+        &.ma-is-blue {
+            background: $lightBlue;
+
+            .ma-svg {
+                path {
+                    fill: $darkBlue;
+                }
+            }
+        }
+
+        &.ma-is-green {
+            background: $lightGreen;
+
+            .ma-svg {
+                path {
+                    fill: $darkGreen;
+                }
+            }
+        }
+
+        &.ma-is-danger {
+            background: $lightRed;
+            .ma-svg {
+                path {
+                    fill: $darkRed;
+                }
+            }
+        }
+
+        &.ma-is-green_v2 {
+            background: $lightGreenV2;
+
+            .ma-svg {
+                path {
+                    fill: $darkGreenV2;
+                }
+            }
+        }
+
+        &.ma-is-orange {
+            background: $lightOrange;
+
+            .ma-svg {
+                path {
+                    fill: $darkOrange;
+                }
+            }
+        }
+
+        &.ma-is-purple {
+            background: $lightPurple;
+
+            .ma-svg {
+                path {
+                    fill: $darkPurple;
+                }
+            }
+        }
+        
+        &.ma-is-purpleV2 {
+            background: $lightPurpleV2;
+
+            .ma-svg {
+                path {
+                    fill: $darkPurpleV2;
+                }
+            }
+        }
+
+        &.ma-is-skyblue {
+            background: $lightSkyblue;
+
+            .ma-svg {
+                path {
+                    fill: $darkSkyblue;
+                }
+            }
+        }
+
+        &.ma-is-pink {
+            background: $lightPink;
+
+            .ma-svg {
+                path {
+                    fill: $darkPink;
+                }
+            }
+        }
+    }
+
+    .ma-stat-value {
+        margin: 0;
+        font-size: $font24;
+        font-weight: $fontBold;
+        color: $textPrimary;
+        @include maMedia($xl)  {
+            font-size: 20px;
+        }
+    }
+
+    .ma-stat-growth {
+        margin: auto 0 0;
+        font-size: $font14;
+        font-weight: $fontRegular;
+        white-space: nowrap;
+
+        .ma-stat-status {
+            @include maFlex(flex-start, center);
+            gap: 4px;
+            font-weight: $fontBold;
+        }
+
+        &.is-up {
+            .ma-stat-status {
+                color: $success;
+            }
+        }
+
+        &.is-down {
+            .ma-stat-status {
+                color: $danger;
+            }
+        }
+    }
+}
+
+.ma-analytics-card {
+    @extend .ma-surface-card;
+    padding: 20px;
+    height: 100%;
+
+    .chart-card__header {
+        @include maFlex(space-between, center);
+        margin-bottom: 16px;
+
+        .chart-card__title {
+            margin: 0;
+            font-size: $font20;
+            font-weight: $fontSemiBold;
+            color: $textPrimary;
+        }
+    }
+
+    .ma-chart-wrap {
+        height: 330px;
+        position: relative;
+    }
+}
+
+.ma-table-card {
+    @extend .ma-surface-card;
+    overflow: hidden;
+
+    .ma-table-card-head {
+        padding: 12px 16px;
+        @include maFlex(space-between, center);
+        flex-wrap: wrap;
+        gap: 8px;
+        .ma-btn {
+            @include maFlex(center, center);
+            gap: 6px;
+            &:hover,&:focus {
+                .ma-grey-text {
+                    color: $white;
+                }
+            }
+        }
+        .ma-table-title {
+            margin: 0;
+            font-size: $font18;
+            font-weight: $fontSemiBold;
+            color: $textPrimary;
+            white-space: nowrap;
+            flex: auto;
+        }
+    }
+}
+
+.chart-card {
+    @include maCard(20px, $borderRadius8, $borderColor, $white, 0 4px 20px rgba($dark, .05));
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+
+    &__header {
+        @include maFlex(space-between, center);
+        margin-bottom: $space16;
+    }
+
+    &__title {
+        margin: 0;
+        font-size: $font18;
+        font-weight: $fontSemiBold;
+        color: $dark;
+    }
+
+    &__body {
+        position: relative;
+        height: 320px;
+
+        canvas {
+            width: 100% !important;
+            height: 100% !important;
+            display: block;
+        }
+    }
+}
+
+@include maMedia($xl) {
+    .ma-stat-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+
+        &.ma-stat-grid--three {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+    }
+
+    .ma-stat-card {
+        flex-direction: row;
+        gap: 12px;
+        padding: 14px 16px;
+
+        .ma-stat-icon {
+            flex: 0 0 45px;
+        }
+
+        .ma-stat-growth {
+            margin-top: 0;
+            white-space: normal;
+        }
+    }
+}
+
+@include maMedia($lg) {
+    .ma-dashboard {
+        .ma-main {
+            margin-left: 0;
+        }
+
+        .ma-content {
+            padding: 16px;
+        }
+    }
+
+    .ma-stat-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+
+        &.ma-stat-grid--three {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+    }
+
+    .ma-page-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .ma-analytics-card {
+        .ma-chart-wrap {
+            height: 280px;
+        }
+    }
+
+    .chart-card {
+        .chart-card__body {
+            height: 300px;
+        }
+    }
+}
+
+@include maMedia($sm) {
+    .ma-stat-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+
+        &.ma-stat-grid--three {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+}
+
+@include maMedia($xs) {
+    .ma-stat-grid {
+        grid-template-columns: 1fr;
+
+        &.ma-stat-grid--three {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .chart-card {
+        padding: $space16;
+
+        .chart-card__body {
+            height: 260px;
+        }
+
+        .chart-card__title {
+            font-size: $font18;
+        }
+    }
+}

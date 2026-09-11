@@ -1,0 +1,218 @@
+<div class="ma-page-header">
+  <div>
+    <h2 class="ma-page-title">Dashboard</h2>
+    <p class="ma-page-subtitle">
+      Healthcare compliance and upload analytics overview
+    </p>
+  </div>
+</div>
+
+<div class="row g-2 justify-content-lg-end align-items-center mb-3 ma-filter-grid">
+  <div class="col-12 col-sm-6 col-lg-2">
+    <select class="form-select ma-date-filter" aria-label="Date range" name="dashboardRange"
+      [(ngModel)]="selectedRange" (ngModelChange)="onRangeChange()">
+      @for (opt of rangeOptions; track opt.value) {
+        <option [ngValue]="opt.value">{{ opt.label }}</option>
+      }
+      <option [ngValue]="'custom'">Custom Range</option>
+    </select>
+  </div>
+  @if (selectedRange === 'custom') {
+    <div class="col-12 col-sm-6 col-lg-2">
+      <div class="ma-input-group is-calendar ma-filter-item ma-filter-item--date">
+        <input
+          id="dashboardFromDate"
+          class="form-control bg-white"
+          placeholder="From date"
+          aria-label="From date"
+          name="dashboardFromDate"
+          readonly
+          ngbDatepicker
+          container="body"
+          #fromPicker="ngbDatepicker"
+          [(ngModel)]="customFrom"
+          [maxDate]="$any(customTo)"
+          (click)="fromPicker.toggle()"
+        />
+        <i class="fa-regular fa-calendar ma-input-icon" role="button" aria-label="Open from-date picker"
+          (click)="fromPicker.toggle()"></i>
+      </div>
+    </div>
+    <div class="col-12 col-sm-6 col-lg-2">
+      <div class="ma-input-group is-calendar ma-filter-item ma-filter-item--date">
+        <input
+          id="dashboardToDate"
+          class="form-control bg-white"
+          placeholder="To date"
+          aria-label="To date"
+          name="dashboardToDate"
+          readonly
+          ngbDatepicker
+          container="body"
+          #toPicker="ngbDatepicker"
+          [(ngModel)]="customTo"
+          [minDate]="$any(customFrom)"
+          (click)="toPicker.toggle()"
+        />
+        <i class="fa-regular fa-calendar ma-input-icon" role="button" aria-label="Open to-date picker"
+          (click)="toPicker.toggle()"></i>
+      </div>
+    </div>
+    <div class="col-12 col-lg-auto">
+      <button type="button" class="btn ma-btn btn-primary w-100" style="min-height: 45px; padding: 0 20px"
+        [disabled]="!customFrom || !customTo" (click)="applyCustomRange()">
+        Apply
+      </button>
+    </div>
+  }
+</div>
+<div class="ma-stat-grid mb-3">
+  <article class="ma-stat-card ma-match-height">
+    <span class="ma-stat-icon ma-is-blue">
+      <img src="/assets/images/icons/user-access.svg" alt="Total Team Users Icon" class="ma-svg" />
+    </span>
+    <div class="ma-stat-content">
+      <p class="ma-stat-title">Total Team Users</p>
+      <h2 class="ma-stat-value">{{ metrics()?.total_team_users ?? 0 | number }}</h2>
+    </div>
+  </article>
+
+  <article class="ma-stat-card ma-match-height">
+    <span class="ma-stat-icon ma-is-purpleV2">
+      <img src="/assets/images/icons/total-upload.svg" alt="Total Uploads Icon" class="ma-svg" />
+    </span>
+    <div class="ma-stat-content">
+      <p class="ma-stat-title">Total Uploads</p>
+      <h2 class="ma-stat-value">{{ metrics()?.total_uploads ?? 0 | number }}</h2>
+    </div>
+  </article>
+
+ 
+
+  <article class="ma-stat-card ma-match-height">
+    <span class="ma-stat-icon ma-is-green_v2">
+      <img src="/assets/images/icons/ai-validation-completed.svg" alt="AI Validation Completed Icon" class="ma-svg" />
+    </span>
+    <div class="ma-stat-content">
+      <p class="ma-stat-title">AI Validation Completed</p>
+      <h2 class="ma-stat-value">{{ metrics()?.ai_validation_completed ?? 0 | number }}</h2>
+    </div>
+  </article>
+
+  <article class="ma-stat-card ma-match-height">
+    <span class="ma-stat-icon ma-is-orange">
+      <img src="/assets/images/icons/claims-pending.svg" alt="Claims Pending Review Icon" class="ma-svg" />
+    </span>
+    <div class="ma-stat-content">
+      <p class="ma-stat-title">Claims Pending Review</p>
+      <h2 class="ma-stat-value">{{ metrics()?.claims_pending_review ?? 0 | number }}</h2>
+    </div>
+  </article>
+
+  <article class="ma-stat-card ma-match-height">
+    <span class="ma-stat-icon ma-is-green_v2">
+      <img src="/assets/images/icons/active.svg" alt="Human Claims Approve Icon" class="ma-svg" />
+    </span>
+    <div class="ma-stat-content">
+      <p class="ma-stat-title">Human-Based Claims Approved</p>
+      <h2 class="ma-stat-value">{{ metrics()?.human_based_claims_approved ?? 0 | number }}</h2>
+    </div>
+  </article>
+
+  <article class="ma-stat-card ma-match-height">
+    <span class="ma-stat-icon ma-is-skyblue">
+      <img src="/assets/images/icons/provider-manage.svg" alt="Total Providers Icon" class="ma-svg" />
+    </span>
+    <div class="ma-stat-content">
+      <p class="ma-stat-title">Total Providers</p>
+      <h2 class="ma-stat-value">{{ metrics()?.total_providers ?? 0 | number }}</h2>
+    </div>
+  </article>
+
+  <article class="ma-stat-card ma-match-height">
+    <span class="ma-stat-icon ma-is-green">
+      <img src="/assets/images/icons/patient-manage.svg" alt="Total Patients Icon" class="ma-svg" />
+    </span>
+    <div class="ma-stat-content">
+      <p class="ma-stat-title">Total Patients</p>
+      <h2 class="ma-stat-value">{{ metrics()?.total_patients ?? 0 | number }}</h2>
+    </div>
+  </article>
+</div>
+<div class="d-flex justify-content-end align-items-center gap-2 mb-2">
+  <label class="ma-form-label mb-0" for="dashboardYear">Year</label>
+  <select class="form-select ma-date-filter" id="dashboardYear" name="dashboardYear"
+    style="width: auto;" [(ngModel)]="selectedYear" (ngModelChange)="onYearChange()">
+    @for (opt of yearOptions; track opt.value) {
+      <option [ngValue]="opt.value">{{ opt.label }}</option>
+    }
+  </select>
+</div>
+<div class="row g-3">
+  <div class="col-12 col-md-6">
+    <section class="ma-analytics-card" aria-labelledby="upload-trends-title">
+      <div class="ma-card-title-wrap">
+        <h2 class="ma-card-title" id="upload-trends-title">
+          Upload Trends
+        </h2>
+      </div>
+      <div class="ma-chart-wrap">
+        @if (hasUploadTrendsData()) {
+          <kendo-chart class="w-100 h-100">
+            <kendo-chart-tooltip [visible]="true" format="{0:n0}"></kendo-chart-tooltip>
+            <kendo-chart-category-axis>
+              <kendo-chart-category-axis-item [categories]="uploadCategories()" [majorGridLines]="{ visible: false }"
+                [labels]="{ rotation: 'auto' }" [title]="{ text: 'Months' }">
+              </kendo-chart-category-axis-item>
+            </kendo-chart-category-axis>
+            <kendo-chart-value-axis>
+              <kendo-chart-value-axis-item [labels]="{ format: '{0:n0}' }" [title]="{ text: 'Upload Volume' }">
+              </kendo-chart-value-axis-item>
+            </kendo-chart-value-axis>
+            <kendo-chart-series>
+              <kendo-chart-series-item type="line" [data]="uploadTrendsData()" color="#2f6bff" [markers]="{ visible: true }">
+              </kendo-chart-series-item>
+            </kendo-chart-series>
+          </kendo-chart>
+        } @else {
+          <app-empty-state icon="fa-chart-line" title="No Upload Activity"
+            [message]="'No uploads recorded for ' + selectedYear + ' yet.'">
+          </app-empty-state>
+        }
+      </div>
+    </section>
+  </div>
+  <div class="col-12 col-md-6">
+    <section class="ma-analytics-card" aria-labelledby="compliance-trends-title">
+      <div class="ma-card-title-wrap">
+        <h2 class="ma-card-title" id="compliance-trends-title">
+          Compliance Score Trends
+        </h2>
+      </div>
+      <div class="ma-chart-wrap">
+        @if (hasComplianceTrendsData()) {
+          <kendo-chart class="w-100 h-100">
+            <kendo-chart-tooltip [visible]="true" format="{0:n0}"></kendo-chart-tooltip>
+            <kendo-chart-category-axis>
+              <kendo-chart-category-axis-item [categories]="complianceCategories()" [majorGridLines]="{ visible: false }"
+                [labels]="{ rotation: 'auto' }" [title]="{ text: 'Months' }">
+              </kendo-chart-category-axis-item>
+            </kendo-chart-category-axis>
+            <kendo-chart-value-axis>
+              <kendo-chart-value-axis-item [labels]="{ format: '{0:n0}' }" [title]="{ text: 'Compliance Score' }">
+              </kendo-chart-value-axis-item>
+            </kendo-chart-value-axis>
+            <kendo-chart-series>
+              <kendo-chart-series-item type="line" [data]="complianceScoreData()" color="#22c55e" [markers]="{ visible: true }">
+              </kendo-chart-series-item>
+            </kendo-chart-series>
+          </kendo-chart>
+        } @else {
+          <app-empty-state icon="fa-chart-line" title="No Compliance Data"
+            [message]="'No compliance scores recorded for ' + selectedYear + ' yet.'">
+          </app-empty-state>
+        }
+      </div>
+    </section>
+  </div>
+</div>

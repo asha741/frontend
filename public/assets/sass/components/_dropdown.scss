@@ -1,0 +1,98 @@
+/* ==========================================================================
+   DROPDOWN COMPONENT
+   ========================================================================== */
+
+.ma-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.ma-dropdown-trigger {
+    @include maSelect;
+    width: $filterInputWidth;
+    min-width: 140px;
+
+    &::placeholder {
+        color: $textSecondary;
+    }
+}
+
+.ma-dropdown-menu {
+    @include maDropdownPanel;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    z-index: $zDropdown;
+    width: 100%;
+    background: $white;
+    max-height: 300px;
+    overflow-y: auto;
+
+    &.show {
+        opacity: 1;
+        visibility: visible;
+        pointer-events: auto;
+    }
+}
+
+.ma-dropdown-item {
+    padding: 10px 12px;
+    font-size: $font14;
+    color: $textPrimary;
+    cursor: pointer;
+    @include maTransition;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+    display: block;
+
+    &:hover {
+        background: $light;
+    }
+
+    &.active {
+        background: rgba($primary, 0.1);
+        color: $primary;
+        font-weight: $fontMedium;
+    }
+}
+
+.ma-dropdown-header {
+    padding: 8px 12px;
+    font-size: $font12;
+    font-weight: $fontBold;
+    color: $textSecondary;
+    text-transform: uppercase;
+    border-bottom: 1px solid $borderColor;
+}
+
+.ma-dropdown-footer {
+    padding: 8px 12px;
+    border-top: 1px solid $borderColor;
+    text-align: center;
+
+    a {
+        font-size: $font12;
+        color: $primary;
+        font-weight: $fontMedium;
+
+        &:hover {
+            text-decoration: underline;
+        }
+    }
+}
+
+.ma-dropdown-divider {
+    height: 1px;
+    background: $borderColor;
+    margin: 4px 0;
+}
+
+/* ==========================================================================
+   NATIVE SELECT STYLES
+   ========================================================================== */
+
+.ma-form-select {
+    @include maSelect;
+}

@@ -1,0 +1,46 @@
+::ng-deep .ma-kendo-grid {
+  height: auto !important;
+  max-height: none !important;
+
+  .k-grid-content,
+  .k-grid-content-locked {
+    overflow-y: visible !important;
+    height: auto !important;
+    max-height: none !important;
+  }
+}
+
+// Fit the non-scrollable grid to the viewport: with a fixed table layout the
+// declared column widths act as proportional weights inside 100% width, so an
+// unbroken long value (e.g. a batch id with no spaces) can't force the
+// column—and the whole table—to blow out. Long cell values wrap onto multiple
+// lines via .ma-cell-wrap in the template instead of being clipped.
+:host ::ng-deep .ma-master-table--bulk-upload {
+  table {
+    table-layout: fixed;
+    width: 100%;
+  }
+
+  th .k-column-title {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+.ma-cell-wrap {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  white-space: normal;
+  overflow-wrap: break-word;
+  word-break: normal;
+  line-height: 1.3;
+}
+
+.table-responsive {
+  overflow-y: visible !important;
+  height: auto !important;
+  max-height: none !important;
+}

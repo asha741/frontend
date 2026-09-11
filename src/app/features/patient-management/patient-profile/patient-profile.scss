@@ -1,0 +1,16 @@
+.ma-tabs {
+  margin-bottom: 1rem;
+}
+
+@media (max-width: 767.98px) {
+  .ma-tabs .nav-tabs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .ma-tabs .nav-tabs .nav-link {
+    flex: 0 0 auto;
+  }
+}

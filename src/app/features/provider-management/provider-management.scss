@@ -1,0 +1,37 @@
+// Fit the non-scrollable grid to the viewport: with a fixed table layout the
+// declared column widths act as proportional weights inside 100% width, so an
+// unbroken long value (e.g. a provider name with no spaces) can't force the
+// column—and the whole table—to blow out. Cell text is clamped to one line via
+// .k-text-ellipsis in the template, with the full value shown on hover via tooltip.
+:host ::ng-deep .ma-master-table--provider {
+  table {
+    table-layout: fixed;
+    width: 100%;
+  }
+
+  th .k-column-title {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  td {
+    overflow: hidden;
+  }
+}
+// provider-management.scss
+::ng-deep .ma-master-table--provider {
+  .k-grid-header {
+    .k-column-title {
+      white-space: normal !important;
+      word-break: break-word;
+      line-height: 1.2;
+      display: inline-block; // lets it wrap within the th
+    }
+
+    th.k-header {
+      vertical-align: middle;
+      height: auto; // let the row grow to fit 2 lines
+    }
+  }
+}

@@ -1,0 +1,88 @@
+/* ==========================================================================
+   PAGINATION BAR
+   ========================================================================== */
+
+.ma-pagination-wrap {
+	@include maFlex(space-between, center);
+	flex-wrap: wrap;
+	gap: 12px;
+	padding: 8px 12px;
+	border-top: 1px solid $borderColor;
+	background: $white;
+	@include maMedia($sm) {
+		justify-content: flex-end;
+	}
+
+	.ma-rows-select {
+		@include maFlex(flex-start, center);
+		gap: 8px;
+
+		span {
+			color: $textSecondary;
+			font-size: $font14;
+		}
+
+		.form-select {
+			min-height: 34px;
+			width: 72px;
+			padding: 4px 2px 4px 16px;
+			border-radius: $borderRadius4;
+			font-size: $font14;
+		}
+		@include maMedia($sm) {
+			display: none;
+		}
+	}
+
+	.pagination {
+		margin: 0;
+		gap: 6px;
+		flex-wrap: nowrap;
+
+		.page-link {
+			border-radius: $borderRadius6;
+			border: 1px solid $borderColor;
+			color: $textSecondary;
+			min-width: 32px;
+			height: 32px;
+			padding: 4px;
+			font-size: $font14;
+			text-align: center;
+			@include maFlex(center, center);
+			&:hover {
+				color: $primary;
+				border-color: rgba($primary, .5);
+				background: rgba($primary, .08);
+			}
+		}
+
+		.page-item.active {
+			.page-link {
+				background: $primary;
+				border-color: $primary;
+				color: $white;
+			}
+		}
+
+		.page-item.disabled {
+			.page-link {
+				opacity: .5;
+				pointer-events: none;
+			}
+		}
+	}
+}
+
+@include maMedia($lg) {
+	.ma-pagination-wrap {
+		.pagination {
+			gap: 4px;
+
+			.page-link {
+				min-width: 34px;
+				height: 34px;
+				padding: 0 8px;
+			}
+		}
+	}
+}

@@ -1,0 +1,79 @@
+
+    <main class="ma-login">
+      <div class="container-fluid px-0">
+        <div class="row g-0 ma-login-row">
+          <div class="col-lg-6 ma-login-left">
+            <div class="ma-login-content">
+              <div class="ma-login-logo-wrap">
+                <img src="assets/images/logo-login.svg" alt="MediAudit Logo" class="ma-login-logo">
+              </div>
+              <p class="ma-kicker">Welcome Aboard</p>
+              <h2 class="ma-login-heading">Accept Your <strong>Invitation</strong></h2>
+              <div class="ma-login-divider"></div>
+              <p class="ma-login-description">Set a password to activate your account. It must be at least 8 characters and include uppercase, lowercase, a number, and a special character.</p>
+            </div>
+          </div>
+          <div class="col-lg-6 ma-login-right">
+            <div class="ma-auth-card">
+              <div class="ma-auth-head">
+                <h2 class="ma-head-lg">Accept Invitation</h2>
+                <p>Create a password to activate your account.</p>
+              </div>
+              @if (!verifying()) {
+              <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate appFocusFirstInput>
+                <div class="ma-form-group">
+                  <label class="ma-form-label" for="aiNew">Password <span class="ma-required">*</span></label>
+                  <div class="input-group ma-input-icon">
+                    <span class="input-group-text">
+                      <img src="assets/images/icons/password.svg" alt="" class="ma-svg">
+                    </span>
+                    <input [type]="showNew() ? 'text' : 'password'" class="form-control" id="aiNew"
+                           formControlName="newPassword" appTrimWhitespace maxlength="12" placeholder="Enter your password"
+                           [class.is-invalid]="isSubmitted() && f['newPassword'].errors">
+                    <button type="button" class="input-group-text" (click)="showNew.update(v=>!v)">
+                      <i class="fa-solid" [class.fa-eye]="!showNew()" [class.fa-eye-slash]="showNew()"></i>
+                    </button>
+                  </div>
+                  @if (isSubmitted() && f['newPassword'].errors) {
+                    <div class="invalid-feedback d-block">
+                      @if (f['newPassword'].errors['required']) {   New password is required. }
+                      @else if (f['newPassword'].errors['minLength']) { Minimum 8 characters required. }
+                      @else if (f['newPassword'].errors['maxLength']) { Maximum 12 characters allowed. }
+                      @else if (f['newPassword'].errors['upperCase']) { At least one uppercase letter required. }
+                      @else if (f['newPassword'].errors['lowerCase']) { At least one lowercase letter required. }
+                      @else if (f['newPassword'].errors['specialChar']) { At least one special character required. }
+                      @else if (f['newPassword'].errors['number']) { At least one number required. }
+                    </div>
+                  }
+                </div>
+                <div class="ma-form-group">
+                  <label class="ma-form-label" for="aiConfirm">Confirm Password <span class="ma-required">*</span></label>
+                  <div class="input-group ma-input-icon">
+                    <span class="input-group-text">
+                      <img src="assets/images/icons/password.svg" alt="" class="ma-svg">
+                    </span>
+                    <input [type]="showConfirm() ? 'text' : 'password'" class="form-control" id="aiConfirm"
+                           formControlName="confirmPassword" appTrimWhitespace maxlength="12" placeholder="Confirm your password"
+                           [class.is-invalid]="isSubmitted() && f['confirmPassword'].errors">
+                    <button type="button" class="input-group-text" (click)="showConfirm.update(v=>!v)">
+                      <i class="fa-solid" [class.fa-eye]="!showConfirm()" [class.fa-eye-slash]="showConfirm()"></i>
+                    </button>
+                  </div>
+                  @if (isSubmitted() && f['confirmPassword'].errors) {
+                    <div class="invalid-feedback d-block">
+                      @if (f['confirmPassword'].errors['required']) { Confirm password is required. }
+                      @else if (f['confirmPassword'].errors['fieldMismatch']) { Passwords do not match. }
+                    </div>
+                  }
+                </div>
+                <button type="submit" class="ma-auth-submit">
+                  <span>Accept Invitation</span>
+                  <i class="fa-solid fa-arrow-right"></i>
+                </button>
+              </form>
+              }
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>

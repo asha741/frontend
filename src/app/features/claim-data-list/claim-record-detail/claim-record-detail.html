@@ -1,0 +1,238 @@
+<div class="ma-page-header">
+  <div class="ma-page-header__meta">
+    <div class="ma-back-header">
+      <!-- <button type="button" class="ma-btn-icon-sm" aria-label="Back to Claim Data" (click)="cancel()">
+        <i class="fa-solid fa-arrow-left"></i>
+      </button> -->
+      <h2 class="ma-page-title">Claim Detail — {{ record()?.claim_id }}</h2>
+    </div>
+  </div>
+</div>
+
+<div class="row g-4">
+  <!-- Patient / Provider Information -->
+  <div class="col-lg-6">
+    <div class="ma-card h-100">
+      <div class="ma-card-header">
+        <div class="chart-card__header mb-0">
+          <h3 class="chart-card__title">Patient Information</h3>
+        </div>
+      </div>
+      <div class="ma-card-body">
+        <div class="ma-label-value">
+          <span class="ma-label">Consumer Name</span>
+          <span class="ma-value">{{ record()?.consumer_name || '-' }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-6">
+    <div class="ma-card h-100">
+      <div class="ma-card-header">
+        <div class="chart-card__header mb-0">
+          <h3 class="chart-card__title">Provider Information</h3>
+        </div>
+      </div>
+      <div class="ma-card-body">
+        <div class="ma-label-value">
+          <span class="ma-label">Provider Name</span>
+          <span class="ma-value">{{ record()?.provider_name || '-' }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Service Information -->
+  <div class="col-lg-6">
+    <div class="ma-card h-100">
+      <div class="ma-card-header">
+        <div class="chart-card__header mb-0">
+          <h3 class="chart-card__title">Service Information</h3>
+        </div>
+      </div>
+      <div class="ma-card-body">
+        <div class="ma-detail-list">
+          <div class="ma-detail-row">
+            <span class="ma-detail-row__label">Service ID</span>
+            <span class="ma-detail-row__value">{{ record()?.service_id || '-' }}</span>
+          </div>
+          <div class="ma-detail-row">
+            <span class="ma-detail-row__label">Service Date</span>
+            <span class="ma-detail-row__value">{{ record()?.service_date ? (record()?.service_date | date: 'MM-dd-yyyy') : '-' }}</span>
+          </div>
+          <div class="ma-detail-row">
+            <span class="ma-detail-row__label">Service Type</span>
+            <span class="ma-detail-row__value">{{ record()?.service_type || '-' }}</span>
+          </div>
+          <div class="ma-detail-row">
+            <span class="ma-detail-row__label">CPT Code</span>
+            <span class="ma-detail-row__value">{{ record()?.cpt_code || '-' }}</span>
+          </div>
+          <div class="ma-detail-row">
+            <span class="ma-detail-row__label">Modifier</span>
+            <span class="ma-detail-row__value">{{ record()?.modifier || '-' }}</span>
+          </div>
+          <div class="ma-detail-row">
+            <span class="ma-detail-row__label">Program</span>
+            <span class="ma-detail-row__value">{{ record()?.program || '-' }}</span>
+          </div>
+          <div class="ma-detail-row">
+            <span class="ma-detail-row__label">Location</span>
+            <span class="ma-detail-row__value">{{ record()?.location || '-' }}</span>
+          </div>
+          <div class="ma-detail-row">
+            <span class="ma-detail-row__label">Recipient</span>
+            <span class="ma-detail-row__value">{{ record()?.recipient || '-' }}</span>
+          </div>
+          <div class="ma-detail-row">
+            <span class="ma-detail-row__label">Duration</span>
+            <span class="ma-detail-row__value">{{ record()?.duration != null ? (record()?.duration + ' min') : '-' }}</span>
+          </div>
+          <div class="ma-detail-row">
+            <span class="ma-detail-row__label">Base Units</span>
+            <span class="ma-detail-row__value">{{ record()?.base_units ?? '-' }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Billing Information -->
+  <div class="col-lg-6">
+    <div class="ma-card h-100">
+      <div class="ma-card-header">
+        <div class="chart-card__header mb-0">
+          <h3 class="chart-card__title">Billing Information</h3>
+        </div>
+      </div>
+      <div class="ma-card-body">
+        <div class="ma-detail-list">
+          <div class="ma-detail-row">
+            <span class="ma-detail-row__label">Base Rate</span>
+            <span class="ma-detail-row__value">{{ record()?.base_rate != null ? ('$' + record()?.base_rate) : '-' }}</span>
+          </div>
+          <div class="ma-detail-row">
+            <span class="ma-detail-row__label">Billing Rate</span>
+            <span class="ma-detail-row__value">{{ record()?.billing_rate != null ? ('$' + record()?.billing_rate) : '-' }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Claim Information + Provider Payment Status -->
+  <div class="col-12">
+    <div class="ma-card">
+      <div class="ma-card-header">
+        <div class="chart-card__header mb-0">
+          <h3 class="chart-card__title">Claim Information</h3>
+        </div>
+      </div>
+      <div class="ma-card-body">
+        <div class="ma-detail-grid">
+          <div class="ma-label-value">
+            <span class="ma-label">Claim ID</span>
+            <span class="ma-value">{{ record()?.claim_id || '-' }}</span>
+          </div>
+          <div class="ma-label-value">
+            <span class="ma-label">Batch Date</span>
+            <span class="ma-value">{{ record()?.batch_date ? (record()?.batch_date | date: 'MM-dd-yyyy') : '-' }}</span>
+          </div>
+          <div class="ma-label-value">
+            <span class="ma-label">Transfer Date</span>
+            <span class="ma-value">{{ record()?.transfer_date ? (record()?.transfer_date | date: 'MM-dd-yyyy') : '-' }}</span>
+          </div>
+          <div class="ma-label-value">
+            <span class="ma-label">Last Insurance Paid</span>
+            <span class="ma-value">{{ record()?.last_insurance_paid != null ? (  record()?.last_insurance_paid) : '-' }}</span>
+          </div>
+          <div class="ma-label-value">
+            <span class="ma-label">Approval User</span>
+            <span class="ma-value">{{ record()?.approval_user || '-' }}</span>
+          </div>
+          <div class="ma-label-value">
+            <span class="ma-label">Approval Date</span>
+            <span class="ma-value">{{ record()?.approval_date ? (record()?.approval_date | date: 'MM-dd-yyyy') : '-' }}</span>
+          </div>
+          <div class="ma-label-value">
+            <span class="ma-label">Status</span>
+            <span class="ma-badge" [class]="record()?.status | badgeClass">{{ record()?.status || '-' }}</span>
+          </div>
+        </div>
+
+        <div class="ma-provider-paid mt-4">
+          <label class="ma-form-label" for="maProviderPaid">Provider Paid <span class="ma-required">*</span></label>
+          @if (perms.can(PERMISSION_MODULE.Claimdata, PERMISSION_ACTION.Update)) {
+            <select
+              id="maProviderPaid"
+              class="form-select"
+              aria-label="Provider Payment Status"
+              [(ngModel)]="selectedPaymentStatus"
+              [class.is-invalid]="isSubmitted() && !selectedPaymentStatus"
+            >
+              @for (opt of paymentStatusOptions; track opt) {
+                <option [value]="opt">{{ opt }}</option>
+              }
+            </select>
+            @if (isSubmitted() && !selectedPaymentStatus) {
+              <div class="invalid-feedback d-block">Provider Payment Status is required.</div>
+            }
+          } @else {
+            <span class="ma-badge" [class]="selectedPaymentStatus | badgeClass">{{ selectedPaymentStatus || '-' }}</span>
+          }
+        </div>
+
+        <div class="ma-btn-group justify-content-end mt-3">
+          <button type="button" class="btn ma-btn btn-outline-primary btn-grey-btn" (click)="cancel()" [disabled]="saving()">
+            Cancel
+          </button>
+          @if (perms.can(PERMISSION_MODULE.Claimdata, PERMISSION_ACTION.Update)) {
+            <button type="button" class="btn ma-btn btn-primary" (click)="saveStatus()" [disabled]="saving()">
+              {{ saving() ? 'Saving…' : 'Save Status' }}
+            </button>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Audit Trail -->
+  <!-- <div class="col-12">
+    <div class="ma-card">
+      <div class="ma-card-header">
+        <div class="chart-card__header mb-0">
+          <h3 class="chart-card__title">Audit Trail</h3>
+        </div>
+      </div>
+      <div class="ma-card-body">
+        <div class="table-responsive ma-table-bnone">
+          <table class="table align-middle ma-data-table">
+            <thead>
+              <tr>
+                <th>Payment Status</th>
+                <th>Updated By</th>
+                <th>Updated Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (entry of record()?.audit_trail ?? []; track entry.updated_at + entry.payment_status) {
+                <tr>
+                  <td>
+                    <span class="ma-badge" [class]="entry.payment_status | badgeClass">{{ entry.payment_status }}</span>
+                  </td>
+                  <td>{{ entry.updated_by_name }}</td>
+                  <td>{{ entry.updated_at | date: 'MM-dd-yyyy h:mm a' }}</td>
+                </tr>
+              } @empty {
+                <tr>
+                  <td colspan="3" class="text-center py-4">No payment status changes have been recorded yet.</td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div> -->
+</div>

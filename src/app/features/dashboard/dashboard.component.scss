@@ -1,0 +1,25 @@
+// Component styles
+
+// Kendo's "No data available" overlay (.k-chart-overlay) uses z-index: 10000,
+// which otherwise escapes above the logout/confirmation modal (z-index ~1050-1055).
+// Isolating this wrapper traps the overlay's stacking inside it.
+//
+// Height lives here (not as an inline style on <kendo-chart>) so it can shrink at
+// narrower widths — an inline height would win over any media query and force the
+// chart to keep a wide-screen aspect ratio, crowding the Jan–Dec labels on mobile.
+.ma-chart-wrap {
+  isolation: isolate;
+  height: 320px;
+}
+
+@media (max-width: 991.98px) {
+  .ma-chart-wrap {
+    height: 260px;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .ma-chart-wrap {
+    height: 220px;
+  }
+}

@@ -1,0 +1,21 @@
+// Fit the non-scrollable grid to the viewport: with a fixed table layout the
+// declared column widths act as proportional weights inside 100% width, so an
+// unbroken long value (e.g. a provider name with no spaces) can't force the
+// column—and the whole table—to blow out. Cell text is clamped to one line via
+// .k-text-ellipsis in the template, with the full value shown on hover via tooltip.
+:host ::ng-deep .ma-master-table--claim-analyst {
+  table {
+    table-layout: fixed;
+    width: 100%;
+  }
+
+  th .k-column-title {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  td {
+    overflow: hidden;
+  }
+}

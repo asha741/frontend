@@ -1,0 +1,94 @@
+/* ==========================================================================
+   BUTTONS
+   ========================================================================== */
+
+.ma-btn {
+    padding: 10px 20px;
+    font-size: $font14;
+    font-weight: $fontMedium;
+    border-radius: $borderRadius4;
+    @include maTransition();
+
+    &.btn-primary {
+        color: $white;
+        white-space: nowrap;
+        &:hover,&:focus {
+            background-color: rgba($primary, .9);
+            box-shadow: $btnShadow;
+            color: $white;
+        }
+    }
+    &.btn-outline-primary {
+        color: $primary;
+        border-color: rgba($darkBlueV2, .15);
+        background: rgba($darkBlueV2, .05);
+        &:hover,&:focus {
+            box-shadow: none;
+            background-color: $primary;
+            color: $white;
+            border-color: $primary;
+        }
+        &.btn-grey-btn {
+            background-color: rgba($gray, .02);
+            color: $dark;
+            border-color: rgba($gray, .3);
+            &:hover,&:focus {
+                box-shadow: none;
+                background-color: rgba($primary, .02);
+                color: $primary;
+                border-color: $primary;
+            }
+        }
+        .ma-grey-text {
+            color: $textSecondary;
+            font-size: $font12;
+            font-weight: $fontMedium;
+        }
+    }
+    &.btn-sm {
+        min-height: 32px;
+        padding: 4px 12px;
+        font-weight: $fontMedium;
+    }
+}
+
+/* ==========================================================================
+   ICON BUTTON
+   ========================================================================== */
+
+.ma-btn-icon {
+    @include maFlex(center, center);
+    width: 48px;
+    height: 48px;
+    padding: 0;
+    flex-shrink: 0;
+    i,
+    svg {
+        font-size: $font18;
+    }
+}
+
+/* ==========================================================================
+   BUTTON GROUP
+   ========================================================================== */
+
+.ma-btn-group {
+    @include maFlex(flex-end, center);
+    flex-wrap: wrap;
+    gap: 12px;
+}
+
+/* ==========================================================================
+   BUTTON UTILITIES
+   ========================================================================== */
+.ma-btn-icon-sm {
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    border-radius: $borderRadius6;
+    @include maFlex(center, center);
+    i,
+    svg {
+        font-size: $font16;
+    }
+}

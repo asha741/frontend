@@ -1,0 +1,59 @@
+// Component styles
+
+// Change-password eye toggle button (mirrors the login eye icon).
+.ma-password-toggle {
+  cursor: pointer;
+  background-color: #fff;
+  color: #6c757d;
+
+  &:hover,
+  &:focus {
+    color: #212529;
+  }
+}
+
+// Section heading inside the Profile Details form ("Organization Details",
+// "Contact Person Details") — a bold label with a divider underneath, so the
+// org-admin-only block reads as a distinct group from the rest of the form.
+.ma-profile-section__title {
+  margin: 0 0 16px;
+  padding-bottom: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #212529;
+  border-bottom: 1px solid #e9ecef;
+}
+
+// The org logo reuses the sidebar's circular avatar-wrap component, but sits
+// beside the "Organization Image" label instead of centered above a name —
+// undo the center-column margin so it aligns with the label next to it.
+.ma-org-logo-wrap {
+  margin: 0;
+}
+
+// Org logo reads better square than circular — override the shared
+// avatar's circular radius with a small rounded-corner radius instead.
+.ma-org-logo-wrap .ma-profile-card__avatar {
+  border-radius: 12px;
+}
+
+// Breathing room from the card edge so the logo doesn't sit flush left.
+.ma-org-image-col {
+  padding-left: 12px;
+}
+
+// Icon on the left, "Organization Image" label + hint on the right,
+// vertically centered against the logo so the row reads as one field.
+.ma-org-image-field {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+// Divider between the image field and the Organization Name field so the
+// two read as distinct fields in the same row, not one run-on block.
+@media (min-width: 768px) {
+  .ma-org-name-field {
+    border-left: 1px solid #e9ecef;
+  }
+}

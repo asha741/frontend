@@ -1,0 +1,345 @@
+<!-- Every style for this page is scoped under `.reports-page` in the global
+     stylesheet, so this wrapper must stay. It's a div, not a <main> — the admin
+     layout already provides `<main class="ma-content">` around this outlet. -->
+<div class="reports-page">
+  <div class="ma-page-header">
+    <div>
+      <h2 class="ma-page-title">Reports & Analytics</h2>
+      <p class="ma-page-subtitle">Organization-wide compliance reporting and analysis</p>
+    </div>
+  </div>
+
+  <!-- SECTION 1: GLOBAL FILTERS -->
+  <div class="ma-card mb-4">
+    <div class="ma-card-header">
+      <div class="ma-card-title-wrap mb-0">
+        <h3 class="ma-card-title">Global Filters</h3>
+      </div>
+    </div>
+    <div class="ma-card-body">
+      <div class="row align-items-start justify-content-center g-3">
+        <div class="col-sm-4 col-md-4 col-lg-3 col-xl-2 col-xxl">
+          <div class="ma-form-group mb-0">
+            <label class="ma-form-label" for="filterYear">Year</label>
+            <select class="form-select" id="filterYear" name="filterYear"
+                    [(ngModel)]="year" (ngModelChange)="onYearChange()">
+              <option value="">Year</option>
+              @for (y of years; track y) {
+                <option [value]="y">{{ y }}</option>
+              }
+            </select>
+          </div>
+        </div>
+        <div class="col-sm-4 col-md-4 col-lg-3 col-xl-2 col-xxl">
+          <div class="ma-form-group mb-0">
+            <label class="ma-form-label" for="filterMonth">Month</label>
+            <select class="form-select" id="filterMonth" name="filterMonth"
+                    [(ngModel)]="month" (ngModelChange)="onMonthChange()" [disabled]="!year">
+              <option value="">Month</option>
+              @for (m of months; track m) {
+                <option [value]="m">{{ m }}</option>
+              }
+            </select>
+          </div>
+        </div>
+        <div class="col-sm-4 col-md-4 col-lg-3 col-xl-2 col-xxl">
+          <div class="ma-form-group mb-0">
+            <label class="ma-form-label" for="filterWeek">Week</label>
+            <select class="form-select" id="filterWeek" name="filterWeek"
+                    [(ngModel)]="week" (ngModelChange)="onWeekChange()" [disabled]="!month">
+              <option value="">Week</option>
+              @for (w of weeks; track w) {
+                <option [value]="w">{{ w }}</option>
+              }
+            </select>
+          </div>
+        </div>
+        <div class="col-sm-12 col-xl-auto">
+          <div class="ma-form-group mb-0">
+            <label class="ma-form-label ma-visually-hidden-label" aria-hidden="true">&nbsp;</label>
+            <span class="ma-filter-sep"><span class="ma-white-bg">OR</span></span>
+          </div>
+        </div>
+        <div class="col-sm-6 col-md-4 col-lg-3 col-xl-2">
+          <div class="ma-form-group mb-0">
+            <label class="ma-form-label ma-visually-hidden-label" for="filterFromDate" aria-hidden="true">&nbsp;</label>
+            <div class="ma-input-group is-calendar ma-filter-item ma-filter-item--date w-100">
+              <input
+                id="filterFromDate"
+                class="form-control bg-white"
+                placeholder="From date"
+                aria-label="From date"
+                name="filterFromDate"
+                readonly
+                ngbDatepicker
+                container="body"
+                #fromPicker="ngbDatepicker"
+                [(ngModel)]="fromDate"
+                [maxDate]="$any(toDate)"
+                (click)="fromPicker.toggle()"
+              />
+              <i
+                class="fa-regular fa-calendar ma-input-icon"
+                role="button"
+                aria-label="Open from-date picker"
+                (click)="fromPicker.toggle()"
+              ></i>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-6 col-md-4 col-lg-3 col-xl-2">
+          <div class="ma-form-group mb-0">
+            <label class="ma-form-label ma-visually-hidden-label" for="filterToDate" aria-hidden="true">&nbsp;</label>
+            <div class="ma-input-group is-calendar ma-filter-item ma-filter-item--date w-100">
+              <input
+                id="filterToDate"
+                class="form-control bg-white"
+                placeholder="To date"
+                aria-label="To date"
+                name="filterToDate"
+                readonly
+                ngbDatepicker
+                container="body"
+                #toPicker="ngbDatepicker"
+                [(ngModel)]="toDate"
+                [minDate]="$any(fromDate)"
+                (click)="toPicker.toggle()"
+              />
+              <i
+                class="fa-regular fa-calendar ma-input-icon"
+                role="button"
+                aria-label="Open to-date picker"
+                (click)="toPicker.toggle()"
+              ></i>
+            </div>
+          </div>
+        </div>
+
+        <!-- The date range applies on Search, not on each pick — see
+             applyDateRange(). The OR separator, date inputs, and buttons carry
+             a visually-hidden label matching Year/Month/Week's real label, so
+             all six filter items line up on the same baseline at every
+             breakpoint instead of only above xl. -->
+        <div class="col-12 col-lg-auto">
+          <div class="ma-form-group mb-0">
+            <label class="ma-form-label ma-visually-hidden-label" aria-hidden="true">&nbsp;</label>
+            <div class="d-flex gap-2">
+              <button type="button" class="btn ma-btn btn-primary" (click)="applyDateRange()">
+                Search
+              </button>
+              <button type="button" class="btn ma-btn btn-outline-primary btn-grey-btn" (click)="resetFilters()">
+                Reset
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 2: ORGANIZATION SUMMARY REPORT -->
+  <div class="ma-card mb-4">
+    <div class="ma-card-header">
+      <div class="d-flex justify-content-between align-items-center gap-2 flex-wrap">
+        <div class="ma-card-title-wrap mb-0">
+          <h3 class="ma-card-title">Organization Summary Report</h3>
+        </div>
+        @if (perms.can(PERMISSION_MODULE.Reports, PERMISSION_ACTION.Export)) {
+          <div class="ma-btn-group">
+            <button type="button" class="btn ma-btn btn-outline-primary btn-grey-btn btn-sm"
+                    [disabled]="exporting()" (click)="exportSummary('pdf')">
+              Export PDF <i class="ms-1 fa-solid fa-file-pdf"></i>
+            </button>
+            <button type="button" class="btn ma-btn btn-outline-primary btn-grey-btn btn-sm"
+                    [disabled]="exporting()" (click)="exportSummary('excel')">
+              Export Excel <i class="ms-1 fa-solid fa-file-excel"></i>
+            </button>
+          </div>
+        }
+      </div>
+    </div>
+    <div class="ma-card-body">
+      <div class="row g-4">
+        <!-- Summary Stats 2x2 -->
+        <div class="col-lg-5">
+          <div class="row g-3">
+            <div class="col-6">
+              <article class="ma-stat-card">
+                <span class="ma-stat-icon ma-is-blue">
+                  <img src="assets/images/icons/claim-total.svg" alt="Total Claims Icon" class="ma-svg" />
+                </span>
+                <span class="ma-stat-label">Total Claims</span>
+                <span class="ma-stat-value">{{ summary()?.total_claims ?? 0 }}</span>
+              </article>
+            </div>
+            <div class="col-6">
+              <article class="ma-stat-card">
+                <span class="ma-stat-icon ma-is-green_v2">
+                  <img src="assets/images/icons/active.svg" alt="Passed Claims Icon" class="ma-svg" />
+                </span>
+                <span class="ma-stat-label">Passed Claims</span>
+                <span class="ma-stat-value">{{ summary()?.passed ?? 0 }}</span>
+              </article>
+            </div>
+            <div class="col-6">
+              <article class="ma-stat-card">
+                <span class="ma-stat-icon ma-is-danger">
+                  <img src="assets/images/icons/failed.svg" alt="Failed Claims Icon" class="ma-svg" />
+                </span>
+                <span class="ma-stat-label">Failed Claims</span>
+                <span class="ma-stat-value">{{ summary()?.failed ?? 0 }}</span>
+              </article>
+            </div>
+            <div class="col-6">
+              <article class="ma-stat-card">
+                <span class="ma-stat-icon ma-is-skyblue">
+                  <img src="assets/images/icons/up-graph.svg" alt="Pass Rate Icon" class="ma-svg" />
+                </span>
+                <span class="ma-stat-label">Pass Rate %</span>
+                <span class="ma-stat-value">{{ summary()?.pass_rate ?? 0 }}%</span>
+              </article>
+            </div>
+          </div>
+        </div>
+
+        <!-- Top Failing Rules -->
+        <div class="col-lg-7">
+          <div class="ma-failing-rules">
+            <h4 class="ma-failing-rules-title">Top Failing Rules</h4>
+            @if (topFailingRules().length) {
+              <ul class="ma-rule-list" role="list">
+                @for (rule of topFailingRules(); track rule.rule_name) {
+                  <li class="ma-rule-item">
+                    <span class="ma-rule-name">{{ rule.rule_name }}</span>
+                    <span class="ma-rule-count">
+                      <img src="assets/images/icons/down-graph.svg" alt="Down Graph Icon" class="ma-svg" />
+                      {{ rule.failure_count }} Failures
+                    </span>
+                  </li>
+                }
+              </ul>
+            } @else {
+              <p class="text-muted mb-0">No failing rules for the selected period.</p>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 3: REPORT TABLES -->
+  <div class="row g-4">
+    <!-- Employee Performance Report -->
+    <div class="col-xxl-12">
+      <div class="ma-card">
+        <div class="ma-card-header">
+          <div class="d-flex justify-content-between align-items-center gap-2 flex-wrap">
+            <div class="ma-card-title-wrap mb-0">
+              <h3 class="ma-card-title">Employee Performance Report</h3>
+            </div>
+            @if (perms.can(PERMISSION_MODULE.Reports, PERMISSION_ACTION.Export)) {
+              <div class="ma-btn-group">
+                <button type="button" class="btn ma-btn btn-outline-primary btn-grey-btn btn-sm"
+                        [disabled]="exporting()" (click)="exportEmployeePerformance('pdf')">
+                  Export PDF <i class="ms-1 fa-solid fa-file-pdf"></i>
+                </button>
+                <button type="button" class="btn ma-btn btn-outline-primary btn-grey-btn btn-sm"
+                        [disabled]="exporting()" (click)="exportEmployeePerformance('excel')">
+                  Export Excel <i class="ms-1 fa-solid fa-file-excel"></i>
+                </button>
+              </div>
+            }
+          </div>
+        </div>
+        <kendo-grid
+          class="ma-kendo-grid table"
+          [data]="employeeData()"
+          [pageSize]="employeeState.take"
+          [skip]="employeeState.skip"
+          [pageable]="{ buttonCount: 3, type: 'numeric', pageSizes: pageSizes }"
+          [scrollable]="'none'"
+          (dataStateChange)="employeeStateChange($event)"
+        >
+          <kendo-grid-column field="employee_name" title="Employee Name" [width]="200">
+            <ng-template kendoGridCellTemplate let-dataItem>{{ dataItem.employee_name || '-' }}</ng-template>
+          </kendo-grid-column>
+          <kendo-grid-column field="credentials" title="Credentials" [width]="160">
+            <ng-template kendoGridCellTemplate let-dataItem>{{ dataItem.credentials || '-' }}</ng-template>
+          </kendo-grid-column>
+          <kendo-grid-column field="claims_reviewed" title="Claims Reviewed" [width]="150">
+            <ng-template kendoGridCellTemplate let-dataItem>{{ dataItem.claims_reviewed ?? 0 }}</ng-template>
+          </kendo-grid-column>
+          <kendo-grid-column field="pass_rate" title="Pass Rate" [width]="120">
+            <ng-template kendoGridCellTemplate let-dataItem>
+              <span class="ma-badge" [class]="(dataItem.pass_rate ?? 0) | badgeClass: 'passRate'">
+                {{ dataItem.pass_rate ?? 0 }}%
+              </span>
+            </ng-template>
+          </kendo-grid-column>
+          <kendo-grid-column field="most_common_failure" title="Most Common Failure" [width]="220">
+            <ng-template kendoGridCellTemplate let-dataItem>{{ dataItem.most_common_failure || '-' }}</ng-template>
+          </kendo-grid-column>
+
+          <ng-template kendoGridNoRecordsTemplate>
+            No employee performance data for the selected period.
+          </ng-template>
+        </kendo-grid>
+      </div>
+    </div>
+
+    <!-- Rule Failure Analysis -->
+    <div class="col-xxl-12">
+      <div class="ma-card">
+        <div class="ma-card-header">
+          <div class="d-flex justify-content-between align-items-center gap-2 flex-wrap">
+            <div class="ma-card-title-wrap mb-0">
+              <h3 class="ma-card-title">Rule Failure Analysis</h3>
+            </div>
+            @if (perms.can(PERMISSION_MODULE.Reports, PERMISSION_ACTION.Export)) {
+              <div class="ma-btn-group">
+                <button type="button" class="btn ma-btn btn-outline-primary btn-grey-btn btn-sm"
+                        [disabled]="exporting()" (click)="exportRuleFailures('pdf')">
+                  Export PDF <i class="ms-1 fa-solid fa-file-pdf"></i>
+                </button>
+                <button type="button" class="btn ma-btn btn-outline-primary btn-grey-btn btn-sm"
+                        [disabled]="exporting()" (click)="exportRuleFailures('excel')">
+                  Export Excel <i class="ms-1 fa-solid fa-file-excel"></i>
+                </button>
+              </div>
+            }
+          </div>
+        </div>
+        <kendo-grid
+          class="ma-kendo-grid table"
+          [data]="ruleData()"
+          [pageSize]="ruleState.take"
+          [skip]="ruleState.skip"
+          [pageable]="{ buttonCount: 3, type: 'numeric', pageSizes: pageSizes }"
+          [scrollable]="'none'"
+          (dataStateChange)="ruleStateChange($event)"
+        >
+          <kendo-grid-column field="rule_id" title="Rule ID" [width]="140">
+            <ng-template kendoGridCellTemplate let-dataItem>{{ dataItem.rule_id || '-' }}</ng-template>
+          </kendo-grid-column>
+          <kendo-grid-column field="rule_name" title="Rule Name" [width]="280">
+            <ng-template kendoGridCellTemplate let-dataItem>{{ dataItem.rule_name || '-' }}</ng-template>
+          </kendo-grid-column>
+          <kendo-grid-column field="pass_count" title="Pass Count" [width]="130">
+            <ng-template kendoGridCellTemplate let-dataItem>
+              <span class="ma-count ma-count--pass">{{ dataItem.pass_count ?? 0 }}</span>
+            </ng-template>
+          </kendo-grid-column>
+          <kendo-grid-column field="fail_count" title="Fail Count" [width]="130">
+            <ng-template kendoGridCellTemplate let-dataItem>
+              <span class="ma-count ma-count--fail">{{ dataItem.fail_count ?? 0 }}</span>
+            </ng-template>
+          </kendo-grid-column>
+
+          <ng-template kendoGridNoRecordsTemplate>
+            No rule failure data for the selected period.
+          </ng-template>
+        </kendo-grid>
+      </div>
+    </div>
+  </div>
+</div>

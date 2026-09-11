@@ -1,0 +1,144 @@
+<section class="ma-filter-wrap">
+  <div class="row g-2 align-items-center ma-filter-grid">
+    <div class="col-12 col-lg-3">
+      <div class="ma-input-group ma-filter-item ma-filter-item--search">
+        <i class="fa-solid fa-magnifying-glass ma-input-icon"></i>
+        <input
+          type="text"
+          class="form-control"
+          placeholder="Search"
+          aria-label="Search documents"
+          [(ngModel)]="search"
+          appTrimWhitespace
+          maxlength="100"
+          (keydown.enter)="onSearch()"
+        />
+      </div>
+    </div>
+
+    <div class="col-12 col-sm-6 col-lg-2">
+      <div class="ma-input-group is-calendar ma-filter-item ma-filter-item--date">
+        <input
+          class="form-control bg-white"
+          placeholder="From date"
+          aria-label="From date"
+          name="docsDateFrom"
+          readonly
+          ngbDatepicker
+          #fromPicker="ngbDatepicker"
+          [(ngModel)]="fromDate"
+          [maxDate]="$any(toDate)"
+          (click)="fromPicker.toggle()"
+        />
+        <i class="fa-regular fa-calendar ma-input-icon" role="button" aria-label="Open from-date picker" (click)="fromPicker.toggle()"></i>
+      </div>
+    </div>
+
+    <div class="col-12 col-sm-6 col-lg-2">
+      <div class="ma-input-group is-calendar ma-filter-item ma-filter-item--date">
+        <input
+          class="form-control bg-white"
+          placeholder="To date"
+          aria-label="To date"
+          name="docsDateTo"
+          readonly
+          ngbDatepicker
+          #toPicker="ngbDatepicker"
+          [(ngModel)]="toDate"
+          [minDate]="$any(fromDate)"
+          (click)="toPicker.toggle()"
+        />
+        <i class="fa-regular fa-calendar ma-input-icon" role="button" aria-label="Open to-date picker" (click)="toPicker.toggle()"></i>
+      </div>
+    </div>
+
+    <div class="col-12 col-lg-auto d-flex gap-2">
+      <button type="button" class="btn ma-btn btn-primary" (click)="onSearch()" style="min-height: 45px; padding: 0 20px">
+        Search
+      </button>
+      <button type="button" class="btn ma-btn btn-outline-secondary" (click)="clearSearch()" style="min-height: 45px; padding: 0 20px">
+        Reset
+      </button>
+    </div>
+  </div>
+</section>
+
+<section class="ma-surface-card ma-users-section-card ma-user-list-card mt-4">
+  <div class="table-responsive">
+    <kendo-grid
+      class="ma-kendo-grid table ma-master-table--patient-documents"
+      [data]="documentsData()"
+      [pageSize]="state.take"
+      [skip]="state.skip"
+      [sortable]="true"
+      [sort]="state.sort"
+      filterable="menu"
+      [filter]="state.filter"
+      [pageable]="{ buttonCount: 3, type: 'numeric', pageSizes: pageSizes }"
+      [scrollable]="'none'"
+      (dataStateChange)="dataStateChange($event)"
+    >
+      <kendo-grid-column title="Sr. No." [width]="80" [filterable]="false" [sortable]="false">
+        <ng-template kendoGridCellTemplate let-rowIndex="rowIndex">
+          {{ rowIndex + 1 }}
+        </ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column field="doc_type" title="Document Type" [width]="180" [sortable]="false">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div class="ma-cell-wrap" [ngbTooltip]="dataItem.doc_type">{{ dataItem.doc_type || '-' }}</div>
+        </ng-template>
+        <ng-template
+          kendoGridFilterMenuTemplate
+          let-filter
+          let-column="column"
+          let-filterService="filterService"
+        >
+          <dropdownlist-filter
+            [isPrimitive]="true"
+            [field]="column.field"
+            [currentFilter]="filter"
+            [filterService]="filterService"
+            textField="label"
+            valueField="value"
+            [data]="documentTypeOptions"
+          >
+          </dropdownlist-filter>
+        </ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column field="document_name" title="Document Name" [width]="220" [filterable]="false" [sortable]="true">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div class="ma-cell-wrap" [ngbTooltip]="dataItem.document_name">{{ dataItem.document_name || '-' }}</div>
+        </ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column field="upload_date" title="Upload Date" [width]="150" [filterable]="false" [sortable]="true">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          {{ dataItem.upload_date ? (dataItem.upload_date | date: 'MM-dd-yyyy') : '' }}
+        </ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column title="Action" [width]="90" [filterable]="false" [sortable]="false">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div class="ma-table-actions">
+            <button
+              class="ma-btn-icon-sm"
+              type="button"
+              ngbTooltip="View"
+              placement="top"
+              [attr.aria-label]="'View ' + (dataItem.document_name || '')"
+              (click)="viewDocument(dataItem)"
+            >
+              <i class="fa-regular fa-eye"></i>
+            </button>
+          </div>
+        </ng-template>
+      </kendo-grid-column>
+
+      <ng-template kendoGridNoRecordsTemplate>
+        <div class="ma-grid-empty">No documents are available for this patient.</div>
+      </ng-template>
+    </kendo-grid>
+  </div>
+</section>

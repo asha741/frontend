@@ -1,0 +1,163 @@
+.ma-upload-box {
+  cursor: pointer;
+
+  input[type='file'] {
+    display: none;
+  }
+
+  &.is-disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+}
+
+.ma-file-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+// Selected-file row: [icon] [name / size] ............... [remove]
+// Same markup/styling as `claim-data-list/claim-import`'s upload preview row.
+.ma-file-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  transition: border-color 0.2s ease;
+
+  &:hover {
+    border-color: rgba(74, 118, 253, 0.35);
+  }
+}
+
+.ma-file-row__icon {
+  flex: 0 0 auto;
+  font-size: 20px;
+  line-height: 1;
+  color: #10b981;
+}
+
+.ma-file-row__meta {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ma-file-row__name {
+  font-size: 13px;
+  font-weight: 500;
+  color: #0f172a;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ma-file-row__size {
+  font-size: 12px;
+  color: #64748b;
+}
+
+.ma-file-row__remove {
+  flex: 0 0 auto;
+  width: 30px;
+  height: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: #fef2f2;
+    border-color: #dc3545;
+    color: #dc3545;
+  }
+}
+
+::ng-deep .ma-kendo-grid {
+  height: auto !important;
+  max-height: none !important;
+
+  .k-grid-content,
+  .k-grid-content-locked {
+    overflow-y: visible !important;
+    height: auto !important;
+    max-height: none !important;
+  }
+}
+
+:host ::ng-deep .ma-master-table--bulk-upload-documents,
+:host ::ng-deep .ma-master-table--bulk-upload-extract {
+  table {
+    table-layout: fixed;
+    width: 100%;
+  }
+
+  th .k-column-title {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+:host ::ng-deep .ma-master-table--bulk-upload-extract {
+  // Kendo draws a full 1px inset box-shadow border around every cellRowspan
+  // (grouped) cell by default (`.k-table-td-row-span`), even though normal
+  // body cells in this grid have no border at all — that boxed outline is
+  // the "extra border" around grouped patient rows.
+  .k-table-td-row-span {
+    box-shadow: none;
+  }
+
+  // A group's first physical row already gets the normal Patient/Provider
+  // column divider (Provider Name is genuinely the 2nd `<td>` there, next
+  // to the rowspan cell). A group's later rows don't render the merged
+  // Sr. No./Patient Name cells at all, so this grid's 7 columns collapse to
+  // 5 `<td>`s there and Provider Name becomes that row's literal
+  // `:first-child` — losing its left border to Kendo's own `:first-child {
+  // border-inline-start-width: 0 }` rule. Restore it only on those
+  // continuation rows (detected by the missing 6th/7th cell — every column
+  // still carries a `rowspan` attribute, even at value "1", so `[rowspan]`
+  // alone can't tell rows apart), so the divider reads consistently from a
+  // group's 2nd row onward without adding a stray line on a single-row
+  // "group" (which keeps all 7 cells, including Sr. No./Patient Name).
+  tr.k-table-row:not(:has(td:nth-child(7))) > td:first-child {
+    border-inline-start-width: 1px;
+    border-inline-start-style: solid;
+    border-inline-start-color: var(--kendo-color-border, #d1d5db);
+  }
+}
+
+.ma-status-info-icon {
+  margin-left: 6px;
+  color: var(--bs-danger, #dc3545);
+  cursor: pointer;
+}
+
+.ma-cell-wrap {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  white-space: normal;
+  overflow-wrap: break-word;
+  word-break: normal;
+  line-height: 1.3;
+}
+
+.table-responsive {
+  overflow-y: visible !important;
+  height: auto !important;
+  max-height: none !important;
+}

@@ -1,0 +1,216 @@
+<div class="ma-page-header">
+  <div class="ma-page-header__meta">
+    <h2 class="ma-page-title">Claim's Data List</h2>
+    <p class="ma-page-subtitle">Central management for all uploaded claims files.</p>
+  </div>
+</div>
+
+<!-- ══ Filters ═══════════════════════════════════════════════════════ -->
+<section class="ma-filter-wrap mt-3">
+  <div class="row g-2 align-items-center ma-filter-grid">
+    <!-- Search input -->
+    <div class="col-12 col-lg-4">
+      <div class="ma-input-group ma-filter-item ma-filter-item--search">
+        <i class="fa-solid fa-magnifying-glass ma-input-icon"></i>
+        <input
+          type="text"
+          class="form-control"
+          placeholder="Search"
+          aria-label="Search claim batches"
+          [(ngModel)]="search"
+          appTrimWhitespace
+          maxlength="100"
+          (keydown.enter)="onSearch()"
+        />
+      </div>
+    </div>
+
+    <!-- Uploaded Date From -->
+    <div class="col-12 col-sm-6 col-lg-2">
+      <div class="ma-input-group is-calendar ma-filter-item ma-filter-item--date">
+        <input
+          id="dateFrom"
+          class="form-control bg-white"
+          placeholder="From date"
+          aria-label="From date"
+          name="dateFrom"
+          readonly
+          ngbDatepicker
+          #fromPicker="ngbDatepicker"
+          [(ngModel)]="fromDate"
+          [maxDate]="$any(toDate)"
+          (click)="fromPicker.toggle()"
+        />
+        <i
+          class="fa-regular fa-calendar ma-input-icon"
+          role="button"
+          aria-label="Open from-date picker"
+          (click)="fromPicker.toggle()"
+        ></i>
+      </div>
+    </div>
+
+    <!-- Uploaded Date To -->
+    <div class="col-12 col-sm-6 col-lg-2">
+      <div class="ma-input-group is-calendar ma-filter-item ma-filter-item--date">
+        <input
+          id="dateTo"
+          class="form-control bg-white"
+          placeholder="To date"
+          aria-label="To date"
+          name="dateTo"
+          readonly
+          ngbDatepicker
+          #toPicker="ngbDatepicker"
+          [(ngModel)]="toDate"
+          [minDate]="$any(fromDate)"
+          (click)="toPicker.toggle()"
+        />
+        <i
+          class="fa-regular fa-calendar ma-input-icon"
+          role="button"
+          aria-label="Open to-date picker"
+          (click)="toPicker.toggle()"
+        ></i>
+      </div>
+    </div>
+
+    <!-- Search & Reset buttons -->
+    <div class="col-12 col-lg-auto d-flex gap-2">
+      <button type="button" class="btn ma-btn btn-primary" (click)="onSearch()" style="min-height: 45px; padding: 0 20px">
+        Search
+      </button>
+      <button type="button" class="btn ma-btn btn-outline-secondary" (click)="clearSearch()" style="min-height: 45px; padding: 0 20px">
+        Reset
+      </button>
+    </div>
+
+    <!-- Actions -->
+    <div class="col-12 col-lg-auto ms-lg-auto d-flex gap-2">
+      <!-- Split button: one Sample File, a menu for the format. -->
+      <div class="dropdown">
+        <button
+          type="button"
+          class="btn ma-btn btn-outline-primary btn-grey-btn dropdown-toggle"
+          style="min-height: 45px"
+          data-bs-toggle="dropdown"
+          aria-expanded="false"
+          aria-label="Download sample file"
+          [disabled]="downloading()"
+        >
+          {{ downloading() ? 'Downloading…' : 'Sample File' }}
+          <i class="fa-solid fa-download ms-2"></i>
+        </button>
+        <ul class="dropdown-menu ma-dropdown-menu">
+          <li>
+            <button class="dropdown-item" type="button" (click)="downloadSampleTemplate('csv')">
+              <i class="fa-solid fa-file-csv me-2"></i> CSV (.csv)
+            </button>
+          </li>
+          <li>
+            <button class="dropdown-item" type="button" (click)="downloadSampleTemplate('xlsx')">
+              <i class="fa-solid fa-file-excel me-2"></i> Excel (.xlsx)
+            </button>
+          </li>
+        </ul>
+      </div>
+
+      @if (perms.can(PERMISSION_MODULE.Claimdata, PERMISSION_ACTION.Create)) {
+        <a
+          routerLink="/claim-data-list/import"
+          class="btn ma-btn btn-outline-primary btn-grey-btn"
+          aria-label="Import Claim Data"
+          style="white-space: nowrap; min-height: 45px"
+        >
+          Import <i class="fa-solid fa-file-import ms-2" aria-hidden="true"></i>
+        </a>
+      }
+    </div>
+  </div>
+</section>
+
+<!-- ══ Batches grid ══════════════════════════════════════════════════ -->
+<section class="ma-surface-card ma-users-section-card ma-user-list-card mt-4">
+  <div class="table-responsive">
+    <kendo-grid
+      class="ma-kendo-grid table ma-master-table--claim-data-list"
+      [data]="batchesData()"
+      [pageSize]="state.take"
+      [skip]="state.skip"
+      [sortable]="true"
+      [sort]="state.sort"
+      filterable="menu"
+      [filter]="state.filter"
+      [pageable]="{ buttonCount: 3, type: 'numeric', pageSizes: pageSizes }"
+      [scrollable]="'none'"
+      (dataStateChange)="dataStateChange($event)"
+    >
+      <!-- ── Sr. No. ──────────────────────────────────────────────── -->
+      <kendo-grid-column title="Sr. No." [width]="80" [filterable]="false" [sortable]="false">
+        <ng-template kendoGridCellTemplate let-rowIndex="rowIndex">
+          {{ rowIndex + 1 }}
+        </ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column field="file_title" title="File Title" [width]="200" [filterable]="false">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div class="ma-cell-wrap" [ngbTooltip]="dataItem.file_title">{{ dataItem.file_title || '-' }}</div>
+        </ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column field="year" title="Year" [width]="100" [filterable]="false">
+        <ng-template kendoGridCellTemplate let-dataItem>{{ dataItem.year || '-' }}</ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column field="month" title="Month" [width]="120" [filterable]="false">
+        <ng-template kendoGridCellTemplate let-dataItem>{{ dataItem.month || '-' }}</ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column field="status" title="Status" [width]="130" [sortable]="false" [filterable]="false">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <span class="ma-badge" [class]="dataItem.status | badgeClass">{{ dataItem.status || '-' }}</span>
+        </ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column field="total_providers" title="Total Providers" [width]="150" [filterable]="false">
+        <ng-template kendoGridCellTemplate let-dataItem>{{ dataItem.total_providers ?? '-' }}</ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column field="total_claim_data" title="Total Claim Data" [width]="150" [filterable]="false">
+        <ng-template kendoGridCellTemplate let-dataItem>{{ dataItem.total_claim_data ?? '-' }}</ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column field="total_patients" title="Total Patients" [width]="150" [filterable]="false">
+        <ng-template kendoGridCellTemplate let-dataItem>{{ dataItem.total_patients ?? '-' }}</ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column field="uploaded_at" title="Uploaded Date" [width]="160" [filterable]="false">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          {{ dataItem.uploaded_at ? (dataItem.uploaded_at | date: 'MM-dd-yyyy') : '' }}
+        </ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column title="Actions" [width]="100" [filterable]="false" [sortable]="false">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div class="ma-table-actions">
+            <button
+              class="ma-btn-icon-sm"
+              type="button"
+              [ngbTooltip]="isBatchViewable(dataItem) ? 'View' : 'Analysis is available once processing completes'"
+              placement="top"
+              [disabled]="!isBatchViewable(dataItem)"
+              [attr.aria-label]="'View ' + (dataItem.file_title || '')"
+              (click)="viewBatch(dataItem)"
+            >
+              <i class="fa-regular fa-eye"></i>
+            </button>
+          </div>
+        </ng-template>
+      </kendo-grid-column>
+
+      <ng-template kendoGridNoRecordsTemplate>
+        <div class="ma-grid-empty">No claim data batches match your current filters.</div>
+      </ng-template>
+    </kendo-grid>
+  </div>
+</section>

@@ -1,0 +1,46 @@
+<div class="ma-page-header">
+  <div class="ma-page-header__meta">
+    <h2 class="ma-page-title">Masters Module</h2>
+    <p class="ma-page-subtitle">
+      Manage Behavioral Health Services and credential mapping masters.
+    </p>
+  </div>
+</div>
+
+<div class="ma-tabs">
+  <ul class="nav nav-tabs" role="tablist">
+    @if (perms.canAccessMenu(MenuType.Bhs)) {
+      <li class="nav-item" role="presentation">
+        <button
+          type="button"
+          class="nav-link"
+          [class.active]="activeTab() === 'bhs'"
+          (click)="switchTab('bhs')"
+        >
+          BHS Matrix
+        </button>
+      </li>
+    }
+    @if (perms.canAccessMenu(MenuType.Cpt)) {
+      <li class="nav-item" role="presentation">
+        <button
+          type="button"
+          class="nav-link"
+          [class.active]="activeTab() === 'cpt'"
+          (click)="switchTab('cpt')"
+        >
+          CPT to Credential
+        </button>
+      </li>
+    }
+  </ul>
+</div>
+
+<div class="tab-content">
+  @if (activeTab() === 'bhs' && perms.canAccessMenu(MenuType.Bhs)) {
+    <app-bhs-matrix />
+  }
+  @if (activeTab() === 'cpt' && perms.canAccessMenu(MenuType.Cpt)) {
+    <app-cpt-credentials />
+  }
+</div>

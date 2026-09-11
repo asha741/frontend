@@ -1,0 +1,63 @@
+/* Global toast stack — pinned to the top-right corner of the viewport.
+
+   `max-width` and `overflow-wrap` are what keep it on screen. An error body can
+   carry a raw API URL, and an unbreakable string like that sets the intrinsic
+   minimum width of this shrink-to-fit fixed element — on a phone that made the
+   whole stack wider than the screen and pushed it off the left edge. Capping
+   the width and letting long values break fixes both halves of that. */
+.custom-toaster {
+  position: fixed;
+  top: 0;
+  right: 0;
+  margin: 0.5em;
+  z-index: 1200;
+  max-width: calc(100% - 1em); // 100% is the viewport here, less our own margins
+
+  .toast {
+    max-width: 100%;
+    // Inherited by .toast-body, which lives in ngb-toast's own template and so
+    // can't be selected from this (encapsulated) stylesheet.
+    overflow-wrap: anywhere;
+  }
+}
+
+/* Phones. A four-line error is most of a 320px screen, and a couple of them
+   used to bury the header and the top of the page. Span the full width, trim
+   the type and padding, and cap the stack so it scrolls instead of covering
+   everything. Bootstrap's own custom properties are the way in: they inherit,
+   so they reach .toast-header / .toast-body inside ngb-toast's template. */
+@media (max-width: 575.98px) {
+  .custom-toaster {
+    left: 0;
+    max-height: calc(100% - 1em);
+    overflow-y: auto;
+
+    .toast {
+      --bs-toast-max-width: 100%;
+      --bs-toast-font-size: 0.8125rem;
+      --bs-toast-padding-x: 0.625rem;
+      --bs-toast-padding-y: 0.4375rem;
+    }
+  }
+}
+
+/* Small phones (320-360px). Squeeze once more — at this width the chrome was
+   costing more than the message: `.toast-body` pads all four sides with
+   `--bs-toast-padding-x`, so trimming that alone buys back real room. The card
+   also stops spanning edge to edge: 280px reads as a notification again rather
+   than a banner: `left` goes back to auto and the stack itself carries the width. */
+@media (max-width: 360px) {
+  .custom-toaster {
+    left: auto;
+    width: 280px; // the card follows the stack (.toast is 100% of it)
+    margin: 0.375em;
+    max-width: calc(100% - 0.75em); // still yields on a screen narrower than that
+    max-height: calc(100% - 0.75em);
+
+    .toast {
+      --bs-toast-font-size: 0.75rem; // 12px
+      --bs-toast-padding-x: 0.5rem;
+      --bs-toast-padding-y: 0.3125rem;
+    }
+  }
+}

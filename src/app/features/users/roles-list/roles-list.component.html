@@ -1,0 +1,171 @@
+<section class="ma-filter-wrap mt-3">
+  <div class="row g-2 align-items-center ma-filter-grid">
+    <!-- Search input -->
+    <div class="col-12 col-lg-3">
+      <div class="ma-input-group ma-filter-item ma-filter-item--search">
+        <i class="fa-solid fa-magnifying-glass ma-input-icon"></i>
+        <input id="roleSearchInput" type="text" class="form-control" placeholder="Search" aria-label="Search roles"
+          [(ngModel)]="search" appTrimWhitespace maxlength="100" (keydown.enter)="onSearch()" />
+      </div>
+    </div>
+
+    <!-- Created Date From -->
+    <div class="col-12 col-sm-6 col-lg-2">
+      <div class="ma-input-group is-calendar ma-filter-item ma-filter-item--date">
+        <input
+          id="roleDateFrom"
+          class="form-control bg-white"
+          placeholder="From date"
+          aria-label="From date"
+          name="roleDateFrom"
+          readonly
+          ngbDatepicker
+          container="body"
+          #roleFromPicker="ngbDatepicker"
+          [(ngModel)]="fromDate"
+          [maxDate]="$any(toDate)"
+          (click)="roleFromPicker.toggle()"
+        />
+        <i
+          class="fa-regular fa-calendar ma-input-icon"
+          role="button"
+          aria-label="Open from-date picker"
+          (click)="roleFromPicker.toggle()"
+        ></i>
+      </div>
+    </div>
+
+    <!-- Created Date To -->
+    <div class="col-12 col-sm-6 col-lg-2">
+      <div class="ma-input-group is-calendar ma-filter-item ma-filter-item--date">
+        <input
+          id="roleDateTo"
+          class="form-control bg-white"
+          placeholder="To date"
+          aria-label="To date"
+          name="roleDateTo"
+          readonly
+          ngbDatepicker
+          container="body"
+          #roleToPicker="ngbDatepicker"
+          [(ngModel)]="toDate"
+          [minDate]="$any(fromDate)"
+          (click)="roleToPicker.toggle()"
+        />
+        <i
+          class="fa-regular fa-calendar ma-input-icon"
+          role="button"
+          aria-label="Open to-date picker"
+          (click)="roleToPicker.toggle()"
+        ></i>
+      </div>
+    </div>
+
+    <!-- Search & Reset buttons -->
+    <div class="col-12 col-lg-auto d-flex gap-2">
+      <button type="button" class="btn ma-btn btn-primary" (click)="onSearch()">
+        Search
+      </button>
+      <button type="button" class="btn ma-btn btn-outline-secondary" (click)="clearSearch()">
+        Reset
+      </button>
+    </div>
+
+    @if (perms.can(PERMISSION_MODULE.Role, PERMISSION_ACTION.Create)) {
+      <div class="col-12 col-lg-auto ms-lg-auto">
+        <div class="ma-filter-actions ma-filter-item ma-filter-item--action">
+          <a routerLink="/team-management/role-form" class="btn ma-btn btn-primary ma-btn-inline-icon" aria-label="Add new role">
+            <span>Add Role</span>
+            <i class="fa-solid fa-plus" aria-hidden="true"></i>
+          </a>
+        </div>
+      </div>
+    }
+  </div>
+</section>
+
+<section class="ma-surface-card ma-users-section-card ma-user-list-card mt-4">
+  <div class="table-responsive">
+    <kendo-grid class="ma-kendo-grid table" [data]="rolesData()" [pageSize]="state.take" [skip]="state.skip"
+      [sortable]="true" [sort]="state.sort" [pageable]="{ buttonCount: 4, type: 'numeric', pageSizes: pageSizes }"
+      [scrollable]="'none'" (dataStateChange)="dataStateChange($event)">
+
+      <kendo-grid-column title="Sr. No." [width]="80" [filterable]="false" [sortable]="false">
+        <ng-template kendoGridCellTemplate let-rowIndex="rowIndex">
+          {{ rowIndex + 1 }}
+        </ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column field="name" title="Role Name" [width]="200" [filterable]="false" [sortable]="false">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div class="text-truncate" [ngbTooltip]="dataItem.name" container="body"
+            [disableTooltip]="!dataItem.name">
+            {{ truncate(dataItem.name) }}
+          </div>
+        </ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column field="description" title="Description" [width]="280" [filterable]="false" [sortable]="false">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div class="ma-clamp-2 text-wrap text-break" [ngbTooltip]="dataItem.description" container="body"
+            [disableTooltip]="!dataItem.description">
+            {{ dataItem.description || '—' }}
+          </div>
+        </ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column field="assigned_users_count" title="Assigned Users" [width]="140" [filterable]="false" [sortable]="false">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          {{ dataItem.assigned_users_count ?? 0 }}
+        </ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column field="status" title="Status" [width]="130" [filterable]="false" [sortable]="false">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <!-- Without role:update the status is shown, but not changeable. -->
+          @if (perms.can(PERMISSION_MODULE.Role, PERMISSION_ACTION.Update)) {
+            <div class="form-check form-switch">
+              <!-- Users can't inactivate their own role. -->
+              <input class="form-check-input k-cursor-pointer" type="checkbox" [checked]="isActive(dataItem)"
+                [disabled]="isSystemRole(dataItem) || isOwnRole(dataItem)"
+                (change)="toggleRoleStatus(dataItem, $event)" [ngbTooltip]="isActive(dataItem) ? 'Active' : 'Inactive'" />
+            </div>
+          } @else {
+            <span class="ma-badge" [class]="(isActive(dataItem) ? 'active' : 'inactive') | badgeClass">
+              {{ isActive(dataItem) ? 'Active' : 'Inactive' }}
+            </span>
+          }
+        </ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column field="created_at" title="Created Date" [width]="150" [filterable]="false">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          {{ dataItem.created_at ? (dataItem.created_at | date: 'MM-dd-yyyy') : '' }}
+        </ng-template>
+      </kendo-grid-column>
+      @if (perms.canAny(PERMISSION_MODULE.Role, PERMISSION_ACTION.Update, PERMISSION_ACTION.Delete)) {
+        <kendo-grid-column title="Actions" [width]="110" [filterable]="false" [sortable]="false">
+          <ng-template kendoGridCellTemplate let-dataItem>
+            <div class="ma-table-actions">
+              @if (!isSystemRole(dataItem)) {
+                @if (perms.can(PERMISSION_MODULE.Role, PERMISSION_ACTION.Update)) {
+                  <button class="ma-btn-icon-sm" type="button" (click)="editRole(dataItem)" [ngbTooltip]="'Edit role'">
+                    <i class="fa-regular fa-pen-to-square"></i>
+                  </button>
+                }
+                @if (perms.can(PERMISSION_MODULE.Role, PERMISSION_ACTION.Delete)) {
+                  <button class="ma-btn-icon-sm" type="button" (click)="deleteRole(dataItem)" [ngbTooltip]="'Delete role'">
+                    <i class="fa-regular fa-trash-can"></i>
+                  </button>
+                }
+              }
+            </div>
+          </ng-template>
+        </kendo-grid-column>
+      }
+      <ng-template kendoGridNoRecordsTemplate>
+        <div class="ma-grid-empty">No roles found.</div>
+      </ng-template>
+    </kendo-grid>
+  </div>
+</section>

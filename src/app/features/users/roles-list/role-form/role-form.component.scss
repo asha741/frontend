@@ -1,0 +1,177 @@
+// ── Permission matrix table ────────────────────────────────────────────────
+
+.ma-role-permission-table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+
+  thead tr th {
+    padding: 10px 14px;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--ma-primary, #4a6cf7);
+    border-bottom: 1.5px solid #e5e9f2;
+    white-space: nowrap;
+    vertical-align: middle;
+    background: #f5f7ff;
+  }
+
+  // Module column — left-aligned, fixed width
+  .ma-perm-th-module {
+    text-align: left;
+    min-width: 160px;
+    width: 220px;
+  }
+
+  tbody tr td {
+    padding: 12px 14px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--ma-text-primary, #1a1f36);
+    border-bottom: 1px solid #f0f3f9;
+    vertical-align: middle;
+    background: transparent;
+  }
+
+  .ma-perm-td-module {
+    text-align: left;
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+
+  tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  tbody tr:hover td {
+    background-color: #f7f8ff;
+  }
+
+  // ── Fluid grid of permission checkboxes ─────────────────────────────
+  .ma-perm-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    column-gap: 32px;
+    row-gap: 20px;
+    align-items: start;
+    justify-items: start;
+
+    // Perfect vertical center: remove Bootstrap's default offsets
+    .form-check-input {
+      margin-top: 0;
+      flex-shrink: 0;
+      align-self: center;
+    }
+
+    label {
+      line-height: 1;
+      margin-bottom: 0;
+      align-self: center;
+    }
+  }
+}
+
+// ── Responsiveness ───────────────────────────────────────────────────────
+
+// Tablet: 4 → 3 columns
+@media (max-width: 991px) {
+  .ma-role-permission-table .ma-perm-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  }
+}
+
+// Mobile: keep it a real table (overrides the global ma-data-table card layout)
+@media (max-width: 767px) {
+  .ma-role-permission-table {
+    display: table !important;
+    width: 100% !important;
+    table-layout: auto !important;
+
+    thead,
+    tbody,
+    tr,
+    th,
+    td {
+      display: revert !important;
+    }
+
+    tr { display: table-row !important; }
+    th,
+    td { display: table-cell !important; }
+
+    // Suppress ::before labels injected by global ma-data-table CSS
+    td::before,
+    th::before {
+      display: none !important;
+      content: none !important;
+    }
+
+    td,
+    th {
+      text-align: left !important;
+    }
+
+    .ma-perm-th-module,
+    .ma-perm-td-module {
+      width: 120px !important;
+      min-width: 120px !important;
+      max-width: 120px !important;
+      white-space: normal !important;
+      vertical-align: top !important;
+      padding: 10px 8px 10px 14px !important;
+    }
+
+    .ma-perm-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+      column-gap: 12px !important;
+      row-gap: 12px !important;
+    }
+  }
+}
+
+// ── Status toggle ────────────────────────────────────────────────────────
+.ma-form-group {
+  .form-switch {
+    display: flex;
+    align-items: center;
+    min-height: 44px; /* Matches the input height so it doesn't look floating */
+    padding-left: 0;
+    margin-top: 0.1rem;
+
+    .form-check-input {
+      width: 2.85rem;
+      height: 1.45rem;
+      margin-left: 0;
+      margin-top: 0;
+      cursor: pointer;
+      box-shadow: none;
+      transition:
+        background-color 0.2s ease-in-out,
+        border-color 0.2s ease-in-out;
+
+      &:focus {
+        border-color: #86b7fe;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+      }
+
+      &:checked {
+        background-color: #0d6efd;
+        border-color: #0d6efd;
+      }
+    }
+
+    .form-check-label {
+      margin-left: 0.75rem;
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: #6c757d;
+      cursor: pointer;
+      user-select: none;
+      transition: color 0.2s ease-in-out;
+    }
+
+    .form-check-input:checked ~ .form-check-label {
+      color: #0d6efd;
+    }
+  }
+}

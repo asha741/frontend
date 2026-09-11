@@ -1,0 +1,246 @@
+<div class="ma-page-header">
+  <div class="ma-page-header__meta d-flex align-items-center gap-3">
+    <div>
+      <h2 class="ma-page-title">
+        {{ isEdit() ? 'Edit BHS Matrix' + (bhsId() ? ' — ' + bhsId() : '') : 'Add BHS Matrix' }}
+      </h2>
+      <p class="ma-page-subtitle">
+        {{ isEdit() ? 'Update Behavioral Health Services master record' : 'Create a new Behavioral Health Services master record' }}
+      </p>
+    </div>
+  </div>
+</div>
+
+<section class="ma-surface-card ma-users-section-card ma-user-form-card">
+  <div class="ma-card__body">
+    <form [formGroup]="form" (ngSubmit)="onSave()" appFocusFirstInput>
+      <div class="row g-3 mb-3">
+        <!-- Service Category -->
+        <div class="col-12 col-md-6">
+          <div class="ma-form-group mb-0">
+            <label class="ma-form-label" for="maBhsServiceCategory">Service Category <span class="ma-required">*</span></label>
+            <input class="form-control" id="maBhsServiceCategory" type="text" formControlName="service_category"
+              appTrimWhitespace minlength="2" maxlength="100" placeholder="Enter service category"
+              [class.is-invalid]="isSubmitted() && f['service_category'].errors" />
+            @if (isSubmitted() && f['service_category'].errors) {
+              <div class="invalid-feedback d-block">
+                @if (f['service_category'].hasError('required')) { Service Category is required. }
+                @else if (f['service_category'].hasError('minlength')) { Minimum 2 characters required. }
+                @else if (f['service_category'].hasError('maxlength')) { Maximum 100 characters allowed. }
+                @else { Invalid Service Category. }
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- Service Name -->
+        <div class="col-12 col-md-6">
+          <div class="ma-form-group mb-0">
+            <label class="ma-form-label" for="maBhsServiceName">Service <span class="ma-required">*</span></label>
+            <input class="form-control" id="maBhsServiceName" type="text" formControlName="service_name"
+              appTrimWhitespace minlength="2" maxlength="100" placeholder="Enter service name"
+              [class.is-invalid]="isSubmitted() && f['service_name'].errors" />
+            @if (isSubmitted() && f['service_name'].errors) {
+              <div class="invalid-feedback d-block">
+                @if (f['service_name'].hasError('required')) { Service is required. }
+                @else if (f['service_name'].hasError('minlength')) { Minimum 2 characters required. }
+                @else if (f['service_name'].hasError('maxlength')) { Maximum 100 characters allowed. }
+                @else { Invalid Service. }
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- Procedure Code -->
+        <div class="col-12 col-md-6">
+          <div class="ma-form-group mb-0">
+            <label class="ma-form-label" for="maBhsProcCode">Procedure Code <span class="ma-required">*</span></label>
+            <input class="form-control" id="maBhsProcCode" type="text" formControlName="proc_code"
+              appTrimWhitespace minlength="2" maxlength="50" placeholder="Enter procedure code"
+              [class.is-invalid]="isSubmitted() && f['proc_code'].errors" />
+            @if (isSubmitted() && f['proc_code'].errors) {
+              <div class="invalid-feedback d-block">
+                @if (f['proc_code'].hasError('required')) { Procedure Code is required. }
+                @else if (f['proc_code'].hasError('minlength')) { Minimum 2 characters required. }
+                @else if (f['proc_code'].hasError('maxlength')) { Maximum 50 characters allowed. }
+                @else { Invalid Procedure Code. }
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- ICD-10 -->
+        <div class="col-12 col-md-6">
+          <div class="ma-form-group mb-0">
+            <label class="ma-form-label" for="maBhsIcd10">ICD-10</label>
+            <input class="form-control" id="maBhsIcd10" type="text" formControlName="icd_10"
+              appTrimWhitespace minlength="2" maxlength="50" placeholder="Enter ICD-10 code"
+              [class.is-invalid]="isSubmitted() && f['icd_10'].errors" />
+            @if (isSubmitted() && f['icd_10'].errors) {
+              <div class="invalid-feedback d-block">
+                @if (f['icd_10'].hasError('minlength')) { Minimum 2 characters required. }
+                @else { Maximum 50 characters allowed. }
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- Modifiers -->
+        <div class="col-6 col-md-3">
+          <div class="ma-form-group mb-0">
+            <label class="ma-form-label" for="maBhsMod1">Modifier 1</label>
+            <input class="form-control" id="maBhsMod1" type="text" formControlName="mod1"
+              appTrimWhitespace minlength="2" maxlength="50" placeholder="Mod1"
+              [class.is-invalid]="isSubmitted() && f['mod1'].errors" />
+            @if (isSubmitted() && f['mod1'].errors) {
+              <div class="invalid-feedback d-block">Minimum 2 characters required.</div>
+            }
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="ma-form-group mb-0">
+            <label class="ma-form-label" for="maBhsMod2">Modifier 2</label>
+            <input class="form-control" id="maBhsMod2" type="text" formControlName="mod2"
+              appTrimWhitespace minlength="2" maxlength="50" placeholder="Mod2"
+              [class.is-invalid]="isSubmitted() && f['mod2'].errors" />
+            @if (isSubmitted() && f['mod2'].errors) {
+              <div class="invalid-feedback d-block">Minimum 2 characters required.</div>
+            }
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="ma-form-group mb-0">
+            <label class="ma-form-label" for="maBhsMod3">Modifier 3</label>
+            <input class="form-control" id="maBhsMod3" type="text" formControlName="mod3"
+              appTrimWhitespace minlength="2" maxlength="50" placeholder="Mod3"
+              [class.is-invalid]="isSubmitted() && f['mod3'].errors" />
+            @if (isSubmitted() && f['mod3'].errors) {
+              <div class="invalid-feedback d-block">Minimum 2 characters required.</div>
+            }
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="ma-form-group mb-0">
+            <label class="ma-form-label" for="maBhsMod4">Modifier 4</label>
+            <input class="form-control" id="maBhsMod4" type="text" formControlName="mod4"
+              appTrimWhitespace minlength="2" maxlength="50" placeholder="Mod4"
+              [class.is-invalid]="isSubmitted() && f['mod4'].errors" />
+            @if (isSubmitted() && f['mod4'].errors) {
+              <div class="invalid-feedback d-block">Minimum 2 characters required.</div>
+            }
+          </div>
+        </div>
+
+        <!-- Place(s) of Service Allowed -->
+        <div class="col-12 col-md-6">
+          <div class="ma-form-group mb-0">
+            <label class="ma-form-label" for="maBhsAllowedPos">Place(s)-of-Service Allowed <span class="ma-required">*</span></label>
+            <input class="form-control" id="maBhsAllowedPos" type="text" formControlName="allowed_pos"
+              appTrimWhitespace minlength="2" maxlength="50" placeholder="Enter allowed place(s) of service"
+              [class.is-invalid]="isSubmitted() && f['allowed_pos'].errors" />
+            @if (isSubmitted() && f['allowed_pos'].errors) {
+              <div class="invalid-feedback d-block">
+                @if (f['allowed_pos'].hasError('required')) { Place(s) of Service Allowed is required. }
+                @else if (f['allowed_pos'].hasError('minlength')) { Minimum 2 characters required. }
+                @else if (f['allowed_pos'].hasError('maxlength')) { Maximum 50 characters allowed. }
+                @else { Invalid Place(s) of Service Allowed. }
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- Rate -->
+        <div class="col-12 col-md-6">
+          <div class="ma-form-group mb-0">
+            <label class="ma-form-label" for="maBhsRate">Rate <span class="ma-required">*</span></label>
+            <div class="input-group">
+              <span class="input-group-text">$</span>
+              <input class="form-control" id="maBhsRate" type="number" formControlName="rate"
+                min="0" max="99999999" step="0.01" placeholder="Enter rate"
+                [class.is-invalid]="isSubmitted() && f['rate'].errors" />
+            </div>
+            @if (isSubmitted() && f['rate'].errors) {
+              <div class="invalid-feedback d-block">
+                @if (f['rate'].hasError('required')) { Rate is required. }
+                @else if (f['rate'].hasError('max')) { Maximum value is 99999999. }
+                @else { Invalid Rate. }
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- Rate Increment -->
+        <div class="col-12 col-md-6">
+          <div class="ma-form-group mb-0">
+            <label class="ma-form-label" for="maBhsRateIncrement">Rate Increment</label>
+            <input class="form-control" id="maBhsRateIncrement" type="text" formControlName="rate_increment"
+              appTrimWhitespace minlength="2" maxlength="50" placeholder="Enter rate increment"
+              [class.is-invalid]="isSubmitted() && f['rate_increment'].errors" />
+            @if (isSubmitted() && f['rate_increment'].errors) {
+              <div class="invalid-feedback d-block">Minimum 2 characters required.</div>
+            }
+          </div>
+        </div>
+
+        <!-- Enhanced Rate -->
+        <div class="col-12 col-md-6">
+          <div class="ma-form-group mb-0">
+            <label class="ma-form-label" for="maBhsEnhancedRate">Enhanced Rate</label>
+            <input class="form-control" id="maBhsEnhancedRate" type="text" formControlName="enhanced_rate"
+              appTrimWhitespace minlength="2" maxlength="50" placeholder="Enter enhanced rate"
+              [class.is-invalid]="isSubmitted() && f['enhanced_rate'].errors" />
+            @if (isSubmitted() && f['enhanced_rate'].errors) {
+              <div class="invalid-feedback d-block">Minimum 2 characters required.</div>
+            }
+          </div>
+        </div>
+
+        <!-- Auth Requirement -->
+        <div class="col-12 col-md-6">
+          <div class="ma-form-group mb-0">
+            <label class="ma-form-label" for="maBhsAuthRequirement">Auth Requirement</label>
+            <input class="form-control" id="maBhsAuthRequirement" type="text" formControlName="auth_requirement"
+              appTrimWhitespace minlength="2" maxlength="50" placeholder="Enter authorization requirement"
+              [class.is-invalid]="isSubmitted() && f['auth_requirement'].errors" />
+            @if (isSubmitted() && f['auth_requirement'].errors) {
+              <div class="invalid-feedback d-block">Minimum 2 characters required.</div>
+            }
+          </div>
+        </div>
+
+        <!-- Unit Limits -->
+        <div class="col-12 col-md-6">
+          <div class="ma-form-group mb-0">
+            <label class="ma-form-label" for="maBhsUnitLimits">Unit Limits</label>
+            <input class="form-control" id="maBhsUnitLimits" type="text" formControlName="unit_limits"
+              appTrimWhitespace minlength="2" maxlength="50" placeholder="Enter unit limits"
+              [class.is-invalid]="isSubmitted() && f['unit_limits'].errors" />
+            @if (isSubmitted() && f['unit_limits'].errors) {
+              <div class="invalid-feedback d-block">Minimum 2 characters required.</div>
+            }
+          </div>
+        </div>
+
+        <!-- Service Exclusions -->
+        <div class="col-12">
+          <div class="ma-form-group mb-0">
+            <label class="ma-form-label" for="maBhsServiceExclusions">Service Exclusions</label>
+            <textarea class="form-control" id="maBhsServiceExclusions" formControlName="service_exclusions"
+              appTrimWhitespace minlength="2" maxlength="250" rows="3" placeholder="Enter service exclusions"
+              [class.is-invalid]="isSubmitted() && f['service_exclusions'].errors"></textarea>
+            @if (isSubmitted() && f['service_exclusions'].errors) {
+              <div class="invalid-feedback d-block">Minimum 2 characters required.</div>
+            }
+          </div>
+        </div>
+      </div>
+
+      <div class="ma-btn-group mt-3 justify-content-end">
+        <a routerLink="/masters" class="btn ma-btn btn-outline-primary btn-grey-btn">Cancel</a>
+        <button class="btn ma-btn btn-primary" type="submit">
+          Save
+        </button>
+      </div>
+    </form>
+  </div>
+</section>

@@ -1,0 +1,163 @@
+.ma-consecutive-days-export {
+  flex-shrink: 0;
+  align-self: center;
+}
+
+@media (max-width: 767.98px) {
+  .ma-tabs .nav-tabs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .ma-tabs .nav-tabs .nav-link {
+    flex: 0 0 auto;
+  }
+
+  // The Consecutive Days stat grid drops to 2 columns at this breakpoint
+  // (.ma-stat-grid's own responsive rule), so the Export button — a flex
+  // sibling of the grid, not a grid item — ends up vertically centered
+  // beside whichever card lands in the grid's last row instead of sitting
+  // below the full grid. Stack the row so Export always follows all the
+  // stat cards, full width.
+  .ma-stat-grid-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .ma-consecutive-days-export {
+    align-self: stretch;
+  }
+}
+
+.ma-batch-summary {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+
+  @media (max-width: 767.98px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.ma-batch-summary__item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.ma-batch-summary__label {
+  font-size: 13px;
+  font-weight: 500;
+  color: #4a76fd;
+}
+
+.ma-batch-summary__value {
+  font-size: 15px;
+  font-weight: 600;
+  color: #0f172a;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+::ng-deep .ma-kendo-grid {
+  height: auto !important;
+  max-height: none !important;
+
+  .k-grid-content,
+  .k-grid-content-locked {
+    overflow-y: visible !important;
+    height: auto !important;
+    max-height: none !important;
+  }
+
+  // Long cell values (names, locations, service types) wrap onto multiple
+  // lines instead of being clipped, so nothing gets hidden behind an ellipsis.
+  td {
+    vertical-align: middle;
+  }
+}
+
+.ma-cell-wrap {
+  white-space: normal;
+  word-break: break-word;
+  line-height: 1.3;
+}
+
+.table-responsive {
+  overflow-y: visible !important;
+  height: auto !important;
+  max-height: none !important;
+}
+// Component styles
+
+// Kendo's "No data available" overlay (.k-chart-overlay) uses z-index: 10000,
+// which otherwise escapes above the logout/confirmation modal (z-index ~1050-1055).
+// Isolating this wrapper traps the overlay's stacking inside it.
+.ma-chart-wrapper {
+  isolation: isolate;
+}
+
+.ma-chart-tooltip {
+  min-width: 130px;
+  padding: 10px 12px;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.18);
+  // Kendo's popup sets its own font — pin it back to the app's body font.
+  font-family: var(--bs-body-font-family);
+}
+
+.ma-chart-tooltip__title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 6px;
+  white-space: nowrap;
+}
+
+.ma-chart-tooltip__row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  line-height: 1.6;
+
+  & + & {
+    margin-top: 2px;
+  }
+}
+
+.ma-chart-tooltip__row--total {
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px solid #e2e8f0;
+  font-weight: 600;
+
+  .ma-chart-tooltip__label {
+    color: #0f172a;
+  }
+}
+
+.ma-chart-tooltip__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.ma-chart-tooltip__label {
+  color: #64748b;
+  white-space: nowrap;
+}
+
+.ma-chart-tooltip__value {
+  color: #0f172a;
+  font-weight: 600;
+  margin-left: 4px;
+  white-space: nowrap;
+}

@@ -1,0 +1,220 @@
+/* ==========================================================================
+   REPORTS & ANALYTICS PAGE
+   ========================================================================== */
+
+.reports-page {
+
+    // ============================================================
+    // FILTER SEPARATOR (OR)
+    // ============================================================
+    .ma-filter-sep {
+        font-size: $font12;
+        font-weight: $fontSemiBold;
+        color: $textSecondary;
+        padding: 0 4px;
+        white-space: nowrap;
+        position: relative;
+        min-width: 70px;
+        @include maFlex(center, center);
+        .ma-white-bg {
+            background: $white;
+            padding: 0 4px;
+            position: relative;
+            z-index: 1;
+        }
+        &::after {
+            position: absolute;
+            content: "";
+            top: 50%;
+            left: calc(50% - 35px);
+            width: 70px;
+            height: 1px;
+            display: block;
+            background: $textSecondary;
+        }
+    }
+
+    // ============================================================
+    // SUMMARY STAT CARDS
+    // ============================================================
+    .ma-stat-card {
+        @include maFlexColumn(flex-start, flex-start);
+        gap: 8px;
+        padding: 16px;
+        background: $white;
+        border: 1px solid $borderColor;
+        border-radius: $borderRadius12;
+        @include maTransition;
+        box-shadow: none;
+    }
+
+    .ma-stat-icon {
+        @include maIconWrapper(40px);
+        border-radius: $borderRadius8;
+        font-size: $font18;
+
+        &--blue {
+            background: $blueBg;
+            color: $blueText;
+        }
+
+        &--success {
+            background: $successBg;
+            color: $success;
+        }
+
+        &--danger {
+            background: $lightRed;
+            color: $danger;
+        }
+
+        &--purple {
+            background: $purpleBg;
+            color: $purpleText;
+        }
+    }
+
+    .ma-stat-label {
+        font-size: $font12;
+        color: $textSecondary;
+        font-weight: $fontMedium;
+    }
+
+    .ma-stat-value {
+        font-size: $font24;
+        font-weight: $fontBold;
+        color: $textPrimary;
+        line-height: 1;
+    }
+
+    // ============================================================
+    // TOP FAILING RULES
+    // ============================================================
+    .ma-failing-rules {
+        @include maFlexColumn(flex-start);
+        gap: 12px;
+        height: 100%;
+    }
+
+    .ma-failing-rules-title {
+        font-size: $font14;
+        font-weight: $fontSemiBold;
+        color: $textPrimary;
+        margin: 0;
+    }
+
+    .ma-rule-list {
+        @include maListReset;
+        @include maFlexColumn(flex-start);
+        gap: 8px;
+        width: 100%;
+    }
+
+    .ma-rule-item {
+        @include maFlex(flex-start, center);
+        gap: 8px;
+        padding: 12px 12px;
+        background: $light;
+        border: 1px solid $borderColor;
+        border-radius: $borderRadius4;
+        background: $white;
+        @include maTransition;
+        cursor: pointer;
+
+        &:hover {
+            background: rgba($primary, 0.04);
+            border-color: rgba($primary, 0.2);
+        }
+    }
+
+    .ma-rule-arrow {
+        color: $primary;
+        font-size: $font12;
+        flex-shrink: 0;
+    }
+
+    .ma-rule-name {
+        color: $textPrimary;
+        flex: 1;
+    }
+
+    .ma-rule-count {
+        font-size: $font14;
+        font-weight: $fontRegular;
+        white-space: nowrap;
+        flex-shrink: 0;
+        .ma-svg {
+            width: 16px;
+            height: 16px;
+            margin-right: 4px;
+        }
+    }
+
+    // ============================================================
+    // TABLE FOOTER (PAGINATION ROW)
+    // ============================================================
+    .ma-table-footer {
+        @include maFlexBetween;
+        gap: 12px;
+        flex-wrap: wrap;
+
+        @include maMedia($sm) {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+    }
+
+    .ma-rows-select {
+        width: auto;
+        min-width: 70px;
+    }
+
+    .ma-page-info {
+        font-size: $font12;
+        color: $textSecondary;
+        white-space: nowrap;
+    }
+
+    // ============================================================
+    // PASS / FAIL COUNT TEXT
+    // ============================================================
+    .ma-count {
+        font-size: $font14;
+        font-weight: $fontSemiBold;
+
+        &--pass {
+            color: $success;
+        }
+
+        &--fail {
+            color: $danger;
+        }
+    }
+
+    // ============================================================
+    // RESPONSIVE
+    // ============================================================
+    @include maMedia($md) {
+        .ma-failing-rules {
+            margin-top: 8px;
+        }
+    }
+
+    @include maMedia($sm) {
+        .ma-stat-value {
+            font-size: $font20;
+        }
+
+        .ma-btn-group {
+            flex: auto;
+            .ma-btn {
+                &.btn-grey-btn {
+                    &.btn-sm {
+                        flex: auto;
+                    }
+                }
+            }
+        }
+    }
+}
+

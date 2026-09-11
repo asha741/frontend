@@ -1,0 +1,305 @@
+/* ==========================================================================
+   Claim Analyst PAGE
+   ========================================================================== */
+
+.claim-detail-page {
+    .page-title-group {
+        margin-bottom: 24px;
+
+        .page-title {
+            font-size: $font28;
+            font-weight: $fontBold;
+            color: $textPrimary;
+        }
+
+        .claim-id {
+            font-size: $font14;
+            color: $textSecondary;
+            margin-top: 4px;
+        }
+    }
+
+    .ma-card {
+        margin-bottom: 24px;
+    }
+
+    .ma-stepper {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+
+        .stepper-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+
+            .stepper-circle {
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                background: $light;
+                color: $textSecondary;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-weight: $fontBold;
+                transition: all 0.2s ease;
+            }
+
+            .stepper-label {
+                font-size: $font12;
+                text-align: center;
+                color: $textSecondary;
+            }
+
+            &.completed {
+                .stepper-circle {
+                    background: $success;
+                    color: $white;
+                }
+
+                .stepper-label {
+                    color: $success;
+                    font-weight: $fontMedium;
+                }
+            }
+
+            &.current {
+                .stepper-circle {
+                    background: $primary;
+                    color: $white;
+                }
+
+                .stepper-label {
+                    color: $primary;
+                    font-weight: $fontMedium;
+                }
+            }
+
+            &.pending {
+                .stepper-circle {
+                    border: 2px dashed $borderColor;
+                }
+            }
+        }
+    }
+
+    .ma-info-grid {
+        @include maGrid(repeat(3, 1fr), 16px);
+
+        @include maMedia($md) {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        @include maMedia($sm) {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .ma-info-item {
+        @include maFlexColumn(flex-start);
+        gap: 4px;
+    }
+
+    .ma-info-label {
+        font-size: $font12;
+        color: $textSecondary;
+        text-transform: uppercase;
+        font-weight: $fontMedium;
+        letter-spacing: 0.5px;
+    }
+
+    .ma-info-value {
+        font-size: $font14;
+        color: $textPrimary;
+        font-weight: $fontMedium;
+    }
+
+    .ma-documents-list {
+        @include maFlexColumn(flex-start);
+        gap: 12px;
+    }
+
+    .ma-document-card {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 16px;
+        background: $light;
+        border-radius: $borderRadius8;
+        transition: all 0.2s ease;
+
+        &:hover {
+            background: darken($light, 3%);
+        }
+    }
+
+    .ma-document-icon {
+        font-size: 24px;
+        color: $primary;
+        min-width: 32px;
+        text-align: center;
+    }
+
+    .ma-document-info {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        flex: 1;
+        margin: 0 12px;
+    }
+
+    .ma-document-name {
+        font-size: $font14;
+        font-weight: $fontMedium;
+        color: $textPrimary;
+    }
+
+    .ma-document-size {
+        font-size: $font12;
+        color: $textSecondary;
+    }
+
+    .ma-document-actions {
+        display: flex;
+        gap: 8px;
+    }
+
+    .ma-document-action-btn {
+        @include maResetButton;
+        width: 32px;
+        height: 32px;
+        border-radius: $borderRadius4;
+        color: $textSecondary;
+        @include maTransition;
+
+        &:hover {
+            background: rgba($primary, 0.1);
+            color: $primary;
+        }
+
+        &.ma-download:hover {
+            color: $success;
+        }
+    }
+
+    .ma-tabs {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .ma-tabs-header {
+        display: flex;
+        gap: 12px;
+        border-bottom: 2px solid $borderColor;
+    }
+
+    .ma-tab-button {
+        @include maResetButton;
+        padding: 12px 16px;
+        font-size: $font14;
+        color: $textSecondary;
+        border-bottom: 3px solid transparent;
+        @include maTransition;
+
+        &:hover {
+            color: $primary;
+        }
+
+        &.active {
+            color: $primary;
+            border-bottom-color: $primary;
+            font-weight: $fontMedium;
+        }
+    }
+
+    .ma-tab-badge {
+        background: rgba($primary, 0.1);
+        color: $primary;
+        font-size: $font12;
+        padding: 2px 6px;
+        border-radius: $borderRadius4;
+    }
+
+    .ma-tabs-content {
+        padding-top: 16px;
+    }
+
+    .ma-table-wrapper {
+        overflow-x: auto;
+        @include maScrollbar;
+    }
+
+    .ma-compliance-badge {
+        @include maBadge;
+        padding: 6px 12px;
+        font-size: $font14;
+
+        &.high {
+            background: rgba($success, 0.1);
+            color: $success;
+        }
+
+        &.medium {
+            background: rgba($warning, 0.1);
+            color: $warning;
+        }
+
+        &.low {
+            background: rgba($danger, 0.1);
+            color: $danger;
+        }
+    }
+
+    .ma-finding-badge {
+        @include maBadge;
+        font-size: $font12;
+        padding: 4px 8px;
+
+        &.pass {
+            background: rgba($success, 0.1);
+            color: $success;
+        }
+
+        &.fail {
+            background: rgba($danger, 0.1);
+            color: $danger;
+        }
+
+        &.pending {
+            background: rgba($warning, 0.1);
+            color: $warning;
+        }
+    }
+
+    .ma-red-flags {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .ma-flag-item {
+        font-size: $font12;
+        color: $danger;
+        font-weight: $fontMedium;
+    }
+
+    .ma-status-badge {
+        @include maBadge;
+        font-size: $font12;
+        padding: 4px 8px;
+
+        &.pending {
+            background: rgba($warning, 0.1);
+            color: $warning;
+        }
+
+        &.validated {
+            background: rgba($primary, 0.1);
+            color: $primary;
+        }
+    }
+}

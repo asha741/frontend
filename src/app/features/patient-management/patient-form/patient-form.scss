@@ -1,0 +1,28 @@
+// Patient form — layout inherits from global .ma-form-group / .ma-surface-card styles.
+
+// The global `.form-control.is-invalid` rule paints its own red exclamation icon on
+// the right edge of the input — on the calendar field that collides with our own
+// fa-calendar icon in the same spot. The red border + the message below the field
+// already communicate the invalid state, so drop the built-in icon here only.
+.ma-input-group.is-calendar .form-control.is-invalid {
+  background-image: none;
+  padding-right: 38px;
+}
+
+// Gender radios — override the global `.form-check-label { color: $primary; }` so the
+// options read as normal body text and only pick up the brand color once selected.
+.ma-radio-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 1.5rem;
+  min-height: 44px;
+  align-items: center;
+
+  .form-check-label {
+    color: #6c757d;
+  }
+
+  .form-check-input:checked ~ .form-check-label {
+    color: #0d6efd;
+  }
+}

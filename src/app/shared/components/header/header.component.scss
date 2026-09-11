@@ -1,0 +1,241 @@
+// Component styles
+
+// This panel is deliberately NOT a Bootstrap `data-bs-toggle="dropdown"` — it's
+// a plain Angular-controlled overlay (see notificationsOpen in header.component.ts).
+// `.ma-topbar` is `position: sticky` (assets/css/style.css); Bootstrap's Popper
+// positions dropdowns against the nearest positioned ancestor via an async JS
+// calculation, and against a sticky ancestor that calculation depends on the
+// page's current scroll position — the combination is what caused the panel to
+// intermittently flash at the wrong position/size before settling. Because this
+// wrapper is `position: relative` (not sticky) and the panel is plain
+// `position: absolute` against it, positioning is synchronous CSS box layout —
+// there's no JS step and no sticky ancestor involved, so nothing to race.
+.ma-notification-dropdown {
+  position: relative;
+
+  .ma-notification-btn {
+    position: relative;
+  }
+
+  .ma-notification-count {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    min-width: 16px;
+    height: 16px;
+    padding: 0 4px;
+    border-radius: 999px;
+    background: #dc3545;
+    color: #fff;
+    font-size: 10px;
+    line-height: 16px;
+    text-align: center;
+    font-weight: 600;
+  }
+
+  // Fully self-contained visual chrome — deliberately doesn't reuse Bootstrap's
+  // `.dropdown-menu` / the template's `.ma-dropdown-menu` classes, so it can't
+  // inherit their conflicting width/transition/z-index rules again.
+  .ma-notification-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 8px;
+    width: min(340px, calc(100vw - 24px));
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.12);
+    overflow: hidden;
+
+    // This app's loader overlay sits at z-index: 9998 (loader.component.ts) and
+    // Kendo's popups/overlays go even higher — any of those appearing while this
+    // panel is open would otherwise bury it.
+    z-index: 10050;
+
+    // `right: 0` above anchors the panel against this small bell button, not
+    // the viewport — on a narrow phone the bell sits close enough to the
+    // avatar on its right that the panel's left edge runs past the screen's
+    // left edge. Anchor to the viewport itself instead, decoupled from the
+    // bell's exact position, so it can never overflow either edge. 70px
+    // mirrors the topbar's fixed height ($topbarHeight in _variables.scss).
+    @media (max-width: 575.98px) {
+      position: fixed;
+      top: 70px;
+      left: 12px;
+      right: 12px;
+      width: auto;
+    }
+  }
+
+  .ma-dropdown-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    font-weight: 600;
+    border-bottom: 1px solid var(--bs-border-color, #e9ecef);
+  }
+
+  .ma-notification-new-count {
+    font-size: 12px;
+    font-weight: 500;
+    color: #6c757d;
+  }
+
+  // Fixed height (not just max-height) so the panel's box doesn't jump as the
+  // list goes loading -> empty/populated. `min(320px, 60vh)` caps it on a short
+  // phone screen too, while staying a single fixed value for the whole time
+  // the panel is open (only the viewport picks it, never the content).
+  .ma-notification-list {
+    height: min(320px, 60vh);
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  .ma-notification-empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    padding: 24px 16px;
+    text-align: center;
+    color: #6c757d;
+    font-size: 13px;
+  }
+
+  .ma-notification-loading-more {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 16px;
+    text-align: center;
+    color: #6c757d;
+    font-size: 12px;
+  }
+
+  // Plain <button> elements pick up the browser's native tap/focus highlight
+  // (often a dark gray flash) unless every visual state is set explicitly —
+  // that flash was being read as "goes dark when marking as read".
+  .ma-notification-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    width: 100%;
+    padding: 12px 16px;
+    border: 0;
+    background-color: #fff;
+    color: inherit;
+    text-align: left;
+    border-bottom: 1px solid var(--bs-border-color, #f1f1f1);
+    -webkit-tap-highlight-color: transparent;
+    outline: none;
+
+    &:hover,
+    &:focus-visible {
+      background-color: var(--bs-tertiary-bg, #f8f9fa);
+    }
+
+    &:active {
+      background-color: var(--bs-tertiary-bg, #f1f3f5);
+    }
+
+    &:last-child {
+      border-bottom: 0;
+    }
+  }
+
+  .ma-notification-indicator {
+    flex: 0 0 8px;
+    width: 8px;
+    height: 8px;
+    margin-top: 6px;
+    border-radius: 50%;
+    background: #0d6efd;
+  }
+
+  // Shared small spinner — used both in place of a row's unread dot while it's
+  // being marked read, and inline in the "Mark all as read" button's label.
+  // No margin-top here: the item row needs one to line up with its first text
+  // line (that row uses align-items: flex-start), but the footer button
+  // vertically centers its content, where the same offset would look uneven.
+  .ma-notification-spinner {
+    flex: 0 0 12px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 2px solid rgba(13, 110, 253, 0.25);
+    border-top-color: #0d6efd;
+    animation: ma-notification-spin 0.6s linear infinite;
+  }
+
+  .ma-notification-item .ma-notification-spinner {
+    margin-top: 3px;
+  }
+
+  @keyframes ma-notification-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .ma-notification-body {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+    flex: 1 1 auto;
+  }
+
+  .ma-notification-title {
+    font-size: 13px;
+    font-weight: 600;
+    overflow-wrap: anywhere;
+  }
+
+  .ma-notification-text {
+    font-size: 12px;
+    color: #6c757d;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .ma-notification-time {
+    font-size: 11px;
+    color: #adb5bd;
+  }
+
+  .ma-dropdown-footer {
+    padding: 10px 16px;
+    text-align: center;
+    border-top: 1px solid var(--bs-border-color, #e9ecef);
+  }
+}
+
+/* Long user names would otherwise stretch the topbar. Cap the name/role block
+   and ellipsise both lines — the full value is on the tooltip. Nested under
+   .ma-topbar .ma-user-toggle to outrank the same selector in the template's
+   global assets/css/style.css. */
+.ma-topbar {
+  .ma-user-toggle {
+    .ma-profile-meta {
+      display: block;
+      min-width: 0; // without this the flex item refuses to shrink
+      max-width: 180px;
+    }
+
+    .ma-user-name,
+    .ma-user-role {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+}
+.ma-notification-item {
+  &:disabled,
+  &.is-read {
+    cursor: default;
+    opacity: 0.6;
+  }
+}

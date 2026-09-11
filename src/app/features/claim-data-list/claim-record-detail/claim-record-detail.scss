@@ -1,0 +1,73 @@
+// `.ma-label-value` / `.ma-label` / `.ma-value` have no styling outside their
+// owning page scopes elsewhere in the app, so this component defines its own
+// look (matching the `.ma-batch-summary__*` treatment used in the sibling
+// claim-batch-detail component) plus local layout helpers for the read-only,
+// row-per-field cards (Service / Billing Information) and the multi-column
+// stat grid (Claim Information).
+
+.ma-label-value {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+
+.ma-label {
+  font-size: 13px;
+  font-weight: 500;
+
+}
+
+.ma-value {
+  font-size: 15px;
+  font-weight: 600;
+  color: #0f172a;
+  overflow-wrap: anywhere;
+}
+
+.ma-detail-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.ma-detail-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 0;
+
+  &:not(:last-child) {
+    border-bottom: 1px solid #eef1f6;
+  }
+}
+
+.ma-detail-row__label {
+  color: #64748b;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+
+.ma-detail-row__value {
+  color: #0f172a;
+  font-weight: 600;
+  font-size: 14px;
+  text-align: right;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.ma-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px 24px;
+
+  @media (max-width: 991.98px) {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.ma-provider-paid {
+  max-width: 320px;
+}

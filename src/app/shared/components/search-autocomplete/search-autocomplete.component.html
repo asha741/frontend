@@ -1,0 +1,21 @@
+<kendo-autocomplete
+  class="ma-search-autocomplete"
+  [class.is-invalid]="invalid"
+  [data]="options()"
+  valueField="label"
+  [value]="text"
+  [placeholder]="placeholder"
+  [filterable]="true"
+  [loading]="loading()"
+  [clearButton]="true"
+  [suggest]="false"
+  [disabled]="isDisabled"
+  [inputAttributes]="inputAttributes"
+  (filterChange)="onFilterChange($event)"
+  (valueChange)="onValueChange($event)"
+  (inputBlur)="onBlur()"
+>
+  <ng-template kendoAutoCompleteNoDataTemplate>
+    <div class="ma-search-autocomplete__hint">{{ emptyMessage }}</div>
+  </ng-template>
+</kendo-autocomplete>

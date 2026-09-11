@@ -1,0 +1,28 @@
+
+    @if (pagination && pagination.totalPages > 1) {
+      <nav aria-label="Pagination" class="ma-pagination-wrap">
+        <div class="ma-pagination-info">
+          Showing {{ (pagination.currentPage - 1) * pagination.pageSize + 1 }}–
+          {{ endItem(pagination) }} of
+          {{ pagination.totalItems }} results
+        </div>
+        <ul class="pagination ma-pagination mb-0">
+          <li class="page-item" [class.disabled]="pagination.currentPage === 1">
+            <button class="page-link" (click)="changePage(pagination.currentPage - 1)" [disabled]="pagination.currentPage === 1">
+              <i class="fa-solid fa-chevron-left"></i>
+            </button>
+          </li>
+          @for (page of pages; track page) {
+            <li class="page-item" [class.active]="page === pagination.currentPage">
+              <button class="page-link" (click)="changePage(page)">{{ page }}</button>
+            </li>
+          }
+          <li class="page-item" [class.disabled]="pagination.currentPage === pagination.totalPages">
+            <button class="page-link" (click)="changePage(pagination.currentPage + 1)" [disabled]="pagination.currentPage === pagination.totalPages">
+              <i class="fa-solid fa-chevron-right"></i>
+            </button>
+          </li>
+        </ul>
+      </nav>
+    }
+  

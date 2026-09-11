@@ -1,0 +1,93 @@
+<div class="ma-page-header">
+  <div class="ma-page-header__meta">
+    <div class="ma-back-header">
+      <h2 class="ma-page-title">Patient Profile</h2>
+    </div>
+    <p class="ma-page-subtitle">
+      {{ patient()?.first_name }} {{ patient()?.last_name }} — {{ patient()?.patient_id }}
+    </p>
+  </div>
+</div>
+
+<div class="ma-tabs">
+  <ul class="nav nav-tabs" id="patientProfileTab" role="tablist">
+    <li class="nav-item" role="presentation">
+      <button
+        type="button"
+        id="patientProfileEditTab"
+        class="nav-link"
+        [class.active]="activeTab() === 'edit'"
+        (click)="switchTab('edit')"
+        role="tab"
+        aria-controls="patientProfileEditPane"
+        [attr.aria-selected]="activeTab() === 'edit'"
+      >
+        Edit Patient
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button
+        type="button"
+        id="patientProfileDocumentsTab"
+        class="nav-link"
+        [class.active]="activeTab() === 'documents'"
+        (click)="switchTab('documents')"
+        role="tab"
+        aria-controls="patientProfileDocumentsPane"
+        [attr.aria-selected]="activeTab() === 'documents'"
+      >
+        Patient Documents
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button
+        type="button"
+        id="patientProfileClaimsTab"
+        class="nav-link"
+        [class.active]="activeTab() === 'claims'"
+        (click)="switchTab('claims')"
+        role="tab"
+        aria-controls="patientProfileClaimsPane"
+        [attr.aria-selected]="activeTab() === 'claims'"
+      >
+        Patient Claims
+      </button>
+    </li>
+  </ul>
+</div>
+
+<div class="tab-content" id="patientProfileTabContent">
+  @if (activeTab() === 'edit') {
+    <div
+      class="tab-pane fade show active"
+      id="patientProfileEditPane"
+      role="tabpanel"
+      aria-labelledby="patientProfileEditTab"
+      tabindex="0"
+    >
+      <app-patient-form [patientId]="patientId" />
+    </div>
+  }
+  @if (activeTab() === 'documents' && patientId) {
+    <div
+      class="tab-pane fade show active"
+      id="patientProfileDocumentsPane"
+      role="tabpanel"
+      aria-labelledby="patientProfileDocumentsTab"
+      tabindex="0"
+    >
+      <app-patient-documents [patientId]="patientId" />
+    </div>
+  }
+  @if (activeTab() === 'claims' && patientId) {
+    <div
+      class="tab-pane fade show active"
+      id="patientProfileClaimsPane"
+      role="tabpanel"
+      aria-labelledby="patientProfileClaimsTab"
+      tabindex="0"
+    >
+      <app-patient-claims [patientId]="patientId" />
+    </div>
+  }
+</div>

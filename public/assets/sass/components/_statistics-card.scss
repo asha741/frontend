@@ -1,0 +1,91 @@
+/* ==========================================================================
+   STATISTICS CARD COMPONENT
+   ========================================================================== */
+
+.ma-statistics-card {
+    @include maStatCard;
+    background: $white;
+    border: 1px solid $borderColor;
+    border-radius: $borderRadius12;
+    box-shadow: $shadowSm;
+    padding: 20px;
+}
+
+.statistics-icon {
+    width: 48px;
+    height: 48px;
+    @include maFlexCenter;
+    border-radius: $borderRadius12;
+    font-size: 24px;
+    color: $white;
+    flex-shrink: 0;
+
+    &.is-blue {
+        background: rgba($darkBlue, 0.1);
+        color: $darkBlue;
+    }
+
+    &.is-green {
+        background: rgba($darkGreenV2, 0.1);
+        color: $darkGreenV2;
+    }
+
+    &.is-orange {
+        background: rgba($darkOrange, 0.1);
+        color: $darkOrange;
+    }
+
+    &.is-purple {
+        background: rgba($darkPurpleV2, 0.1);
+        color: $darkPurpleV2;
+    }
+
+    &.is-purpleV2 {
+        background: rgba($darkPurpleV2, 0.1);
+        color: $darkPurpleV2;
+    }
+
+    &.is-skyblue {
+        background: rgba($darkSkyblue, 0.1);
+        color: $darkSkyblue;
+    }
+
+    &.is-danger {
+        background: rgba($danger, 0.1);
+        color: $danger;
+    }
+
+    &.is-green_v2 {
+        background: rgba($darkGreenV2, 0.1);
+        color: $darkGreenV2;
+    }
+}
+
+.statistics-label {
+    font-size: $font12;
+    color: $textSecondary;
+    font-weight: $fontMedium;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.statistics-value {
+    font-size: $font28;
+    font-weight: $fontBold;
+    color: $textPrimary;
+    line-height: 1.2;
+}
+
+.statistics-change {
+    font-size: $font12;
+    font-weight: $fontMedium;
+    margin-top: 4px;
+
+    &.positive {
+        color: $success;
+    }
+
+    &.negative {
+        color: $danger;
+    }
+}

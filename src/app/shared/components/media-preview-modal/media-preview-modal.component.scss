@@ -1,0 +1,57 @@
+.preview-stage {
+  height: 55vh;
+}
+
+.preview-media {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.nav-btn {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border-radius: 50%;
+  background-color: rgba(0, 0, 0, 0.15);
+  border-color: transparent;
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.35);
+    border-color: transparent;
+  }
+}
+
+.nav-icon {
+  filter: invert(1);
+  width: 20px;
+  height: 20px;
+}
+
+.preview-thumb {
+  border-radius: 8px;
+  overflow: hidden;
+  border: 2px solid transparent;
+  transition: border-color 0.2s;
+  cursor: pointer;
+
+  &.selected {
+    border-color: #0d6efd;
+  }
+
+  &-img {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    display: block;
+    border-radius: 6px;
+  }
+}
+
+.thumb-video {
+  background: whitesmoke;
+}

@@ -1,0 +1,153 @@
+/* ==========================================================================
+   MASTERS PAGE
+   ========================================================================== */
+
+
+.ma-tabs {
+    background: rgba($primary, .06);
+    border: 1px solid rgba($primary, .2);
+    border-radius: $borderRadius8;
+    padding: 6px;
+    margin-bottom: 16px;
+    width: fit-content;
+
+    .nav-tabs {
+        border: 0;
+        gap: 8px;
+
+        .nav-link {
+            border: 1px solid transparent;
+            border-radius: $borderRadius8;
+            color: $textSecondary;
+            font-weight: $fontMedium;
+            font-size: $font14;
+            min-height: 40px;
+            background: transparent;
+            padding: 8px 16px;
+
+            &.active {
+                color: $white;
+                background: $primary;
+                border-color: $primary;
+                box-shadow: $shadowSm;
+            }
+        }
+    }
+}
+
+
+.ma-master-card {
+    overflow: hidden;
+
+    &__head {
+        padding: 16px;
+        border-bottom: 1px solid $borderColor;
+    }
+
+    &__title {
+        margin: 0;
+        font-size: $font18;
+        font-weight: $fontSemiBold;
+        color: $textPrimary;
+    }
+
+    &__subtitle {
+        margin: 4px 0 0;
+        color: $textSecondary;
+        font-size: $font14;
+    }
+
+    &__toolbar {
+        padding: 16px;
+        border-bottom: 1px solid $borderColor;
+        @include maFlex(space-between, center, row, wrap);
+        gap: 12px;
+    }
+
+    &__search {
+        min-width: 280px;
+        flex: 1 1 320px;
+    }
+
+    &__actions {
+        @include maFlex(flex-end, center, wrap);
+        gap: 8px;
+        .ma-btn {
+            white-space: nowrap;
+        }
+    }
+
+    &__actions--filter {
+        .form-select {
+            min-width: 170px;
+        }
+    }
+
+    &__page-count {
+        margin: 0;
+        color: $textSecondary;
+        font-size: $font14;
+        white-space: nowrap;
+    }
+
+    .table-responsive {
+        max-height: 520px;
+        @include maScrollbar(rgba($primary, .24), rgba($primary, .05));
+    }
+
+    .ma-master-table {
+        &__codes {
+            white-space: normal;
+            word-break: break-word;
+            min-width: 210px;
+        }
+    }
+}
+
+@include maMedia($md) {
+    .ma-master-card {
+        &__search {
+            min-width: 0;
+            flex: 1 1 100%;
+        }
+
+        &__actions,
+        &__actions--filter {
+            width: 100%;
+            justify-content: flex-start;
+        }
+
+        &__page-count {
+            width: 100%;
+        }
+    }
+}
+
+@include maMedia($sm) {
+    .ma-tabs {
+        width: 100%;
+
+        .nav-tabs {
+            .nav-link {
+                width: 100%;
+            }
+        }
+    }
+
+    .ma-master-card {
+        &__search {
+            min-width: 0;
+            flex-basis: 100%;
+        }
+
+        &__actions,
+        &__actions--filter {
+            width: 100%;
+
+            .ma-btn,
+            .form-select {
+                width: 100%;
+            }
+        }
+    }
+}

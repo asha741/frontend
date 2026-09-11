@@ -1,0 +1,118 @@
+<!-- The claim-analyst page scope carries the .ma-label-value / .ma-label /
+     .ma-value styling this detail layout reuses. -->
+<main class="claim-analyst-page">
+<!-- ══ Header ════════════════════════════════════════════════════════ -->
+<div class="ma-page-header">
+  <div class="ma-page-header__meta">
+    <div class="ma-back-header">
+      <h2 class="ma-page-title">Batch Detail @if (batchLabel()) { — {{ batchLabel() }} }</h2>
+    </div>
+    <p class="ma-page-subtitle">Read-only view of travel time batch processing results</p>
+  </div>
+</div>
+
+<!-- ══ Batch Information ═════════════════════════════════════════════ -->
+<div class="ma-card mt-3">
+  <div class="ma-card-header">
+    <div class="chart-card__header mb-0">
+      <h3 class="chart-card__title">Batch Information</h3>
+    </div>
+  </div>
+  <div class="ma-card-body">
+    <div class="row g-3">
+      <div class="col-12 col-md-4 col-xl-3">
+        <div class="ma-label-value">
+          <span class="ma-label">File Name</span>
+          <span class="ma-value ma-value--clamp" [title]="fileName()">{{ fileName() || '-' }}</span>
+        </div>
+      </div>
+      <div class="col-6 col-md-4 col-xl-2">
+        <div class="ma-label-value">
+          <span class="ma-label">File Size</span>
+          <span class="ma-value">{{ fileSize() || '-' }}</span>
+        </div>
+      </div>
+      <div class="col-6 col-md-4 col-xl-2">
+        <div class="ma-label-value">
+          <span class="ma-label">Uploaded Date</span>
+          <span class="ma-value">{{ uploadedAt() ? (uploadedAt() | date: 'MM-dd-yyyy') : '-' }}</span>
+        </div>
+      </div>
+      <div class="col-6 col-md-4 col-xl-2">
+        <div class="ma-label-value">
+          <span class="ma-label">Extraction Status</span>
+          @if (extractionStatus()) {
+            <span class="d-flex align-items-center">
+              <span class="ma-badge" [class]="extractionStatus() | badgeClass">{{ extractionStatus() }}</span>
+              @if (isFailedStatus(extractionStatus()) && failureReason()) {
+                <i class="fa-solid fa-circle-info ma-status-info-icon" [ngbTooltip]="failureReason()"
+                  triggers="hover click" container="body" aria-label="Failure reason"></i>
+              }
+            </span>
+          } @else {
+            <span class="ma-value">-</span>
+          }
+        </div>
+      </div>
+      <div class="col-6 col-md-4 col-xl-2">
+        <div class="ma-label-value">
+          <span class="ma-label">Travel Time Status</span>
+          @if (travelTimeStatus()) {
+            <span class="ma-badge" [class]="travelTimeStatus() | badgeClass">{{ travelTimeStatus() }}</span>
+          } @else {
+            <span class="ma-value">-</span>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ Extract Data ══════════════════════════════════════════════════ -->
+<section class="ma-surface-card ma-users-section-card ma-user-list-card mt-3">
+  <div class="table-responsive">
+    <kendo-grid class="ma-kendo-grid table ma-master-table--travel-time-extract" [data]="providersGridData()"
+      [sortable]="false" [pageable]="false" [scrollable]="'none'">
+      <kendo-grid-column title="Sr. No." [width]="80" [filterable]="false" [sortable]="false">
+        <ng-template kendoGridCellTemplate let-rowIndex="rowIndex">
+          {{ rowIndex + 1 }}
+        </ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column field="provider_name" title="Provider Name (License)" [width]="240" [filterable]="false">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div class="ma-cell-wrap">{{ dataItem.provider_name || '-' }} @if (dataItem.license) { ({{ dataItem.license }}) }</div>
+        </ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column field="total_patient" title="Total Patient" [width]="150" [filterable]="false">
+        <ng-template kendoGridCellTemplate let-dataItem>{{ dataItem.total_patient ?? '-' }}</ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column field="total_progress_notes" title="Total Progress Notes" [width]="180" [filterable]="false">
+        <ng-template kendoGridCellTemplate let-dataItem>{{ dataItem.total_progress_notes ?? '-' }}</ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column field="flag_notes" title="Flag Notes" [width]="130" [filterable]="false">
+        <ng-template kendoGridCellTemplate let-dataItem>{{ canViewResult() ? (dataItem.flag_notes ?? '-') : '-' }}</ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column title="Action" [width]="90" [filterable]="false" [sortable]="false">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div class="ma-table-actions">
+            @if (canViewResult()) {
+              <button class="ma-btn-icon-sm" type="button" (click)="viewProviderResult(dataItem)" [ngbTooltip]="'View'">
+                <i class="fa-regular fa-eye"></i>
+              </button>
+            }
+          </div>
+        </ng-template>
+      </kendo-grid-column>
+
+      <ng-template kendoGridNoRecordsTemplate>
+        <div class="ma-grid-empty">No provider data was extracted from this batch.</div>
+      </ng-template>
+    </kendo-grid>
+  </div>
+</section>
+</main>

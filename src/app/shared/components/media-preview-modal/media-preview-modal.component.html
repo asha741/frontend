@@ -1,0 +1,59 @@
+<div class="modal-header">
+  <h5 class="modal-title fw-semibold mb-0">{{ title }}</h5>
+  <button type="button" class="btn-close" aria-label="Close" (click)="close()"></button>
+</div>
+<div class="modal-body mt-2">
+  <div class="d-flex align-items-center gap-2">
+    @if (attachments.length > 1) {
+      <button class="btn btn-outline-secondary nav-btn" type="button" (click)="previous()">
+        <span class="carousel-control-prev-icon nav-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+      </button>
+    }
+    <div class="flex-grow-1 overflow-hidden preview-stage">
+      @for (attachment of attachments; track $index) {
+        @if (selectedIndex() === $index) {
+          <div class="text-center h-100 d-flex align-items-center justify-content-center">
+            @if (attachment.isImage) {
+              <img [src]="getPath(attachment)" class="preview-media" alt="Attachment" />
+            } @else {
+              <video controls [src]="getPath(attachment)" class="preview-media"></video>
+            }
+          </div>
+        }
+      }
+    </div>
+    @if (attachments.length > 1) {
+      <button class="btn btn-outline-secondary nav-btn" type="button" (click)="next()">
+        <span class="carousel-control-next-icon nav-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+      </button>
+    }
+  </div>
+
+  <div class="text-center mt-2">
+    <button type="button" class="btn btn-primary" (click)="downloadFile()" title="Download">
+      <i class="fa-solid fa-download me-1"></i> Download
+    </button>
+  </div>
+
+  @if (attachments.length > 1) {
+    <div class="mt-3 row g-3 justify-content-center">
+      @for (attachment of attachments; track $index) {
+        <div
+          class="col-auto preview-thumb"
+          role="button"
+          (click)="select($index)"
+          [class.selected]="selectedIndex() === $index">
+          @if (attachment.isImage) {
+            <img [src]="getPath(attachment)" alt="thumbnail" class="preview-thumb-img" />
+          } @else {
+            <video class="preview-thumb-img thumb-video">
+              <source [src]="getPath(attachment)" type="video/mp4" />
+            </video>
+          }
+        </div>
+      }
+    </div>
+  }
+</div>

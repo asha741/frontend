@@ -1,0 +1,80 @@
+// Same technique as reports-analytics.scss: keeps the Extraction Status /
+// Travel Time Status <select>s' real labels available to screen readers
+// while the filter row itself stays label-less like the search/date fields.
+.ma-visually-hidden-label {
+  display: block;
+  visibility: hidden;
+}
+
+::ng-deep .ma-kendo-grid {
+  height: auto !important;
+  max-height: none !important;
+
+  .k-grid-content,
+  .k-grid-content-locked {
+    overflow-y: visible !important;
+    height: auto !important;
+    max-height: none !important;
+  }
+}
+
+// Fit the non-scrollable grid to the viewport — see bulk-upload.scss for why
+// a fixed table layout is needed alongside .ma-cell-wrap.
+:host ::ng-deep .ma-master-table--travel-time {
+  table {
+    table-layout: fixed;
+    width: 100%;
+  }
+
+  th .k-column-title {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  td {
+    overflow: hidden;
+  }
+}
+
+// Long column titles (e.g. "Extraction Status", "Travel Time Status") wrap
+// onto a second line instead of being cut off — same pattern as
+// provider-management.scss.
+::ng-deep .ma-master-table--travel-time {
+  .k-grid-header {
+    .k-column-title {
+      white-space: normal !important;
+      word-break: break-word;
+      line-height: 1.2;
+      display: inline-block; // lets it wrap within the th
+    }
+
+    th.k-header {
+      vertical-align: middle;
+      height: auto; // let the row grow to fit 2 lines
+    }
+  }
+}
+
+.ma-cell-wrap {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  white-space: normal;
+  overflow-wrap: break-word;
+  word-break: normal;
+  line-height: 1.3;
+}
+
+.ma-status-info-icon {
+  margin-left: 6px;
+  color: var(--bs-danger, #dc3545);
+  cursor: pointer;
+}
+
+.table-responsive {
+  overflow-y: visible !important;
+  height: auto !important;
+  max-height: none !important;
+}

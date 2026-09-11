@@ -1,0 +1,186 @@
+// Stepper state colours — a clear traffic-light so each state is distinct:
+//   green  = completed / passed (done successfully)
+//   blue   = current (active step — kept from the global CSS)
+//   amber  = pending (upcoming step)
+//   red    = failed
+// Scoped + `.claim-analyst-page` prefixed so these win over the global rules
+// (which colour "completed" blue — the source of the done-vs-active confusion).
+
+// Completed / passed step — success (green).
+.claim-analyst-page .ma-step.completed,
+.claim-analyst-page .ma-step.passed {
+  .ma-step-circle {
+    background: #17b26a;
+    border-color: #17b26a;
+    color: #ffffff;
+  }
+
+  .ma-step-label {
+    color: #17b26a;
+  }
+}
+
+// Completed connector line — green to match the steps it joins.
+.claim-analyst-page .ma-step-line.completed {
+  background: #17b26a;
+}
+
+// Failed step — danger (red).
+.claim-analyst-page .ma-step.failed {
+  .ma-step-circle {
+    background: #dc3545;
+    border-color: #dc3545;
+    color: #ffffff;
+  }
+
+  .ma-step-label {
+    color: #dc3545;
+    font-weight: 600;
+  }
+}
+
+// Pending / upcoming step — warning (amber).
+// .claim-analyst-page .ma-step.pending {
+//   .ma-step-circle {
+//     background: #fffbeb;
+//     border-color: #fcd34d;
+//     color: #d97706;
+//   }
+
+//   .ma-step-label {
+//     color: #d97706;
+//   }
+// }
+
+.claim-analyst-page .ma-step.current {
+  .ma-step-circle {
+    background: #d97706;
+    color: #fffbeb;
+    border-color: #d97706;
+  }
+
+  .ma-step-label {
+    color: #d97706;
+  }
+}
+
+// ── Reviewer Action (read-only, opened from Patient Claims) ──
+.ma-readonly-field {
+  min-height: 5rem;
+  background: #f8fafc;
+  color: #334155;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+// ── Eye icon button that opens the Failed Notes drill-down page ──
+.ma-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  background: #f8fafc;
+  color: #475569;
+
+  &:hover {
+    background: #eef2f7;
+    color: #1d4ed8;
+  }
+}
+
+// ── Findings cell: failure reason + recommendation + failed-note sections ──
+.ma-finding {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  &__reason {
+    line-height: 1.5;
+  }
+
+  &__recommendation {
+    display: flex;
+    gap: 0.4rem;
+    padding: 0.5rem 0.65rem;
+    border-radius: 0.5rem;
+    background: #ecfdf5;
+    border: 1px solid #a7f3d0;
+    color: #065f46;
+    font-size: 0.875rem;
+    line-height: 1.45;
+
+    i {
+      margin-top: 0.15rem;
+    }
+  }
+
+  &__notes {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  &__note {
+    padding: 0.5rem 0.65rem;
+    border-radius: 0.5rem;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+  }
+
+  &__note-meta {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #475569;
+  }
+
+  &__sections {
+    margin: 0.35rem 0 0;
+    padding-left: 1.1rem;
+    font-size: 0.85rem;
+    line-height: 1.45;
+    color: #334155;
+
+    li + li {
+      margin-top: 0.25rem;
+    }
+  }
+}
+
+// ── Findings table: mobile — Failure Reason / Recommendation cells ──
+// The global .ma-data-table mobile CSS lays every <td> out as a flex row with
+// `justify-content: space-between; text-align: right`. That's the right look
+// for a plain "——" empty value (matches Red Flags / Failed Notes), but once
+// there's real content — the finding paragraph or the recommendation callout
+// — it squeezed that content into a narrow, right-aligned column. Scope the
+// label-left / content-right override to just the populated case (`:has`),
+// so an empty cell still gets the plain right-aligned dash like its
+// neighbours, while a populated cell gets a fixed-width label and the rest
+// of the row for the content to wrap into.
+@media (max-width: 767.98px) {
+  .ma-findings-table tbody td[data-label='Failure Reason']:has(.ma-finding),
+  .ma-findings-table tbody td[data-label='Recommendation']:has(.ma-finding__recommendation) {
+    align-items: flex-start !important;
+    justify-content: flex-start !important;
+    text-align: left !important;
+    gap: 12px;
+
+    &::before {
+      flex: 0 0 120px;
+      padding-top: 0.15rem;
+      text-align: left !important;
+    }
+
+    > * {
+      flex: 1 1 auto;
+      min-width: 0;
+      text-align: left !important;
+    }
+  }
+}

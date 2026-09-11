@@ -1,0 +1,384 @@
+/* ==========================================================================
+   LOGIN PAGE
+   ========================================================================== */
+
+.ma-login {
+    min-height: 100vh;
+    background: rgba($light, .5);
+
+    .ma-login-row {
+        min-height: 100vh;
+    }
+
+    .ma-login-left {
+        position: relative;
+        min-height: 100vh;
+        padding: $space50;
+        @include maFlex(center, flex-start, column);
+        background: $dark url("../images/login/login-cover.png") center center / cover no-repeat;
+        @include maMedia($lg) {
+            padding: 24px;
+        }
+
+        &::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: $gradient-pattern;
+            opacity: .95;
+        }
+
+        .ma-login-content {
+            position: relative;
+            z-index: 1;
+            max-width: 570px;
+            margin: $space20 auto;
+        }
+
+        .ma-login-logo-wrap {
+            margin-bottom: $space40;
+            .ma-login-logo {
+                width: 220px;
+                @include maMedia($lg) {
+                    width: 180px;
+                }
+            }
+        }
+
+        .ma-kicker {
+            margin: 0 0 $space12;
+            color: $white;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: $font14;
+            font-weight: $fontMedium;
+        }
+
+        .ma-login-heading {
+            margin: 0;
+            color: $white;
+            font-size: $font32;
+            font-weight: $fontMedium;
+            max-width: 500px;
+            @include maMedia($lg) {
+                font-size: $font28;
+            }
+        }
+
+        .ma-login-divider {
+            width: 100px;
+            height: 3px;
+            border-radius: 1px;
+            background: $white;
+            margin: $space20 0 $space24;
+        }
+
+        .ma-login-description {
+            margin: 0;
+            color: $white;
+            font-size: $font16;
+        }
+
+        .ma-login-stats {
+            margin-top: $space50;
+            @include maFlex(flex-start, center);
+            flex-wrap: wrap;
+
+            .ma-stat-item {
+                position: relative;
+                .ma-stat-value {
+                    margin: 0;
+                    color: $white;
+                    font-size: $font32;
+                    line-height: 1;
+                    font-weight: $fontBold;
+                    @include maMedia($lg) {
+                        font-size: $font24;
+                    }
+                }
+
+                .ma-stat-label {
+                    margin: $space4 0 0;
+                    color: rgba($white, .81);
+                    font-size: $font16;
+                    @include maMedia($lg) {
+                        font-size: $font14;
+                    }
+                }
+                + {
+                    .ma-stat-item {
+                        border-left: 1px solid rgba($white, .1);
+                        padding-left: 24px;
+                        margin-left: 24px;
+                        @include maMedia($lg) {
+                            padding-left: 12px;
+                            margin-left: 12px;
+                            border-left: none;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    .ma-login-right {
+        min-height: 100vh;
+        @include maFlex(center, center);
+        flex-direction: column;
+        padding: $space30;
+        @include maMedia($lg) {
+            padding: 24px;
+        }
+        @include maMedia($xs) {
+            padding: 24px 20px;
+        }
+
+        .ma-login-logo-wrap-mobile {
+            display: none;
+            .ma-login-logo {
+                width: 142px;
+            }
+            @include maMedia($md) {
+                display: block;
+            }
+        }
+
+        .ma-auth-card {
+            width: 100%;
+            max-width: 600px;
+            border: 1px solid $borderColor;
+            border-radius: $borderRadius8;
+            background: $white;
+            box-shadow: $shadowSm;
+            padding: 35px;
+        }
+
+        .ma-auth-head {
+            text-align: center;
+            margin-bottom: 24px;
+            @include maMedia($lg) {
+                margin-bottom: 20px;
+            }
+            p {
+                margin: 0;
+                color: $textSecondary;
+                @include maMedia($xs) {
+                    font-size: $font14;
+                }
+            }
+        }
+
+        .ma-role-switcher {
+            @include maFlex(flex-start, center);
+            flex-wrap: wrap;
+            gap: 8px;
+            border: 1px solid rgba($primary, .2);
+            padding: 6px;
+            border-radius: $borderRadius8;
+            margin-bottom: 24px;
+            background: rgba($primary, .06);
+
+            .ma-role-btn {
+                min-height: 45px;
+                border: 0;
+                border-radius: $borderRadius8;
+                background: transparent;
+                color: $textGray;
+                font-weight: $fontRegular;
+                font-size: $font16;
+                @include maFlex(center, center);
+                gap: 7px;
+                flex: auto;
+                @include maMedia($xs) {
+                    font-size: $font14;
+                }
+
+                .ma-svg {
+                    width: 24px;
+                    height: 24px;
+                    @include maMedia($xs) {
+                        width: 18px;
+                        height: 18px;
+                    }
+                }
+
+                &.active {
+                    background: $primary;
+                    color: $white;
+                    .ma-svg {
+                        path {
+                            fill: $white;
+                        }
+                    }
+                }
+            }
+        }
+
+        .ma-form-group {
+            margin-bottom: 20px;
+        }
+
+        .ma-input-icon {
+            .input-group-text {
+                border-radius: $borderRadius8;
+                background: transparent;
+                color: $textSecondary;
+                padding: 8px 14px;
+                .ma-svg {
+                    width: 18px;
+                    height: 18px;
+                }
+            }
+
+            .form-control {
+                border-radius: $borderRadius8;
+            }
+        }
+
+        .ma-password-wrap {
+            position: relative;
+
+            .ma-password-toggle {
+                position: absolute;
+                right: 14px;
+                top: 50%;
+                transform: translateY(-50%);
+                border: 0;
+                background: transparent;
+                color: $textSecondary;
+            }
+
+            .form-control {
+                border-radius: $borderRadius6;
+                min-height: 52px;
+                padding-right: 44px;
+            }
+        }
+
+        .ma-auth-meta {
+            @include maFlex(space-between, center);
+            gap: 10px;
+            margin: 20px 0 30px;
+
+            .form-check {
+                margin: 0;
+            }
+
+            .form-check-input {
+                border-radius: $borderRadius4;
+                width: 24px;
+                height: 24px;
+                margin-top: 0;
+                @include maMedia($xs) {
+                    width: 22px;
+                    height: 22px;
+                }
+                &:checked {
+                    background-color: $primary;
+                    border-color: $primary;
+                }
+            }
+
+            .ma-link {
+                color: $primary;
+                font-weight: $fontRegular;
+                font-size: $font16;
+                text-decoration: underline;
+                @include maMedia($xs) {
+                    font-size: $font14;
+                }
+                &:hover {
+                    text-decoration: none;
+                }
+            }
+        }
+
+        .ma-auth-submit {
+            width: 100%;
+            min-height: 52px;
+            border: 0;
+            border-radius: $borderRadius6;
+            color: $white;
+            background: $primary;
+            font-size: $font16;
+            font-weight: $fontSemiBold;
+            @include maFlex(center, center);
+            gap: 10px;
+            @include maMedia($xs) {
+                min-height: 48px;
+                font-size: $font14;
+            }
+
+            &:hover {
+                box-shadow: $btnShadow;
+            }
+        }
+
+        .ma-terms,
+        .ma-bottom-link {
+            text-align: center;
+            color: $textGray;
+            font-size: $font14;
+        }
+
+        .ma-terms {
+            margin: 24px auto 16px;
+            color: $textGray;
+            font-size: $font14;
+            font-weight: $fontMedium;
+            max-width: 520px;
+            @include maMedia($xs) {
+                margin-bottom: 0;
+            }
+            .ma-link {
+                color: $primary;
+            }
+        }
+
+        .ma-bottom-link {
+            margin: 30px auto 0;
+            font-weight: $fontMedium;
+            a {
+                color: $primary;
+            }
+        }
+    }
+
+    @include maMedia($lg) {
+        .ma-login-right {
+            .ma-auth-card {
+                padding: 24px;
+            }
+        }
+    }
+
+    @include maMedia($md) {
+        .ma-login-left {
+            min-height: auto;
+            display: none;
+        }
+
+    }
+
+    @include maMedia($sm) {
+        .ma-login-left {
+            padding: 24px 20px;
+            .ma-login-stats {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+        }
+
+        .ma-login-right {
+            .ma-auth-card {
+                padding: 20px 16px;
+            }
+
+            .ma-auth-meta {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    }
+}
+    

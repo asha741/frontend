@@ -1,0 +1,164 @@
+/* ==========================================================================
+   BOOTSTRAP THEME OVERRIDES
+   Centralized Bootstrap 5 variable customization for project-wide consistency.
+   ========================================================================== */
+
+/* Core Color Variables */
+/* Used by Bootstrap color system, button variants, links, alerts, and badges. */
+$primary: #4A76FD;
+$secondary: #8AA2F9;
+$success: #17B26A;
+$danger: #DC3545;
+$warning: #FFC107;
+$info: #0EA5E9;
+$light: #F8FAFC;
+$dark: #0F172A;
+
+/* Body and Text Variables */
+/* Controls global body background and text color across all Bootstrap components. */
+$body-bg: #F8FAFC;
+$body-color: #0F172A;
+
+/* Typography Variables */
+/* Used globally for Bootstrap text, headings, labels, and utility classes. */
+$font-family-sans-serif: $fontFamilyPrimary;
+$font-size-base: 1rem;
+$font-weight-normal: $fontRegular;
+$font-weight-medium: $fontMedium;
+$font-weight-semibold: $fontSemiBold;
+$font-weight-bold: $fontBold;
+$line-height-base: 1.5;
+$headings-color: #0F172A;
+
+/* Container Variables */
+/* Controls Bootstrap container widths across breakpoints for dashboard layouts. */
+$container-max-widths: (
+	sm: 540px,
+	md: 720px,
+	lg: 960px,
+	xl: 1140px,
+	xxl: 1280px
+);
+
+/* Border and Radius Variables */
+/* Shared by cards, inputs, dropdowns, modals, badges, and buttons. */
+$border-color: #E2E8F0;
+$border-radius: $borderRadius8;
+$border-radius-sm: $borderRadius6;
+$border-radius-lg: $borderRadius12;
+$border-radius-xl: $borderRadius16;
+
+/* Shadow Variables */
+/* Defines subtle enterprise shadows for cards, dropdowns, and modals. */
+$box-shadow-sm: 0 1px 2px rgba(15, 23, 42, .05);
+$box-shadow: 0 4px 12px rgba(15, 23, 42, .08);
+$box-shadow-lg: 0 12px 28px rgba(15, 23, 42, .12);
+
+/* Button Variables */
+/* Used globally for all Bootstrap buttons and button groups. */
+$btn-font-weight: $fontSemiBold;
+$btn-padding-y: 10px;
+$btn-padding-x: 18px;
+$btn-border-radius: 10px;
+$btn-focus-width: 0;
+$btn-box-shadow: none;
+
+/* Form and Input Variables */
+/* Used by form-control, form-select, input-group, and validation states. */
+$input-padding-y: 10px;
+$input-padding-x: 16px;
+$input-font-size: $font16;
+$input-color: #0F172A;
+$input-bg: #FFFFFF;
+$input-border-color: #E2E8F0;
+$input-border-radius: 12px;
+$input-focus-border-color: rgba(74, 118, 253, .5);
+$input-focus-box-shadow: none;
+$form-select-border-color: #E2E8F0;
+$form-select-border-radius: 12px;
+$form-select-focus-box-shadow: none;
+$form-check-input-border: 1px solid #CBD5E1;
+$form-check-input-focus-box-shadow: none;
+
+/* Dropdown Variables */
+/* Used by dropdown menus and action menus in admin tables. */
+$dropdown-bg: #FFFFFF;
+$dropdown-border-color: #E2E8F0;
+$dropdown-border-radius: 12px;
+$dropdown-box-shadow: 0 8px 24px rgba(15, 23, 42, .12);
+$dropdown-link-hover-bg: #F1F5FD;
+$dropdown-link-active-bg: #E8EFFF;
+$dropdown-link-active-color: #1D4ED8;
+
+/* Modal Variables */
+/* Used by Bootstrap modals across admin workflows. */
+$modal-content-bg: #FFFFFF;
+$modal-content-border-color: #E2E8F0;
+$modal-content-border-radius: 16px;
+$modal-content-box-shadow-xs: 0 14px 30px rgba(15, 23, 42, .14);
+$modal-backdrop-opacity: .55;
+
+/* Card Variables */
+/* Used by summary cards, analytics cards, and table wrapper cards. */
+$card-bg: #FFFFFF;
+$card-border-color: #E2E8F0;
+$card-border-radius: 16px;
+$card-box-shadow: 0 4px 20px rgba(15, 23, 42, .05);
+$card-cap-bg: #FFFFFF;
+
+/* Table Variables */
+/* Used by table headers, striped rows, and hover states. */
+$table-color: #475569;
+$table-bg: #FFFFFF;
+$table-border-color: #E2E8F0;
+$table-hover-bg: rgba(74, 118, 253, .04);
+$table-striped-bg: #F8FAFC;
+
+/* Pagination Variables */
+/* Used for dashboard and list pagination controls. */
+$pagination-padding-y: 8px;
+$pagination-padding-x: 12px;
+$pagination-color: #334155;
+$pagination-bg: #FFFFFF;
+$pagination-border-color: #E2E8F0;
+$pagination-focus-box-shadow: none;
+$pagination-hover-color: #4A76FD;
+$pagination-hover-bg: #F1F5FD;
+$pagination-hover-border-color: #CFE0FF;
+$pagination-active-color: #FFFFFF;
+$pagination-active-bg: #4A76FD;
+$pagination-active-border-color: #4A76FD;
+
+/* Nav Tabs Variables */
+/* Used by Users & Access tabs and any role-based panel tabs. */
+$nav-tabs-border-color: #E2E8F0;
+$nav-tabs-link-hover-border-color: #D9E5FF;
+$nav-tabs-link-active-color: #FFFFFF;
+$nav-tabs-link-active-bg: #4A76FD;
+$nav-tabs-link-active-border-color: #4A76FD;
+$nav-link-color: #64748B;
+$nav-link-hover-color: #4A76FD;
+
+/* Accordion Variables */
+/* Used by collapsible Bootstrap accordions in future master sections. */
+$accordion-bg: #FFFFFF;
+$accordion-border-color: #E2E8F0;
+$accordion-border-radius: 16px;
+$accordion-button-bg: #FFFFFF;
+$accordion-button-color: #0F172A;
+$accordion-button-active-bg: #F1F5FD;
+$accordion-button-active-color: #1D4ED8;
+
+/* Breadcrumb Variables */
+/* Used in topbar breadcrumbs for page hierarchy. */
+$breadcrumb-font-size: $font14;
+$breadcrumb-divider-color: #94A3B8;
+$breadcrumb-active-color: #0F172A;
+$breadcrumb-divider: ">";
+
+/* Offcanvas Variables */
+/* Used by mobile sidebar drawer behavior and panel sizing. */
+$offcanvas-bg-color: #FFFFFF;
+$offcanvas-border-color: #E2E8F0;
+$offcanvas-horizontal-width: 280px;
+$offcanvas-title-line-height: 1.2;

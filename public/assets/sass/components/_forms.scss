@@ -1,0 +1,291 @@
+/* ==========================================================================
+   FORM GROUP
+   ========================================================================== */
+
+.ma-form-group {
+    margin-bottom: 20px;
+}
+
+/* ==========================================================================
+   LABEL
+   ========================================================================== */
+
+.ma-form-label {
+    display: inline-block;
+    margin-bottom: 8px;
+    font-size: $font14;
+    font-weight: $fontRegular;
+    color: $textGray;
+}
+
+/* ==========================================================================
+   REQUIRED
+   ========================================================================== */
+
+.ma-required {
+    color: $danger;
+}
+
+/* ==========================================================================
+   INPUT / SELECT
+   ========================================================================== */
+
+.form-control,
+.form-select {
+    min-height: 45px;
+    padding: 8px 16px;
+    border: 1px solid $borderColor;
+    border-radius: $borderRadius8;
+    font-size: $font14;
+    color: $textPrimary;
+
+    @include maTransition();
+
+    &:focus {
+        border-color: $primary;
+        box-shadow: none;
+    }
+
+    @include maPlaceholder {
+        color: $textMuted;
+    }
+}
+
+.form-select {
+    padding-right: 32px;
+}
+
+/* ==========================================================================
+   TEXTAREA
+   ========================================================================== */
+
+textarea.form-control {
+    min-height: 120px;
+    resize: vertical;
+}
+
+/* ==========================================================================
+   CHECKBOX & RADIO
+   ========================================================================== */
+
+.form-check {
+    margin-bottom: 0;
+    &.form-switch {
+        .form-check-input {
+            width: 40px;
+            height: 22px;
+            min-width: 40px;
+            margin-top: 0;
+            &:focus {
+                box-shadow: none;
+            }
+        }
+    }
+}
+
+.form-check-input {
+    cursor: pointer;
+
+    &:focus {
+        box-shadow: none;
+    }
+}
+
+.form-check-label {
+    cursor: pointer;
+    color: $primary;
+    padding-left: 8px;
+    font-size: $font16; 
+    @include maMedia($xs) {
+        font-size: 14px;
+    }
+}
+
+.form-check-input.ma-permission-checkbox {
+    margin: 0;
+    width: 24px;
+    height: 24px;
+    min-width: 24px;
+    border: 1px solid $gray;
+    border-radius: $borderRadius6;
+    background-color: $white;
+    background-position: center;
+    background-size: 12px 12px;
+    background-repeat: no-repeat;
+    vertical-align: middle;
+
+    &:focus {
+        box-shadow: none;
+    }
+
+    &:checked {
+        background-color: $white;
+        background-image: url("../images/icons/check.svg");
+        background-position: center center;
+        background-repeat: no-repeat;
+        background-size: 14px 10px;
+    }
+}
+
+/* ==========================================================================
+   SWITCH
+   ========================================================================== */
+
+.form-switch {
+    .form-check-input {
+        cursor: pointer;
+    }
+}
+
+/* ==========================================================================
+   FILE UPLOAD
+   ========================================================================== */
+
+.form-control[type="file"] {
+    min-height: auto;
+    padding: 10px 16px;
+}
+
+/* ==========================================================================
+   FORM HELP TEXT
+   ========================================================================== */
+
+.ma-form-text {
+    display: block;
+    margin-top: 6px;
+    font-size: $font12;
+    color: $textSecondary;
+}
+
+/* ==========================================================================
+   VALIDATION
+   ========================================================================== */
+
+.ma-form-error {
+    display: block;
+    margin-top: 6px;
+    font-size: $font12;
+    color: $danger;
+}
+
+.ma-form-success {
+    display: block;
+    margin-top: 6px;
+    font-size: $font12;
+    color: $success;
+}
+
+/* ==========================================================================
+   DISABLED STATE
+   ========================================================================== */
+
+.form-control:disabled,
+.form-select:disabled {
+    background-color: $bgLight;
+    border-color: $borderColor;
+    color: $textMuted;
+    cursor: not-allowed;
+    opacity: .7;
+}
+
+.form-control:disabled {
+    @include maPlaceholder {
+        color: $textMuted;
+    }
+}
+
+.form-check-input:disabled {
+    cursor: not-allowed;
+    opacity: .6;
+}
+
+.form-check-input:disabled + .form-check-label {
+    cursor: not-allowed;
+    opacity: .6;
+}
+
+.form-control[type="file"]:disabled {
+    cursor: not-allowed;
+}
+
+.btn:disabled {
+    cursor: not-allowed;
+    opacity: .65;
+}
+
+/* ==========================================================================
+   READONLY
+   ========================================================================== */
+
+.form-control[readonly] {
+    background-color: $bgLight;
+    border-color: $borderColor;
+    cursor: default;
+}
+
+/* ==========================================================================
+   SEARCH FORM
+   ========================================================================== */
+
+.ma-search-form {
+    position: relative;
+
+    .form-control {
+        padding-right: 48px;
+    }
+}
+
+.ma-search-form__btn {
+    position: absolute;
+    top: 50%;
+    right: 16px;
+    transform: translateY(-50%);
+    border: 0;
+    background: transparent;
+    padding: 0;
+    color: $textSecondary;
+}
+
+/* ==========================================================================
+   DECORATED FIELD WRAPPER
+   ========================================================================== */
+
+.ma-input-group {
+    position: relative;
+    min-width: 165px;
+
+    .ma-input-icon {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: $textSecondary;
+        z-index: 2;
+        pointer-events: none;
+    }
+
+    .form-control {
+        padding-left: 40px;
+    }
+
+    &.is-calendar {
+        .form-control {
+            padding-left: 12px;
+            padding-right: 38px;
+        }
+        .ma-input-icon {
+            right: 15px;
+            left: auto;
+        }
+    }
+
+}
+
+.ma-filter-actions {
+    width: 100%;
+    .ma-btn {
+        width: 100%;
+        @include maFlex(center, center);
+        gap: 6px;
+    }
+}

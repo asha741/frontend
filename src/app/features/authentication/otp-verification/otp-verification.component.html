@@ -1,0 +1,77 @@
+<main class="ma-login">
+  <div class="container-fluid px-0">
+    <div class="row g-0 ma-login-row">
+      <div class="col-lg-6 ma-login-left">
+        <div class="ma-login-content">
+          <div class="ma-login-logo-wrap">
+            <img src="assets/images/logo-login.svg" alt="MediAudit Logo" class="ma-login-logo">
+          </div>
+          <p class="ma-kicker">Two-Factor Authentication</p>
+          <h2 class="ma-login-heading">Secure <strong>Verification</strong></h2>
+          <div class="ma-login-divider"></div>
+          <p class="ma-login-description">An OTP has been sent to your registered email. Enter it to continue.</p>
+        </div>
+      </div>
+      <div class="col-lg-6 ma-login-right">
+        <div class="ma-auth-card">
+
+          <!-- Back Arrow → Login -->
+          <a routerLink="/auth/login" class="ma-back-arrow" aria-label="Back to Sign In">
+            <i class="fa-solid fa-arrow-left"></i>
+          </a>
+
+          <div class="ma-auth-head">
+            <h2 class="ma-head-lg">OTP Verification</h2>
+            <p>Enter the 6-digit code sent to <strong>{{ email() }}</strong></p>
+          </div>
+          <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate appFocusFirstInput>
+            <div class="ma-form-group">
+              <label class="ma-form-label">OTP Code <span class="ma-required">*</span></label>
+              <ng-otp-input formControlName="otp" [class]="{'is-invalid': isSubmitted() && f['otp'].errors}"
+                [config]="otpConfig" [disabled]="isLocked() || countdown() == '0'"></ng-otp-input>
+              @if (isSubmitted() && f['otp'].errors) {
+                @if (f['otp'].errors['required']) {
+                <div class="invalid-feedback d-block text-center">Verification code is required.</div>
+                } @else {
+                <div class="invalid-feedback d-block text-center">Please enter the valid 6-digit OTP.</div>
+                }
+              }
+            </div>
+
+            @if (verifyError() || isLocked()) {
+              <div class="alert ma-auth-alert" role="alert"
+                   [class.alert-warning]="isLocked()" [class.alert-danger]="!isLocked()">
+                <span class="d-block">{{ verifyError() }}</span>
+                @if (isLocked()) {
+                  <span class="d-block mt-1">
+                    You can try again in <strong>{{ lockoutDisplay() }}</strong>.
+                  </span>
+                } @else if (attemptsLeft() !== null && attemptsLeft() !== 0) {
+                  <span class="d-block mt-1">
+                    {{ attemptsLeft() }} attempt{{ attemptsLeft() === 1 ? '' : 's' }} left before
+                    your account is locked.
+                  </span>
+                }
+              </div>
+            }
+
+            <button type="submit" class="ma-auth-submit" [disabled]="verifying() || isLocked()">
+              <span>{{ isLocked() ? 'Try again in ' + lockoutDisplay() : 'Verify OTP' }}</span>
+              <i class="fa-solid" [class.fa-arrow-right]="!isLocked()" [class.fa-lock]="isLocked()"></i>
+            </button>
+          </form>
+          <p class="ma-terms text-center mt-3">
+            @if (isLocked()) {
+            Resend is unavailable until the lock expires.
+            } @else if (canResend()) {
+            Didn't receive?
+            <button type="button" class="btn btn-link p-0 ma-link" (click)="resendOtp()">Resend OTP</button>
+            } @else {
+            Code expires in <strong>{{ countdown() }}</strong>
+            }
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>

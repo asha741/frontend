@@ -1,0 +1,130 @@
+<header class="ma-topbar">
+  <div class="ma-topbar-left">
+    <button
+      class="btn ma-btn ma-sidebar-toggle"
+      type="button"
+      (click)="sidebarToggle.emit()"
+      aria-label="Toggle sidebar"
+    >
+      <i class="fa-solid fa-bars" aria-hidden="true"></i>
+    </button>
+    <app-breadcrumb />
+  </div>
+  <div class="ma-topbar-right">
+    <!-- Notification Dropdown -->
+    @if (auth.isOrgAdmin()) {
+      <div class="ma-notification-dropdown" #notificationRoot>
+        <button
+          class="btn ma-btn ma-notification-btn"
+          type="button"
+          (click)="toggleNotifications()"
+          [attr.aria-expanded]="notificationsOpen()"
+          aria-label="Open notifications"
+        >
+          <img
+            src="assets/images/icons/notification.svg"
+            alt="Notifications"
+            class="ma-svg ma-notification-icon"
+          />
+          @if (notifications.unreadCount() > 0) {
+            <span class="ma-notification-count">{{
+              notifications.unreadCount() > 99 ? '99+' : notifications.unreadCount()
+            }}</span>
+          }
+        </button>
+        @if (notificationsOpen()) {
+          <div class="ma-notification-menu">
+            <div class="ma-dropdown-header">
+              <span>Notifications</span>
+              @if (notifications.unreadCount() > 0) {
+                <span class="ma-notification-new-count">{{ notifications.unreadCount() }} new</span>
+              }
+            </div>
+            <div class="ma-notification-list" (scroll)="onNotificationListScroll($event)">
+              @if (notifications.loading()) {
+                <div class="ma-notification-empty">Loading…</div>
+              } @else if (notifications.notifications().length === 0) {
+                <div class="ma-notification-empty">You're all caught up.</div>
+              } @else {
+                @for (item of notifications.notifications(); track item.id) {
+                  <button
+                    type="button"
+                    class="ma-notification-item"
+                    [class.unread]="item.status === 'Unread'"
+                    [disabled]="notifications.markingReadIds().has(item.id)"
+                    (click)="onNotificationClick(item.id)"
+                  >
+                    @if (notifications.markingReadIds().has(item.id)) {
+                      <span class="ma-notification-spinner" aria-hidden="true"></span>
+                    } @else {
+                      <span class="ma-notification-indicator"></span>
+                    }
+                    <span class="ma-notification-body">
+                      <span class="ma-notification-title">{{ item.title }}</span>
+                      <span class="ma-notification-text">{{ item.message }}</span>
+                      <span class="ma-notification-time">{{ item.createdAt | timeAgo }}</span>
+                    </span>
+                  </button>
+                }
+                @if (notifications.loadingMore()) {
+                  <div class="ma-notification-loading-more">Loading more…</div>
+                }
+              }
+            </div>
+            <div class="ma-dropdown-footer">
+              <button
+                type="button"
+                class="btn btn-link p-0 d-inline-flex align-items-center justify-content-center gap-2"
+                [disabled]="notifications.unreadCount() === 0 || notifications.markingAllRead()"
+                (click)="markAllAsRead()"
+              >
+                @if (notifications.markingAllRead()) {
+                  <span class="ma-notification-spinner" aria-hidden="true"></span>
+                  Marking…
+                } @else {
+                  Mark all as read
+                }
+              </button>
+            </div>
+          </div>
+        }
+      </div>
+    }
+
+    <!-- User Dropdown -->
+    <div class="dropdown ma-user-dropdown">
+      <button
+        class="btn ma-btn ma-user-toggle dropdown-toggle"
+        type="button"
+        data-bs-toggle="dropdown"
+        data-bs-auto-close="outside"
+        aria-expanded="false"
+        aria-label="Open user profile menu"
+      >
+        @if (auth.userAvatarUrl()) {
+          <img class="ma-avatar" [src]="auth.userAvatarUrl()" style="object-fit: cover" />
+        } @else {
+          <span class="ma-avatar">{{ auth.userInitials() }}</span>
+        }
+        <span class="ma-profile-meta">
+          <span class="ma-user-name text-truncate">{{ auth.userFullName() }}</span>
+          <span class="ma-user-role text-truncate">{{ auth.userRoleLabel() || '' }}</span>
+        </span>
+        <span class="ma-chevron"><i class="fa-solid fa-chevron-down"></i></span>
+      </button>
+      <ul class="dropdown-menu dropdown-menu-end ma-dropdown-menu ma-user-menu">
+        <li>
+          <a class="dropdown-item" routerLink="/profile">
+            <i class="fa-regular fa-user"></i> Profile
+          </a>
+        </li>
+        <li><hr class="dropdown-divider" /></li>
+        <li>
+          <button class="dropdown-item text-danger" type="button" (click)="logout()">
+            <i class="fa-solid fa-right-from-bracket"></i> Logout
+          </button>
+        </li>
+      </ul>
+    </div>
+  </div>
+</header>

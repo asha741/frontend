@@ -1,0 +1,72 @@
+<div class="ma-page-header">
+  <div class="ma-page-header__meta">
+    <h2 class="ma-page-title">Settings</h2>
+    <p class="ma-page-subtitle">Configure system-level thresholds and preferences</p>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-12">
+    <article class="ma-card">
+      <div class="ma-card__header">
+        <h3 class="ma-card__title">Consecutive Day Analysis</h3>
+      </div>
+
+      <div class="ma-card__body">
+        <form [formGroup]="form" (ngSubmit)="saveSettings()" appFocusFirstInput>
+          <div class="ma-form-group">
+            <label class="ma-form-label" for="maConsecutiveDaysThreshold">
+              Consecutive Days Threshold <span class="ma-required">*</span>
+            </label>
+            <p class="ma-settings-hint">
+              Providers working more than this many consecutive days will be flagged in Claim Data
+              Analytics. Accepted range: 1 – 31.
+            </p>
+            <input
+              id="maConsecutiveDaysThreshold"
+              type="text"
+              inputmode="numeric"
+              pattern="[0-9]*"
+              class="form-control ma-settings-input"
+              formControlName="consecutiveDaysThreshold"
+              maxlength="2"
+              placeholder="Enter threshold"
+              appTrimWhitespace
+              [readonly]="!canUpdate()"
+              (keydown)="onThresholdKeydown($event)"
+              (paste)="onThresholdPaste($event)"
+              [class.is-invalid]="isSubmitted() && f['consecutiveDaysThreshold'].errors"
+            />
+            @if (isSubmitted() && f['consecutiveDaysThreshold'].errors) {
+              <div class="invalid-feedback d-block">
+                @if (f['consecutiveDaysThreshold'].hasError('required')) {
+                  Consecutive Days Threshold is required.
+                } @else if (f['consecutiveDaysThreshold'].hasError('pattern')) {
+                  Only numeric values are allowed.
+                } @else {
+                  Threshold must be between 1 and 31 days.
+                }
+              </div>
+            }
+          </div>
+
+          <div class="ma-settings-note">
+            <i class="fa-solid fa-circle-info" aria-hidden="true"></i>
+            <span>
+              This value controls provider flagging logic in the Consecutive Day Analysis screen
+              inside Claim Data Analytics. The configured threshold is displayed there as read-only.
+            </span>
+          </div>
+
+          @if (canUpdate()) {
+            <div class="ma-settings-footer">
+              <button class="btn ma-btn btn-primary" type="submit" [disabled]="saving()">
+                {{ saving() ? 'Saving...' : 'Save Settings' }}
+              </button>
+            </div>
+          }
+        </form>
+      </div>
+    </article>
+  </div>
+</div>

@@ -1,0 +1,8 @@
+
+    @if (show) {
+      <div class="ma-loader-overlay" [class.inline]="inline" role="status" aria-label="Loading">
+        <div class="ma-spinner"></div>
+        @if (message) { <p class="ma-loader-text">{{ message }}</p> }
+      </div>
+    }
+  

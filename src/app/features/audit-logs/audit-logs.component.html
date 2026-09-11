@@ -1,0 +1,304 @@
+<!-- Page header -->
+<div class="ma-page-header">
+  <div class="ma-page-header__meta">
+    <h2 class="ma-page-title">Audit Logs</h2>
+    <p class="ma-page-subtitle">Complete system activity audit trail</p>
+  </div>
+  <div class="ma-page-header__actions ma-audit-actions">
+    @if (integrity(); as chk) {
+      <span
+        class="ma-badge ma-audit-integrity"
+        [class]="(chk.valid ? 'accepted' : 'failed') | badgeClass"
+        [ngbTooltip]="integrityDetail()"
+      >
+        <i class="fa-solid" [class]="chk.valid ? 'fa-shield-check' : 'fa-shield-xmark'"></i>
+        @if (chk.valid) {
+          Chain verified
+        } @else if (chk.brokenAtSequence != null) {
+          Chain broken at #{{ chk.brokenAtSequence }}
+        } @else {
+          Chain failed
+        }
+      </span>
+    }
+    @if (perms.can(PERMISSION_MODULE.Audit, PERMISSION_ACTION.Verify)) {
+      <button type="button" class="btn ma-btn btn-outline-secondary ma-audit-verify-btn" (click)="verifyIntegrity()">
+        <i class="fa-solid fa-shield-halved me-2"></i> Verify Integrity
+      </button>
+    }
+    <!-- Split button: one Export, a menu for the format the backend supports. -->
+    @if (perms.can(PERMISSION_MODULE.Audit, PERMISSION_ACTION.Export) && logsData().total > 0) {
+      <div class="dropdown ma-audit-export">
+        <button
+          type="button"
+          class="btn ma-btn btn-primary dropdown-toggle"
+          data-bs-toggle="dropdown"
+          aria-expanded="false"
+          aria-label="Export audit logs"
+          [disabled]="exporting()"
+        >
+          <i class="fa-solid fa-download me-2"></i>
+          {{ exporting() ? 'Exporting…' : 'Export' }}
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end ma-dropdown-menu">
+          <li>
+            <button class="dropdown-item" type="button" (click)="exportLogs('csv')">
+              <i class="fa-solid fa-file-csv me-2"></i> CSV (.csv)
+            </button>
+          </li>
+          <li>
+            <button class="dropdown-item" type="button" (click)="exportLogs('xlsx')">
+              <i class="fa-solid fa-file-excel me-2"></i> Excel (.xlsx)
+            </button>
+          </li>
+        </ul>
+      </div>
+    }
+  </div>
+</div>
+
+<!-- ══ Filters ══════════════════════════════════════════════════════ -->
+<section class="ma-filter-wrap mt-3">
+  <div class="row g-2 align-items-center ma-filter-grid">
+    <!-- Six equal-width fields: 6 per row from xl, 3 per row at lg, 2 at sm —
+         so the bar never wraps into a ragged half-row. -->
+    <!-- Keyword search -->
+    <div class="col-12 col-sm-6 col-lg-4 col-xl-2">
+      <div class="ma-input-group ma-filter-item ma-filter-item--search">
+        <i class="fa-solid fa-magnifying-glass ma-input-icon"></i>
+        <input
+          id="auditSearchInput"
+          type="text"
+          class="form-control"
+          placeholder="Search"
+          aria-label="Search"
+          name="search"
+          [(ngModel)]="search"
+          appTrimWhitespace
+          maxlength="100"
+          (keydown.enter)="onSearch()"
+        />
+      </div>
+    </div>
+
+    <!-- Action Date From -->
+    <div class="col-12 col-sm-6 col-lg-4 col-xl-2">
+      <div class="ma-input-group is-calendar ma-filter-item ma-filter-item--date">
+        <input
+          id="dateFrom"
+          class="form-control bg-white"
+          placeholder="From date"
+          aria-label="From date"
+          name="dateFrom"
+          readonly
+          ngbDatepicker
+          #fromPicker="ngbDatepicker"
+          [(ngModel)]="fromDate"
+          [maxDate]="$any(toDate)"
+          (click)="fromPicker.toggle()"
+        />
+        <i
+          class="fa-regular fa-calendar ma-input-icon"
+          role="button"
+          aria-label="Open from-date picker"
+          (click)="fromPicker.toggle()"
+        ></i>
+      </div>
+    </div>
+
+    <!-- Action Date To -->
+    <div class="col-12 col-sm-6 col-lg-4 col-xl-2">
+      <div class="ma-input-group is-calendar ma-filter-item ma-filter-item--date">
+        <input
+          id="dateTo"
+          class="form-control bg-white"
+          placeholder="To date"
+          aria-label="To date"
+          name="dateTo"
+          readonly
+          ngbDatepicker
+          #toPicker="ngbDatepicker"
+          [(ngModel)]="toDate"
+          [minDate]="$any(fromDate)"
+          (click)="toPicker.toggle()"
+        />
+        <i
+          class="fa-regular fa-calendar ma-input-icon"
+          role="button"
+          aria-label="Open to-date picker"
+          (click)="toPicker.toggle()"
+        ></i>
+      </div>
+    </div>
+
+    <!-- Actor — type-ahead search; Action/Module filter from the grid columns. -->
+    <div class="col-12 col-sm-6 col-lg-4 col-xl-2">
+      <div class="ma-filter-item">
+        <app-search-autocomplete
+          [endpoint]="API_ROUTES.GET_AUDIT_LOG_FILTERS"
+          searchKey="user_search"
+          resultKey="users"
+          valueAs="label"
+          placeholder="Search actor"
+          [(ngModel)]="actorFilter"
+        ></app-search-autocomplete>
+      </div>
+    </div>
+
+    <!-- Search & Reset buttons — Action/Module filters now live as column filters in the grid -->
+    <div class="col-12 col-sm-6 col-lg-4 col-xl-2 d-flex gap-2">
+      <button
+        type="button"
+        class="btn ma-btn btn-primary"
+        (click)="onSearch()"
+        style="min-height: 45px; padding: 0 20px"
+      >
+        Search
+      </button>
+      <button
+        type="button"
+        class="btn ma-btn btn-outline-secondary"
+        (click)="clearSearch()"
+        style="min-height: 45px; padding: 0 20px"
+      >
+        Reset
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- ══ Audit logs grid ══════════════════════════════════════════════ -->
+<section class="ma-surface-card mt-4">
+  <div class="table-responsive">
+    <kendo-grid
+      class="ma-kendo-grid table"
+      [data]="logsData()"
+      [pageSize]="state.take"
+      [skip]="state.skip"
+      [sortable]="true"
+      [sort]="state.sort"
+      filterable="menu"
+      [filter]="state.filter"
+      [pageable]="{ buttonCount: 3, type: 'numeric', pageSizes: pageSizes }"
+      [scrollable]="'none'"
+      (dataStateChange)="dataStateChange($event)"
+    >
+      <!-- ── Sr. No. ──────────────────────────────────────────────── -->
+      <kendo-grid-column title="Sr. No." [width]="80" [filterable]="false" [sortable]="false">
+        <ng-template kendoGridCellTemplate let-rowIndex="rowIndex">
+          {{ rowIndex + 1 }}
+        </ng-template>
+      </kendo-grid-column>
+
+      <!-- ── Timestamp ────────────────────────────────────────────── -->
+      <!-- field drives sort_by — must match the backend's column name
+           (`created_at`), not the normalized `timestamp` the cell renders from. -->
+      <kendo-grid-column
+        field="created_at"
+        title="Timestamp"
+        [width]="210"
+        [filterable]="false"
+        [sortable]="true"
+      >
+        <ng-template kendoGridCellTemplate let-dataItem>
+          {{ dataItem.timestamp ? (dataItem.timestamp | date: 'dd-MMM-yyyy hh:mm a') : '—' }}
+        </ng-template>
+      </kendo-grid-column>
+
+      <!-- ── Actor ────────────────────────────────────────────────── -->
+      <!-- field drives sort_by; the cell renders from the normalized `actor`.
+           Filtering happens in the top bar (sent as the backend's `user`). -->
+      <kendo-grid-column
+        field="actor_name"
+        title="Actor"
+        [width]="140"
+        [sortable]="true"
+        [filterable]="false"
+      >
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div class="text-truncate" style="max-width: 140px" [ngbTooltip]="dataItem.actor">
+            {{ dataItem.actor || '—' }}
+          </div>
+        </ng-template>
+      </kendo-grid-column>
+
+      <!-- ── Action (dropdown column filter) ──────────────────────── -->
+      <kendo-grid-column field="action" title="Action" [width]="150" [sortable]="true">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <span class="ma-badge" [class]="dataItem.action | badgeClass: 'action'">{{
+            dataItem.action || '—'
+          }}</span>
+        </ng-template>
+        <ng-template
+          kendoGridFilterMenuTemplate
+          let-filter
+          let-column="column"
+          let-filterService="filterService"
+        >
+          <dropdownlist-filter
+            [isPrimitive]="true"
+            [field]="column.field"
+            [currentFilter]="filter"
+            [filterService]="filterService"
+            textField="label"
+            valueField="value"
+            [data]="actionOptions"
+          >
+          </dropdownlist-filter>
+        </ng-template>
+      </kendo-grid-column>
+
+      <!-- ── Module (dropdown column filter) ──────────────────────── -->
+      <kendo-grid-column field="module" title="Module" [width]="170" [sortable]="true">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div class="text-truncate" [ngbTooltip]="dataItem.module">
+            {{ dataItem.module || '—' }}
+          </div>
+        </ng-template>
+        <ng-template
+          kendoGridFilterMenuTemplate
+          let-filter
+          let-column="column"
+          let-filterService="filterService"
+        >
+          <dropdownlist-filter
+            [isPrimitive]="true"
+            [field]="column.field"
+            [currentFilter]="filter"
+            [filterService]="filterService"
+            textField="label"
+            valueField="value"
+            [data]="moduleOptions"
+          >
+          </dropdownlist-filter>
+        </ng-template>
+      </kendo-grid-column>
+
+      <!-- ── IP Address ───────────────────────────────────────────── -->
+      <kendo-grid-column
+        field="ip_address"
+        title="IP Address"
+        [width]="150"
+        [filterable]="false"
+        [sortable]="false"
+      >
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <code>{{ dataItem.ipAddress || '—' }}</code>
+        </ng-template>
+      </kendo-grid-column>
+
+      <!-- ── Details ──────────────────────────────────────────────── -->
+      <kendo-grid-column field="details" title="Details" [filterable]="false" [sortable]="false">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div class="text-truncate" style="max-width: 340px" [ngbTooltip]="dataItem.details">
+            {{ dataItem.details || '—' }}
+          </div>
+        </ng-template>
+      </kendo-grid-column>
+
+      <ng-template kendoGridNoRecordsTemplate>
+        <div class="ma-grid-empty">No audit logs match your current filters.</div>
+      </ng-template>
+    </kendo-grid>
+  </div>
+</section>

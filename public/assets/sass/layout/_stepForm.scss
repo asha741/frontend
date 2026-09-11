@@ -1,0 +1,363 @@
+/* ==========================================================================
+   STEP FORM
+   ========================================================================== */
+
+.ma-stepform-wrap {
+    width: 100%;
+}
+
+/* ==========================================================================
+   STEP INDICATOR
+   ========================================================================== */
+
+.ma-step-indicator {
+    @include maFlex(flex-start, center);
+    margin-bottom: 24px;
+    width: 100%;
+    gap: 12px;
+}
+
+.ma-step-item {
+    position: relative;
+    flex: 1;
+    min-width: 80px;
+    padding: 8px;
+    border-radius: $borderRadius8;
+    cursor: pointer;
+    text-align: center;
+    @include maFlex(center, center, column);
+    gap: 8px;
+    @include maTransition();
+    @include maMedia($md) {
+        flex-direction: row;
+        text-align: left;
+    }
+
+    &.active {
+        background: rgba($primary, .08);
+
+        .ma-step-circle {
+            background: $primary;
+            color: $white;
+        }
+
+        .ma-step-title {
+            color: $textPrimary;
+            font-weight: $fontSemiBold;
+        }
+    }
+
+    &.completed {
+        .ma-step-circle {
+            background: $success;
+            color: $white;
+        }
+
+        .ma-step-title {
+            color: $success;
+        }
+    }
+}
+
+.ma-step-circle {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: $light;
+    color: $textSecondary;
+    @include maFlexCenter;
+    font-weight: $fontBold;
+    @include maTransition;
+    font-size: $font16;
+
+    @include maMedia($sm) {
+        width: 36px;
+        height: 36px;
+        font-size: $font14;
+    }
+}
+
+.ma-step-title {
+    font-size: $font14;
+    font-weight: $fontMedium;
+    color: $textSecondary;
+}
+
+.ma-step-line {
+    flex-shrink: 0;
+    width: 40px;
+    height: 2px;
+    background: $borderColor;
+
+    @include maTransition();
+
+    &.completed {
+        background: $primary;
+    }
+}
+
+/* ==========================================================================
+   STEP CONTENT
+   ========================================================================== */
+
+.ma-stepcontent {
+    width: 100%;
+}
+
+.ma-step-panel {
+    display: none;
+
+    &.active {
+        display: block;
+        animation: alsFadeIn .3s ease;
+    }
+}
+
+@keyframes alsFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ==========================================================================
+   STEP PANEL HEADER
+   ========================================================================== */
+
+.ma-step-panel-head {
+    margin-bottom: 24px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid $borderColor;
+}
+
+.ma-step-panel-desc {
+    color: $textSecondary;
+    margin-bottom: 0;
+}
+
+/* ==========================================================================
+   UPLOAD MODE
+   ========================================================================== */
+
+.ma-upload-mode-wrap {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+    margin-bottom: 24px;
+
+    @include maMedia($md) {
+        grid-template-columns: 1fr;
+    }
+}
+
+.ma-upload-mode-card {
+    cursor: pointer;
+
+    input {
+        display: none;
+    }
+
+    &:has(input:checked) {
+
+        .ma-upload-mode-inner {
+            border-color: $primary;
+            background: rgba($primary, .08);
+        }
+
+        .ma-upload-mode-radio {
+            background: $primary;
+            border-color: $primary;
+        }
+    }
+}
+
+.ma-upload-mode-inner {
+    @include maCard();
+
+    @include maFlex(
+        $direction: column
+    );
+
+    gap: 12px;
+
+    @include maTransition();
+
+    &:hover {
+        border-color: rgba($primary, .4);
+    }
+}
+
+.ma-upload-mode-top {
+    @include maFlex(
+        flex-start,
+        center
+    );
+
+    gap: 12px;
+}
+
+.ma-upload-mode-radio {
+    width: 20px;
+    height: 20px;
+    border: 2px solid $borderColor;
+    border-radius: 50%;
+}
+
+.ma-upload-mode-title {
+    font-weight: $fontSemiBold;
+    color: $textPrimary;
+}
+
+.ma-upload-mode-desc {
+    color: $textSecondary;
+}
+
+/* ==========================================================================
+   UPLOAD ZONE
+   ========================================================================== */
+
+.ma-upload-zone {
+    position: relative;
+    padding: 40px 20px;
+    text-align: center;
+    cursor: pointer;
+
+    border: 2px dashed $borderColor;
+    border-radius: $borderRadius12;
+    background: $white;
+
+    @include maFlex(
+        center,
+        center,
+        column
+    );
+
+    @include maTransition();
+
+    &.dragover {
+        border-color: $primary;
+        background: rgba($primary, .08);
+    }
+}
+
+.ma-file-input {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+}
+
+.ma-upload-icon {
+    width: 32px;
+    height: 32px;
+    flex: 0 0 auto;
+    margin-bottom: 8px;
+    @include maFlex(center, center);
+}
+
+.ma-upload-center {
+    max-width: 500px;
+}
+
+.ma-upload-browse {
+    margin-top: 20px;
+}
+
+/* ==========================================================================
+   FILE PREVIEW
+   ========================================================================== */
+
+.ma-file-preview {
+    @include maCard();
+
+    margin-top: 16px;
+}
+
+.ma-file-preview-inner {
+    @include maFlex(
+        flex-start,
+        center
+    );
+
+    gap: 12px;
+}
+
+.ma-file-preview-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: $borderRadius8;
+    background: $light;
+
+    @include maFlex(center, center);
+
+    flex-shrink: 0;
+}
+
+.ma-file-preview-meta {
+    flex: 1;
+    min-width: 0;
+}
+
+.ma-file-preview-name {
+    display: block;
+    margin-bottom: 4px;
+    font-size: $font14;
+    font-weight: $fontSemiBold;
+
+    @include maTextEllipsis();
+}
+
+.ma-file-preview-size {
+    font-size: $font12;
+    color: $textSecondary;
+}
+
+.ma-file-remove {
+    width: 32px;
+    height: 32px;
+    border: 1px solid $borderColor;
+    border-radius: $borderRadius8;
+    background: $white;
+    color: $danger;
+
+    @include maFlex(center, center);
+
+    @include maTransition();
+
+    &:hover {
+        background: rgba($danger, .08);
+    }
+}
+
+/* ==========================================================================
+   FORM ACTIONS
+   ========================================================================== */
+
+.ma-form-actions {
+    margin-top: 24px;
+
+    @include maFlex(
+        flex-start,
+        center
+    );
+
+    gap: 12px;
+    flex-wrap: wrap;
+
+    @include maMedia($sm) {
+        flex-direction: column-reverse;
+        align-items: stretch;
+    }
+
+    .btn,
+    .ma-btn {
+        @include maMedia($sm) {
+            width: 100%;
+        }
+    }
+}

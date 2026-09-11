@@ -1,0 +1,306 @@
+<!-- The claim-analyst page scope carries the .ma-label-value / .ma-label /
+     .ma-value styling this detail layout reuses. -->
+<main class="claim-analyst-page">
+<!-- ══ Header ════════════════════════════════════════════════════════ -->
+<div class="ma-page-header">
+  <div class="ma-page-header__meta">
+    <div class="ma-back-header">
+      <!-- <app-back-button /> -->
+      <h2 class="ma-page-title">Batch Detail @if (batchLabel()) { — {{ batchLabel() }} }</h2>
+    </div>
+    <p class="ma-page-subtitle">Read-only view of batch processing results</p>
+  </div>
+</div>
+
+<!-- ══ Batch Information ═════════════════════════════════════════════ -->
+<div class="ma-card mt-3">
+  <div class="ma-card-header">
+    <div class="chart-card__header mb-0">
+      <h3 class="chart-card__title">Batch Information</h3>
+    </div>
+  </div>
+  <div class="ma-card-body">
+    <div class="row g-3">
+      <div class="col-6 col-md-4 col-xl-2">
+        <div class="ma-label-value">
+          <span class="ma-label">Batch ID</span>
+          <span class="ma-value" [title]="batchLabel()">{{ batchLabel() || '-' }}</span>
+        </div>
+      </div>
+      <div class="col-6 col-md-4 col-xl-2">
+        <div class="ma-label-value">
+          <span class="ma-label">Treatment Plan</span>
+          <span class="ma-value">{{ treatmentPlanCount() || '-' }}</span>
+        </div>
+      </div>
+      <div class="col-6 col-md-4 col-xl-2">
+        <div class="ma-label-value">
+          <span class="ma-label">Progress Notes</span>
+          <span class="ma-value">{{ progressNotesCount() || '-' }}</span>
+        </div>
+      </div>
+      <div class="col-6 col-md-4 col-xl-2">
+        <div class="ma-label-value">
+          <span class="ma-label">DLA 20</span>
+          <span class="ma-value">{{ dla20Count() || '-' }}</span>
+        </div>
+      </div>
+      <div class="col-6 col-md-4 col-xl-2">
+        <div class="ma-label-value">
+          <span class="ma-label">File Size</span>
+          <span class="ma-value">{{ fileSize() || '-' }}</span>
+        </div>
+      </div>
+      <div class="col-6 col-md-4 col-xl-2">
+        <div class="ma-label-value">
+          <span class="ma-label">Status</span>
+          @if (batchStatus()) {
+            <span class="ma-badge" [class]="batchStatus() | badgeClass">{{ batchStatus() }}</span>
+          } @else {
+            <span class="ma-value">-</span>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ Tabs ══════════════════════════════════════════════════════════ -->
+<div class="ma-tabs mt-3">
+  <ul class="nav nav-tabs" role="tablist">
+    <li class="nav-item" role="presentation">
+      <button type="button" class="nav-link" [class.active]="activeTab() === 'documents'" (click)="activeTab.set('documents')">
+        Documents
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button type="button" class="nav-link" [class.active]="activeTab() === 'extract-data'" (click)="activeTab.set('extract-data')">
+        Extract Data
+      </button>
+    </li>
+    <li class="nav-item" role="presentation">
+      <button type="button" class="nav-link" [class.active]="activeTab() === 'claims'" (click)="activeTab.set('claims')">
+        Claims
+      </button>
+    </li>
+  </ul>
+</div>
+
+<div class="tab-content">
+  <!-- ══════════════════════ DOCUMENTS TAB ══════════════════════ -->
+  @if (activeTab() === 'documents') {
+    <section class="ma-surface-card ma-users-section-card ma-user-list-card mt-3">
+      <div class="table-responsive">
+        <kendo-grid
+          class="ma-kendo-grid table ma-master-table--bulk-upload-documents"
+          [data]="documentsGridData()"
+          [pageSize]="documentsState.take"
+          [skip]="documentsState.skip"
+          [sortable]="false"
+          [pageable]="{ buttonCount: 3, type: 'numeric', pageSizes: pageSizes }"
+          [scrollable]="'none'"
+          (dataStateChange)="onDocumentsStateChange($event)"
+        >
+          <kendo-grid-column title="Sr. No." [width]="80" [filterable]="false" [sortable]="false">
+            <ng-template kendoGridCellTemplate let-rowIndex="rowIndex">
+              {{ rowIndex + 1 }}
+            </ng-template>
+          </kendo-grid-column>
+
+          <kendo-grid-column field="document_name" title="Document Name" [width]="240" [filterable]="false">
+            <ng-template kendoGridCellTemplate let-dataItem>
+              <div class="ma-cell-wrap" [ngbTooltip]="dataItem.document_name">{{ dataItem.document_name || '-' }}</div>
+            </ng-template>
+          </kendo-grid-column>
+
+          <kendo-grid-column field="status" title="Status" [width]="150" [filterable]="false">
+            <ng-template kendoGridCellTemplate let-dataItem>
+              <span class="ma-badge" [class]="dataItem.status | badgeClass">{{ dataItem.status || '-' }}</span>
+            </ng-template>
+          </kendo-grid-column>
+
+          <kendo-grid-column field="pages_processed" title="Pages Processed" [width]="150" [filterable]="false">
+            <ng-template kendoGridCellTemplate let-dataItem>{{ dataItem.pages_processed ?? '-' }}</ng-template>
+          </kendo-grid-column>
+
+          <kendo-grid-column field="pages_failed" title="Pages Failed" [width]="140" [filterable]="false">
+            <ng-template kendoGridCellTemplate let-dataItem>{{ dataItem.pages_failed ?? '-' }}</ng-template>
+          </kendo-grid-column>
+
+          <kendo-grid-column title="Failed Reason" [width]="140" [filterable]="false" [sortable]="false">
+            <ng-template kendoGridCellTemplate let-dataItem>
+              <div class="ma-table-actions">
+                @if (hasFailedPages(dataItem)) {
+                  <button class="ma-btn-icon-sm" type="button" (click)="viewFailedPages(dataItem)"
+                          [ngbTooltip]="'View failed pages reason'">
+                    <i class="fa-regular fa-eye"></i>
+                  </button>
+                }
+              </div>
+            </ng-template>
+          </kendo-grid-column>
+
+          <ng-template kendoGridNoRecordsTemplate>
+            <div class="ma-grid-empty">No documents in this batch.</div>
+          </ng-template>
+        </kendo-grid>
+      </div>
+    </section>
+  }
+
+  <!-- ══════════════════════ EXTRACT DATA TAB ══════════════════════ -->
+  @if (activeTab() === 'extract-data') {
+    <section class="ma-surface-card ma-users-section-card ma-user-list-card mt-3">
+      <div class="table-responsive">
+        <kendo-grid
+          class="ma-kendo-grid table ma-master-table--bulk-upload-extract"
+          [data]="extractGridData()"
+          [sortable]="false"
+          [pageable]="false"
+          [scrollable]="'none'"
+        >
+          <kendo-grid-column title="Sr. No." [width]="80" [filterable]="false" [sortable]="false">
+            <ng-template kendoGridCellTemplate let-rowIndex="rowIndex">
+              {{ rowIndex + 1 }}
+            </ng-template>
+          </kendo-grid-column>
+
+          <kendo-grid-column field="patient_name" title="Patient Name (Client ID)" [width]="220" [filterable]="false" [cellRowspan]="extractPatientRowspan">
+            <ng-template kendoGridCellTemplate let-dataItem>
+              <div class="ma-cell-wrap">{{ dataItem.patient_name || '-' }} @if (dataItem.client_id) { ({{ dataItem.client_id }}) }</div>
+            </ng-template>
+          </kendo-grid-column>
+
+          <kendo-grid-column field="provider_name" title="Provider Name (License)" [width]="220" [filterable]="false">
+            <ng-template kendoGridCellTemplate let-dataItem>
+              <div class="ma-cell-wrap">
+                {{ dataItem.provider_name || '-' }}
+                @if (dataItem.provider_license) { ({{ dataItem.provider_license }}) }
+              </div>
+            </ng-template>
+          </kendo-grid-column>
+
+          <kendo-grid-column field="treatment_plan" title="Treatment Plan (Total Notes)" [width]="180" [filterable]="false">
+            <ng-template kendoGridCellTemplate let-dataItem>{{ dataItem.treatment_plan ?? '-' }}</ng-template>
+          </kendo-grid-column>
+
+          <kendo-grid-column field="progress_notes" title="Progress / Clinical Notes (Total Notes)" [width]="220" [filterable]="false">
+            <ng-template kendoGridCellTemplate let-dataItem>{{ dataItem.progress_notes ?? '-' }}</ng-template>
+          </kendo-grid-column>
+
+          <kendo-grid-column field="dla_20" title="DLA-20 (Total Notes)" [width]="160" [filterable]="false">
+            <ng-template kendoGridCellTemplate let-dataItem>{{ dataItem.dla_20 ?? '-' }}</ng-template>
+          </kendo-grid-column>
+
+          <kendo-grid-column field="status" title="Status" [width]="150" [filterable]="false">
+            <ng-template kendoGridCellTemplate let-dataItem>
+              @if (dataItem.status) {
+                <span class="ma-badge" [class]="dataItem.status | badgeClass">{{ dataItem.status }}</span>
+                @if (isFailedStatus(dataItem.status) && dataItem.failure_reason) {
+                  <i class="fa-solid fa-circle-info ma-status-info-icon" [ngbTooltip]="dataItem.failure_reason"
+                     triggers="click" container="body" aria-label="Failure reason"></i>
+                }
+              } @else {
+                -
+              }
+            </ng-template>
+          </kendo-grid-column>
+
+          <ng-template kendoGridNoRecordsTemplate>
+            <div class="ma-grid-empty">No patient / provider data was extracted from this batch.</div>
+          </ng-template>
+        </kendo-grid>
+      </div>
+    </section>
+  }
+
+  <!-- ══════════════════════ CLAIMS TAB ══════════════════════ -->
+  @if (activeTab() === 'claims') {
+    <section class="ma-surface-card ma-users-section-card ma-user-list-card mt-3">
+      <div class="table-responsive">
+        <kendo-grid
+          class="ma-kendo-grid table ma-master-table--bulk-upload-claims"
+          [data]="claimsGridData()"
+          [pageSize]="claimsState.take"
+          [skip]="claimsState.skip"
+          [sortable]="false"
+          [pageable]="{ buttonCount: 3, type: 'numeric', pageSizes: pageSizes }"
+          [scrollable]="'none'"
+          (dataStateChange)="onClaimsStateChange($event)"
+        >
+          <kendo-grid-column title="Sr. No." [width]="80" [filterable]="false" [sortable]="false">
+            <ng-template kendoGridCellTemplate let-rowIndex="rowIndex">
+              {{ rowIndex + 1 }}
+            </ng-template>
+          </kendo-grid-column>
+
+          <kendo-grid-column field="claim_id" title="Claim ID" [width]="150" [filterable]="false">
+            <ng-template kendoGridCellTemplate let-dataItem>
+              <div class="text-truncate" [ngbTooltip]="dataItem.claim_id">{{ dataItem.claim_id || '-' }}</div>
+            </ng-template>
+          </kendo-grid-column>
+
+          <kendo-grid-column field="patient_name" title="Patient Name" [width]="200" [filterable]="false">
+            <ng-template kendoGridCellTemplate let-dataItem>
+              <div class="ma-cell-wrap">
+                {{ dataItem.patient_name || '-' }}
+                @if (dataItem.client_id) { ({{ dataItem.client_id }}) }
+              </div>
+            </ng-template>
+          </kendo-grid-column>
+
+          <kendo-grid-column field="provider_name" title="Provider Name" [width]="200" [filterable]="false">
+            <ng-template kendoGridCellTemplate let-dataItem>
+              <div class="ma-cell-wrap">{{ dataItem.provider_name || '-' }}</div>
+            </ng-template>
+          </kendo-grid-column>
+
+          <kendo-grid-column field="document_count" title="Documents" [width]="120" [filterable]="false">
+            <ng-template kendoGridCellTemplate let-dataItem>{{ dataItem.document_count ?? '-' }}</ng-template>
+          </kendo-grid-column>
+
+          <kendo-grid-column field="ai_status" title="AI Status" [width]="140" [filterable]="false">
+            <ng-template kendoGridCellTemplate let-dataItem>
+              <span class="ma-badge" [class]="dataItem.ai_status | badgeClass">{{ dataItem.ai_status || '-' }}</span>
+            </ng-template>
+          </kendo-grid-column>
+
+          <kendo-grid-column field="compliance_score" title="Compliance Score" [width]="160" [filterable]="false">
+            <ng-template kendoGridCellTemplate let-dataItem>
+              {{ dataItem.compliance_score != null ? dataItem.compliance_score + '%' : '-' }}
+            </ng-template>
+          </kendo-grid-column>
+
+          <kendo-grid-column field="review_status" title="Review Status" [width]="150" [filterable]="false">
+            <ng-template kendoGridCellTemplate let-dataItem>
+              <span class="ma-badge" [class]="dataItem.review_status | badgeClass">{{ dataItem.review_status || '-' }}</span>
+            </ng-template>
+          </kendo-grid-column>
+
+          <kendo-grid-column field="uploaded_at" title="Upload Date" [width]="150" [filterable]="false">
+            <ng-template kendoGridCellTemplate let-dataItem>
+              {{ dataItem.uploaded_at ? (dataItem.uploaded_at | date: 'MM-dd-yyyy') : '-' }}
+            </ng-template>
+          </kendo-grid-column>
+
+          <kendo-grid-column title="Action" [width]="100" [filterable]="false" [sortable]="false" [hidden]="!perms.canAccessMenu(MenuType.Claim)">
+            <ng-template kendoGridCellTemplate let-dataItem>
+              <div class="ma-table-actions">
+                @if (perms.canAccessMenu(MenuType.Claim)) {
+                  <button class="ma-btn-icon-sm" type="button" (click)="viewClaim(dataItem)" [ngbTooltip]="'View claim'">
+                    <i class="fa-regular fa-eye"></i>
+                  </button>
+                }
+              </div>
+            </ng-template>
+          </kendo-grid-column>
+
+          <ng-template kendoGridNoRecordsTemplate>
+            <div class="ma-grid-empty">No claims have been created from this batch yet.</div>
+          </ng-template>
+        </kendo-grid>
+      </div>
+    </section>
+  }
+</div>
+</main>

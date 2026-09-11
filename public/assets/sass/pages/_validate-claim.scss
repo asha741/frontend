@@ -1,0 +1,41 @@
+/* ==========================================================================
+   VALIDATE CLAIM PAGE
+   ========================================================================== */
+
+.validate-claim-page {
+
+    // Cards have consistent spacing
+    .ma-card {
+        margin-bottom: $space24;
+    }
+
+    // Upload box label above each upload area
+    .ma-upload-label {
+        display: block;
+        font-size: $font14;
+        font-weight: $fontMedium;
+        color: $textPrimary;
+        margin-bottom: 10px;
+    }
+
+    // Upload icon size for this page
+    .ma-upload-box {
+        .ma-upload-instruction {
+            margin: 0;
+            font-size: $font16;
+            font-weight: $fontRegular;
+        }
+        .ma-upload-info {
+            margin: 6px 0 0;
+            font-size: $font12;
+            font-weight: $fontRegular;
+            opacity: 0.65;
+        }
+        .fa-cloud-arrow-up {
+            font-size: 36px;
+            color: $primary;
+            margin-bottom: 8px;
+        }
+    }
+}
+

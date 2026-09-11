@@ -1,0 +1,207 @@
+<div class="ma-page-header">
+  <div class="ma-page-header__meta">
+    <h2 class="ma-page-title">Import Claim Data</h2>
+    <p class="ma-page-subtitle">Upload a monthly claim data file to start AI analysis.</p>
+  </div>
+</div>
+
+<form class="ma-import-form" [formGroup]="form" (ngSubmit)="onSubmit()" novalidate appFocusFirstInput>
+  <div class="ma-card">
+    <div class="ma-card-header">
+      <div class="ma-card-title-wrap m-0">
+        <h3 class="ma-card-title">File Information</h3>
+      </div>
+    </div>
+    <div class="ma-card-body">
+      <div class="row g-3">
+        <div class="col-12 col-md-6">
+          <label class="form-label">File Title <span class="ma-required">*</span></label>
+          <input
+            type="text"
+            class="form-control"
+            formControlName="file_title"
+            appTrimWhitespace
+            maxlength="100"
+            [class.is-invalid]="isSubmitted() && f['file_title'].errors"
+          />
+          @if (isSubmitted() && f['file_title'].errors) {
+            <div class="invalid-feedback d-block">
+              @if (f['file_title'].hasError('required')) {
+                File Title is mandatory.
+              } @else if (f['file_title'].hasError('minlength')) {
+                File Title must be at least 3 characters.
+              } @else if (f['file_title'].hasError('maxlength')) {
+                File Title cannot exceed 100 characters.
+              } @else {
+                File Title cannot be blank.
+              }
+            </div>
+          }
+        </div>
+
+        <div class="col-12 col-md-3">
+          <label class="form-label">Year <span class="ma-required">*</span></label>
+          <select
+            class="form-select"
+            formControlName="year"
+            aria-label="Select year"
+            [class.is-invalid]="isSubmitted() && f['year'].errors"
+          >
+            <option value="">Select Year</option>
+            @for (y of years; track y) {
+              <option [value]="y">{{ y }}</option>
+            }
+          </select>
+          @if (isSubmitted() && f['year'].errors) {
+            <div class="invalid-feedback d-block">Year is mandatory.</div>
+          }
+        </div>
+
+        <div class="col-12 col-md-3">
+          <label class="form-label">Month <span class="ma-required">*</span></label>
+          <select
+            class="form-select"
+            formControlName="month"
+            aria-label="Select month"
+            [class.is-invalid]="isSubmitted() && f['month'].errors"
+          >
+            <option value="">Select Month</option>
+            @for (m of months; track m) {
+              <option [value]="m">{{ m }}</option>
+            }
+          </select>
+          @if (isSubmitted() && f['month'].errors) {
+            <div class="invalid-feedback d-block">Month is mandatory.</div>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ma-card mt-3">
+    <div class="ma-card-header">
+      <div class="ma-card-title-wrap m-0">
+        <h3 class="ma-card-title">Upload File <span class="ma-required">*</span></h3>
+      </div>
+    </div>
+    <div class="ma-card-body">
+      <div class="ma-upload-wrapper">
+        @if (!selectedFile()) {
+          <div
+            class="ma-upload-box"
+            [class.is-dragover]="dragOver()"
+            (click)="fileInput.click()"
+            (dragover)="onDragOver($event)"
+            (dragleave)="onDragLeave($event)"
+            (drop)="onDrop($event)"
+          >
+            <img src="/assets/images/icons/upload-lg.svg" alt="" class="ma-upload-icon ma-svg" />
+            <p class="ma-upload-instruction">Drag & drop file here or click to browse</p>
+            <p class="ma-upload-info">Supported formats: Excel (.xlsx), CSV (.csv)</p>
+            <input
+              #fileInput
+              type="file"
+              accept=".xlsx,.csv"
+              (change)="onFileSelected($event)"
+              aria-label="Upload claim data file"
+            />
+            @if (fileError()) {
+              <div class="ma-upload-error">{{ fileError() }}</div>
+            }
+          </div>
+        } @else {
+          <div class="ma-file-row">
+            <span class="ma-file-row__icon"><i class="fa-solid fa-file-excel"></i></span>
+            <div class="ma-file-row__meta">
+              <span class="ma-file-row__name" [title]="selectedFile()!.name">{{ selectedFile()!.name }}</span>
+            </div>
+            <button type="button" class="ma-file-row__remove" (click)="removeFile()" [disabled]="uploading()" aria-label="Remove file">
+              <i class="fa-regular fa-trash-can"></i>
+            </button>
+          </div>
+        }
+
+        @if (isSubmitted() && !selectedFile() && !fileError()) {
+          <div class="ma-upload-error">Upload File is mandatory.</div>
+        }
+
+        @if (importSummary()) {
+          <div class="ma-import-summary">
+            @if (importSummary()!.total_rows != null || importSummary()!.created != null || importSummary()!.skipped != null) {
+              <div class="ma-import-summary__stats">
+                <span class="ma-import-stat ma-import-stat--total">
+                  Total Rows <strong>{{ importSummary()!.total_rows ?? '-' }}</strong>
+                </span>
+                <span class="ma-import-stat ma-import-stat--created">
+                  Created <strong>{{ importSummary()!.created ?? 0 }}</strong>
+                </span>
+                <span class="ma-import-stat ma-import-stat--skipped">
+                  Skipped <strong>{{ importSummary()!.skipped ?? 0 }}</strong>
+                </span>
+              </div>
+            }
+
+            @if (importSummary()!.errors?.length) {
+              <div class="ma-import-alert" role="alert">
+                <i class="fa-solid fa-triangle-exclamation ma-import-alert__icon"></i>
+                <span class="ma-import-alert__text">
+                  {{ importSummary()!.detail || (importSummary()!.errors!.length + ' row(s) have validation errors. Please fix the file and re-upload.') }}
+                </span>
+              </div>
+
+              <div class="table-responsive ma-import-error-table-wrap">
+                <table class="table ma-import-error-table">
+                  <thead>
+                    <tr>
+                      <th>Row</th>
+                      <th>Field</th>
+                      <th>Message</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    @for (err of importSummary()!.errors; track $index) {
+                      <tr class="ma-import-row--error">
+                        <td data-label="Row">{{ err.row ?? '-' }}</td>
+                        <td data-label="Field">
+                          @if (err.field) {
+                            <div class="ma-import-error-fields">
+                              @for (f of splitFields(err.field); track $index) {
+                                <span class="ma-import-error-fields__chip">{{ f }}</span>
+                              }
+                            </div>
+                          } @else {
+                            -
+                          }
+                        </td>
+                        <td data-label="Message">
+                          @if (err.message) {
+                            <div class="ma-import-error-messages">
+                              @for (m of splitMessages(err.message); track $index) {
+                                <div class="ma-import-error-messages__item">{{ m }}</div>
+                              }
+                            </div>
+                          } @else {
+                            -
+                          }
+                        </td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            }
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+
+  <div class="ma-btn-group justify-content-end mt-3">
+    <button type="button" class="btn ma-btn btn-outline-primary btn-grey-btn" (click)="cancel()" [disabled]="submitting()">
+      Cancel
+    </button>
+    <button type="submit" class="btn ma-btn btn-primary" [disabled]="submitting() || uploading()">
+      {{ submitting() ? 'Submitting…' : 'Submit for Analysis' }}
+    </button>
+  </div>
+</form>

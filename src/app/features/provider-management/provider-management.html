@@ -1,0 +1,492 @@
+<div class="ma-page-header">
+  <div class="ma-page-header__meta">
+    <h2 class="ma-page-title">Provider Management</h2>
+    <p class="ma-page-subtitle">Manage healthcare providers and their credentials</p>
+  </div>
+</div>
+
+<!-- ══ Provider Information (commented out) ═══════════════════════════
+<div class="row">
+  <div class="col-md-12">
+    <div class="ma-card h-100">
+      <div class="ma-card-header">
+        <div class="ma-card-title-wrap">
+          <h2 class="ma-card-title">Provider Information</h2>
+        </div>
+      </div>
+      <div class="ma-card-body">
+        <div class="ma-provider-info">
+          <div class="ma-info-group">
+            <span class="ma-info-label">Provider Name</span>
+            <span class="ma-info-value">Dr. Sarah Johnson</span>
+          </div>
+          <div class="ma-info-group">
+            <span class="ma-info-label">Employee ID</span>
+            <span class="ma-info-value">PRV-001</span>
+          </div>
+          <div class="ma-info-group">
+            <span class="ma-info-label">License</span>
+            <span class="ma-info-value">Psychiatrists</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+═══════════════════════════════════════════════════════════════════ -->
+
+<!-- ══ Stat cards (commented out) ════════════════════════════════════
+<div class="ma-stat-grid mt-3">
+  <article class="ma-stat-card">
+    <span class="ma-stat-icon ma-is-blue">
+      <img src="assets/images/icons/user-access.svg" alt="Total Users Icon" class="ma-svg" />
+    </span>
+    <div class="ma-stat-content">
+      <p class="ma-stat-title">Total Users</p>
+      <h2 class="ma-stat-value">45</h2>
+    </div>
+  </article>
+  <article class="ma-stat-card">
+    <span class="ma-stat-icon ma-is-purpleV2">
+      <img src="assets/images/icons/total-upload.svg" alt="Total Uploads Icon" class="ma-svg" />
+    </span>
+    <div class="ma-stat-content">
+      <p class="ma-stat-title">Total Uploads</p>
+      <h2 class="ma-stat-value">1,234</h2>
+    </div>
+  </article>
+  <article class="ma-stat-card">
+    <span class="ma-stat-icon ma-is-skyblue">
+      <img src="assets/images/icons/ocr-processed.svg" alt="OCR Processed Icon" class="ma-svg" />
+    </span>
+    <div class="ma-stat-content">
+      <p class="ma-stat-title">OCR Processed</p>
+      <h2 class="ma-stat-value">1,187</h2>
+    </div>
+  </article>
+  <article class="ma-stat-card">
+    <span class="ma-stat-icon ma-is-green_v2">
+      <img src="assets/images/icons/ai-validation-completed.svg" alt="AI Validation Completed Icon" class="ma-svg" />
+    </span>
+    <div class="ma-stat-content">
+      <p class="ma-stat-title">AI Validation Completed</p>
+      <h2 class="ma-stat-value">1,098</h2>
+    </div>
+  </article>
+</div>
+═══════════════════════════════════════════════════════════════════ -->
+
+<!-- ══ Upload Trends graph (commented out) ═══════════════════════════
+<div class="ma-card mt-3">
+  <div class="ma-card-header">
+    <div class="ma-card-title-wrap">
+      <h2 class="ma-card-title">Upload Trends</h2>
+    </div>
+  </div>
+  <div class="ma-card-body">
+    <div class="ma-chart-wrapper">
+      <kendo-chart style="height: 320px;">
+        <kendo-chart-tooltip format="{0:c0}"></kendo-chart-tooltip>
+        <kendo-chart-category-axis>
+          <kendo-chart-category-axis-item [categories]="chartCategories" [majorGridLines]="{ visible: false }">
+          </kendo-chart-category-axis-item>
+        </kendo-chart-category-axis>
+        <kendo-chart-value-axis>
+          <kendo-chart-value-axis-item [labels]="{ format: '{0:n0}' }">
+          </kendo-chart-value-axis-item>
+        </kendo-chart-value-axis>
+        <kendo-chart-series>
+          <kendo-chart-series-item type="line" [data]="uploadTrendsData()" color="#2f6bff">
+          </kendo-chart-series-item>
+        </kendo-chart-series>
+      </kendo-chart>
+    </div>
+  </div>
+</div>
+═══════════════════════════════════════════════════════════════════ -->
+
+<!-- ══ Filters ═══════════════════════════════════════════════════════ -->
+<section class="ma-filter-wrap mt-3">
+  <div class="row g-2 align-items-center ma-filter-grid">
+    <!-- Search input -->
+    <div class="col-12 col-lg-3">
+      <div class="ma-input-group ma-filter-item ma-filter-item--search">
+        <i class="fa-solid fa-magnifying-glass ma-input-icon"></i>
+        <input
+          id="providerSearchInput"
+          type="text"
+          class="form-control"
+          placeholder="Search"
+          aria-label="Search providers"
+          [(ngModel)]="search"
+          appTrimWhitespace
+          maxlength="100"
+          (keydown.enter)="onSearch()"
+        />
+      </div>
+    </div>
+
+    <!-- Created Date From -->
+    <div class="col-12 col-sm-6 col-lg-2">
+      <div class="ma-input-group is-calendar ma-filter-item ma-filter-item--date">
+        <input
+          id="dateFrom"
+          class="form-control bg-white"
+          placeholder="From date"
+          aria-label="From date"
+          name="dateFrom"
+          readonly
+          ngbDatepicker
+          #fromPicker="ngbDatepicker"
+          [(ngModel)]="fromDate"
+          [maxDate]="$any(toDate)"
+          (click)="fromPicker.toggle()"
+        />
+        <i
+          class="fa-regular fa-calendar ma-input-icon"
+          role="button"
+          aria-label="Open from-date picker"
+          (click)="fromPicker.toggle()"
+        ></i>
+      </div>
+    </div>
+
+    <!-- Created Date To -->
+    <div class="col-12 col-sm-6 col-lg-2">
+      <div class="ma-input-group is-calendar ma-filter-item ma-filter-item--date">
+        <input
+          id="dateTo"
+          class="form-control bg-white"
+          placeholder="To date"
+          aria-label="To date"
+          name="dateTo"
+          readonly
+          ngbDatepicker
+          #toPicker="ngbDatepicker"
+          [(ngModel)]="toDate"
+          [minDate]="$any(fromDate)"
+          (click)="toPicker.toggle()"
+        />
+        <i
+          class="fa-regular fa-calendar ma-input-icon"
+          role="button"
+          aria-label="Open to-date picker"
+          (click)="toPicker.toggle()"
+        ></i>
+      </div>
+    </div>
+
+    <!-- Search & Reset buttons -->
+    <div class="col-12 col-lg-auto d-flex gap-2">
+      <button
+        type="button"
+        class="btn ma-btn btn-primary"
+        (click)="onSearch()"
+        style="min-height: 45px; padding: 0 20px"
+      >
+        Search
+      </button>
+      <button
+        type="button"
+        class="btn ma-btn btn-outline-secondary"
+        (click)="clearSearch()"
+        style="min-height: 45px; padding: 0 20px"
+      >
+        Reset
+      </button>
+    </div>
+
+    <!-- Actions -->
+    <div class="col-12 col-lg-auto ms-lg-auto">
+      <div class="row g-2 ma-filter-item ma-filter-item--action">
+        <!-- Split button: one Sample File, a menu for the format. -->
+        <div class="col-12 col-lg-auto">
+          <div class="dropdown w-100">
+            <button
+              type="button"
+              class="btn ma-btn btn-outline-primary btn-grey-btn dropdown-toggle w-100"
+              style="min-height: 45px"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+              aria-label="Download sample file"
+              [disabled]="downloadingSample()"
+            >
+              {{ downloadingSample() ? 'Downloading…' : 'Sample File' }}
+              <i class="fa-solid fa-download ms-2"></i>
+            </button>
+            <ul class="dropdown-menu ma-dropdown-menu">
+              <li>
+                <button class="dropdown-item" type="button" (click)="downloadSampleFile('csv')">
+                  <i class="fa-solid fa-file-csv me-2"></i> CSV (.csv)
+                </button>
+              </li>
+              <li>
+                <button class="dropdown-item" type="button" (click)="downloadSampleFile('xlsx')">
+                  <i class="fa-solid fa-file-excel me-2"></i> Excel (.xlsx)
+                </button>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        @if (perms.can(PERMISSION_MODULE.Provider, PERMISSION_ACTION.Create)) {
+          <div class="col-12 col-lg-auto">
+            <button
+              class="btn ma-btn btn-outline-primary btn-grey-btn w-100"
+              style="min-height: 45px"
+              (click)="openImportModal()"
+              title="Import Providers"
+            >
+              Import <i class="fa-solid fa-file-import ms-2"></i>
+            </button>
+          </div>
+        }
+
+        <!-- Split button: one Export, a menu for the format. -->
+        @if (perms.can(PERMISSION_MODULE.Provider, PERMISSION_ACTION.Export)) {
+          <div class="col-12 col-lg-auto">
+            <div class="dropdown w-100">
+              <button
+                type="button"
+                class="btn ma-btn btn-outline-primary btn-grey-btn dropdown-toggle w-100"
+                style="min-height: 45px"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+                aria-label="Export Providers"
+                [disabled]="exporting()"
+              >
+                {{ exporting() ? 'Exporting…' : 'Export' }}
+                <i class="fa-solid fa-file-export ms-2"></i>
+              </button>
+              <ul class="dropdown-menu dropdown-menu-end ma-dropdown-menu">
+                <li>
+                  <button class="dropdown-item" type="button" (click)="exportProviders('csv')">
+                    <i class="fa-solid fa-file-csv me-2"></i> CSV (.csv)
+                  </button>
+                </li>
+                <li>
+                  <button class="dropdown-item" type="button" (click)="exportProviders('xlsx')">
+                    <i class="fa-solid fa-file-excel me-2"></i> Excel (.xlsx)
+                  </button>
+                </li>
+              </ul>
+            </div>
+          </div>
+        }
+
+        @if (perms.can(PERMISSION_MODULE.Provider, PERMISSION_ACTION.Create)) {
+          <div class="col-12 col-lg-auto">
+            <a
+              routerLink="/provider-management/add-provider"
+              class="btn ma-btn btn-primary ma-btn-inline-icon w-100"
+              aria-label="Add Provider"
+              style="white-space: nowrap; min-height: 45px"
+            >
+              <span>Add Provider</span>
+              <i class="fa-solid fa-plus ms-2" aria-hidden="true"></i>
+            </a>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ Providers grid ════════════════════════════════════════════════ -->
+<section class="ma-surface-card ma-users-section-card ma-user-list-card mt-4">
+  <div class="table-responsive">
+    <kendo-grid
+      class="ma-kendo-grid table ma-master-table ma-master-table--provider"
+      [data]="providersData()"
+      [pageSize]="state.take"
+      [skip]="state.skip"
+      [sortable]="true"
+      [sort]="state.sort"
+      filterable="menu"
+      [filter]="state.filter"
+      [pageable]="{ buttonCount: 3, type: 'numeric', pageSizes: pageSizes }"
+      [scrollable]="'none'"
+      (dataStateChange)="dataStateChange($event)"
+    >
+      <!-- ── Sr. No. ──────────────────────────────────────────────── -->
+      <kendo-grid-column title="Sr. No." [width]="80" [filterable]="false" [sortable]="false">
+        <ng-template kendoGridCellTemplate let-rowIndex="rowIndex">
+          {{ rowIndex + 1 }}
+        </ng-template>
+      </kendo-grid-column>
+
+      <!-- ── Provider ID ──────────────────────────────────────────── -->
+      <kendo-grid-column field="provider_id" title="Provider ID" [width]="130" [filterable]="false">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div class="k-text-ellipsis" [ngbTooltip]="dataItem.provider_id">
+            {{ dataItem.provider_id || '-' }}
+          </div>
+        </ng-template>
+      </kendo-grid-column>
+
+      <!-- ── Provider Name ────────────────────────────────────────── -->
+      <kendo-grid-column
+        field="first_name"
+        title="Provider Name"
+        [width]="150"
+        [filterable]="false"
+      >
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div class="k-text-ellipsis" [ngbTooltip]="providerName(dataItem)">
+            {{ providerName(dataItem) }}
+          </div>
+        </ng-template>
+      </kendo-grid-column>
+
+      <!-- ── License ──────────────────────────────────────────────── -->
+      <kendo-grid-column field="license" title="License" [width]="200" [filterable]="false">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div class="k-text-ellipsis" [ngbTooltip]="licenseDisplay(dataItem)">
+            {{ licenseDisplay(dataItem) || '-' }}
+          </div>
+        </ng-template>
+      </kendo-grid-column>
+
+      <!-- ── Email ────────────────────────────────────────────────── -->
+      <kendo-grid-column
+        field="email"
+        title="Email Address"
+        [width]="200"
+        [filterable]="false"
+      >
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div class="k-text-ellipsis" [ngbTooltip]="dataItem.email">{{ dataItem.email || '-' }}</div>
+        </ng-template>
+      </kendo-grid-column>
+
+      <!-- ── Contact Number ───────────────────────────────────────── -->
+      <kendo-grid-column
+        field="contact_number"
+        title="Contact Number"
+        [width]="150"
+        [sortable]="false"
+        [filterable]="false"
+      >
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div style="white-space: nowrap;">
+            {{ (dataItem.contact_number || dataItem.contactNumber) | usPhone }}
+          </div>
+        </ng-template>
+      </kendo-grid-column>
+
+      <!-- ── Patients Attended ────────────────────────────────────── -->
+      <kendo-grid-column
+        field="patients_attended"
+        title="Patients Attended"
+        [width]="100"
+        [filterable]="false"
+      >
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <a
+            href="javascript:void(0)"
+            (click)="viewProviderPatients(dataItem)"
+            class="text-primary text-decoration-underline k-cursor-pointer fw-semibold"
+          >
+            {{ dataItem.patients_attended ?? dataItem.patientsAttended ?? '0' }}
+          </a>
+        </ng-template>
+      </kendo-grid-column>
+
+      <!-- ── Performance Score ────────────────────────────────────── -->
+      <kendo-grid-column
+        field="performance_score"
+        title="Performance Score"
+        [width]="120"
+        [filterable]="false"
+      >
+        <ng-template kendoGridCellTemplate let-dataItem>
+          {{
+            (dataItem.performance_score ?? dataItem.performanceScore) != null
+              ? (dataItem.performance_score ?? dataItem.performanceScore) + '%'
+              : '-'
+          }}
+        </ng-template>
+      </kendo-grid-column>
+
+      <!-- ── Status ───────────────────────────────────────────────── -->
+      <kendo-grid-column
+        field="status"
+        title="Status"
+        [width]="130"
+        type="boolean"
+        [sortable]="false"
+      >
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <span class="ma-badge" [class]="dataItem.status | badgeClass">{{
+            dataItem.status || '-'
+          }}</span>
+        </ng-template>
+        <ng-template
+          kendoGridFilterMenuTemplate
+          let-filter
+          let-column="column"
+          let-filterService="filterService"
+        >
+          <kendo-grid-boolean-filter-menu
+            [column]="column"
+            [filter]="filter"
+            [filterService]="filterService"
+            class="radio-btn-group"
+          >
+            <kendo-filter-eq-operator></kendo-filter-eq-operator>
+          </kendo-grid-boolean-filter-menu>
+        </ng-template>
+        <kendo-grid-messages filterIsTrue="Active" filterIsFalse="Inactive"></kendo-grid-messages>
+      </kendo-grid-column>
+
+      <!-- ── Created Date ─────────────────────────────────────────── -->
+      <kendo-grid-column field="created_at" title="Created Date" [width]="120" [filterable]="false">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          {{
+            dataItem.created_at || dataItem.createdAt
+              ? (dataItem.created_at || dataItem.createdAt | date: 'MM-dd-yyyy')
+              : ''
+          }}
+        </ng-template>
+      </kendo-grid-column>
+
+      <!-- ── Actions ──────────────────────────────────────────────── -->
+      @if (perms.canAny(PERMISSION_MODULE.Provider, PERMISSION_ACTION.Update, PERMISSION_ACTION.Delete)) {
+        <kendo-grid-column title="Actions" [width]="110" [filterable]="false" [sortable]="false">
+          <ng-template kendoGridCellTemplate let-dataItem>
+            <div class="ma-table-actions">
+              @if (perms.can(PERMISSION_MODULE.Provider, PERMISSION_ACTION.Update)) {
+                <button
+                  class="ma-btn-icon-sm"
+                  type="button"
+                  ngbTooltip="Edit"
+                  placement="top"
+                  [attr.aria-label]="'Edit ' + (dataItem.provider_id || '')"
+                  (click)="editProvider(dataItem)"
+                >
+                  <i class="fa-regular fa-pen-to-square"></i>
+                </button>
+              }
+              @if (perms.can(PERMISSION_MODULE.Provider, PERMISSION_ACTION.Delete)) {
+                <button
+                  class="ma-btn-icon-sm"
+                  type="button"
+                  ngbTooltip="Delete"
+                  placement="top"
+                  [attr.aria-label]="'Delete ' + (dataItem.provider_id || '')"
+                  (click)="deleteProvider(dataItem)"
+                >
+                  <i class="fa-regular fa-trash-can"></i>
+                </button>
+              }
+            </div>
+          </ng-template>
+        </kendo-grid-column>
+      }
+
+      <ng-template kendoGridNoRecordsTemplate>
+        <div class="ma-grid-empty">No providers match your current filters.</div>
+      </ng-template>
+    </kendo-grid>
+  </div>
+</section>

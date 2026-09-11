@@ -1,0 +1,95 @@
+.failed-notes-page {
+  // Reason card: tighten the gap between the "Reason" title and the
+  // Fail/priority badge row — the shared .ma-table-card-head / .ma-card-body
+  // padding (16px + 20px) was too loose for a two-line meta row like this.
+  > .ma-table-card:first-child {
+    .ma-table-card-head {
+      padding-bottom: 8px;
+    }
+
+    .ma-card-body {
+      padding-top: 4px;
+    }
+  }
+
+  .ma-table-card-head--stacked {
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    gap: 4px;
+  }
+
+  .ma-page-subtitle {
+    color: #475569;
+    font-size: 0.95rem;
+    margin: 0;
+    width: 100%;
+  }
+
+  .table-responsive {
+    max-height: none;
+    overflow-y: visible;
+  }
+
+  .ma-findings-table {
+    table-layout: fixed;
+
+    thead th {
+      white-space: normal;
+    }
+
+    tbody td {
+      white-space: normal;
+      word-break: break-word;
+    }
+  }
+
+  .ma-finding__sections {
+    list-style: none;
+    padding-left: 0;
+    margin-left: 0;
+    font-size: 0.85rem;
+    line-height: 1.45;
+    color: #334155;
+
+    li + li {
+      margin-top: 0.25rem;
+    }
+  }
+
+  .ma-finding__section-item {
+    white-space: normal;
+    word-break: break-word;
+    cursor: default;
+  }
+
+  // ── Failed Notes table: mobile — "Failed Sections" cell ──
+  // Same treatment as the AI Findings table on the claim view page: the
+  // global .ma-data-table mobile CSS lays every <td> out as a single flex
+  // row with `justify-content: space-between`, which was squeezing the
+  // "Failed Sections" label down to a sliver a few characters wide (it wraps
+  // vertically) once the section list's long text entered the same row. Keep
+  // the plain right-aligned dash for an empty cell (`:has` scopes this to
+  // only the populated case), but give a populated cell a fixed-width label
+  // and let the section list use the rest of the row, left-aligned.
+  @media (max-width: 767.98px) {
+    .ma-findings-table tbody td[data-label='Failed Sections']:has(.ma-finding__sections) {
+      align-items: flex-start !important;
+      justify-content: flex-start !important;
+      text-align: left !important;
+      gap: 12px;
+
+      &::before {
+        flex: 0 0 120px;
+        padding-top: 0.15rem;
+        text-align: left !important;
+      }
+
+      > * {
+        flex: 1 1 auto;
+        min-width: 0;
+        text-align: left !important;
+      }
+    }
+  }
+}

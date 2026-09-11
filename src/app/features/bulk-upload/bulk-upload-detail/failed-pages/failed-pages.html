@@ -1,0 +1,52 @@
+<!-- The claim-analyst page scope carries the detail typography this page reuses,
+     matching the Batch Detail page it is opened from. -->
+<main class="claim-analyst-page failed-pages-page">
+  <!-- ══ Header ══════════════════════════════════════════════════════ -->
+  <div class="ma-page-header">
+    <div class="ma-page-header__meta">
+      <div class="ma-back-header">
+        <!-- <app-back-button /> -->
+        <h2 class="ma-page-title">Failed Pages Reason</h2>
+      </div>
+      @if (documentName()) {
+        <p class="ma-page-subtitle" [ngbTooltip]="documentName()">{{ documentName() }}</p>
+      }
+    </div>
+  </div>
+
+  <!-- ══ Failed pages ════════════════════════════════════════════════ -->
+  <section class="ma-surface-card ma-users-section-card ma-user-list-card mt-3">
+    <div class="table-responsive">
+      <kendo-grid
+        class="ma-kendo-grid table ma-master-table--bulk-upload-failed-pages"
+        [data]="pagesGridData()"
+        [pageSize]="pagesState.take"
+        [skip]="pagesState.skip"
+        [sortable]="false"
+        [pageable]="{ buttonCount: 3, type: 'numeric', pageSizes: pageSizes }"
+        [scrollable]="'none'"
+        (dataStateChange)="onPagesStateChange($event)"
+      >
+        <kendo-grid-column title="Sr. No." [width]="90" [filterable]="false" [sortable]="false">
+          <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+            {{ dataItem.sr_no ?? rowIndex + 1 }}
+          </ng-template>
+        </kendo-grid-column>
+
+        <kendo-grid-column field="page_no" title="Page No." [width]="120" [filterable]="false">
+          <ng-template kendoGridCellTemplate let-dataItem>{{ dataItem.page_no ?? '-' }}</ng-template>
+        </kendo-grid-column>
+
+        <kendo-grid-column field="reason" title="Reason" [filterable]="false">
+          <ng-template kendoGridCellTemplate let-dataItem>
+            <div class="ma-cell-wrap">{{ dataItem.reason || '-' }}</div>
+          </ng-template>
+        </kendo-grid-column>
+
+        <ng-template kendoGridNoRecordsTemplate>
+          <div class="ma-grid-empty">No failed pages were recorded for this document.</div>
+        </ng-template>
+      </kendo-grid>
+    </div>
+  </section>
+</main>

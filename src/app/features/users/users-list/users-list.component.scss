@@ -1,0 +1,24 @@
+// Component-specific styles for Users List
+
+// Fix the table to its declared column widths — with auto layout, a wrapped
+// cell (word-break) makes the browser shrink that column to a per-word
+// minimum, so every word lands on its own line instead of filling the width.
+:host ::ng-deep .ma-kendo-grid table {
+  table-layout: fixed;
+  width: 100%;
+}
+
+// Name column wraps long values onto multiple lines instead of clipping to
+// one, but caps at 2 lines with an ellipsis so an unbroken run of characters
+// (no spaces to wrap on) can't blow the row out — the full value is still
+// available via the cell's tooltip.
+.ma-cell-wrap {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  white-space: normal;
+  overflow-wrap: break-word;
+  word-break: normal;
+  line-height: 1.3;
+}

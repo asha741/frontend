@@ -1,0 +1,338 @@
+/* ==========================================================================
+   DASHBOARD HEADER
+   ========================================================================== */
+
+.ma-dashboard {
+    .ma-topbar {
+        height: $topbarHeight;
+        background: $white;
+        border-bottom: 1px solid $borderColor;
+        padding: 0 20px;
+        position: sticky;
+        top: 0;
+        z-index: $zSticky;
+        @include maFlex(space-between, center);
+
+        .ma-topbar-left {
+            @include maFlex(flex-start, center);
+            gap: 8px;
+        }
+
+        .ma-topbar-right {
+            @include maFlex(flex-start, center);
+            gap: 12px;
+            @media (max-width: $lg) {
+                justify-content: flex-end;
+            }
+            @media (max-width: $sm) {
+                gap: 8px;
+            }
+            .ma-user-dropdown {
+                margin-left: 12px;
+            }
+        }
+
+        .ma-sidebar-toggle {
+            width: $font24;
+            height: $font24;
+            color: $textSecondary;
+            font-size: $font16;
+            padding: 0;
+            border: 0;
+            min-height: auto;
+            @include maFlex(center, center);
+        }
+
+        .dropdown-toggle::after {
+            display: none;
+        }
+
+        .ma-breadcrumb {
+            margin: 0;
+            @include maFlex(flex-start, center);
+            flex-wrap: wrap;
+            gap: 2px 8px;
+            .ma-crumb-link,
+            .ma-crumb-link a {
+                color: $textSecondary;
+                font-size: $font14;
+                font-weight: $fontMedium;
+                @media (max-width: $xs) {
+                    display: none;
+                }
+            }
+
+            .ma-crumb-icon {
+                @include maFlex(center, center);
+                color: $textSecondary;
+                font-size: $font12;
+                line-height: 1;
+                @media (max-width: $xs) {
+                    display: none;
+                }
+            }
+
+            .ma-crumb-current {
+                color: $primary;
+                font-size: $font14;
+                font-weight: $fontMedium;
+            }
+        }
+
+        .ma-topbar-search {
+            position: relative;
+
+            .form-control {
+                min-height: 40px;
+                min-width: 220px;
+                border-radius: $borderRadius8;
+                padding-left: 40px;
+                border: 1px solid $borderColor;
+            }
+
+            .ma-search-icon {
+                position: absolute;
+                left: $space12;
+                top: 50%;
+                transform: translateY(-50%);
+                color: $textSecondary;
+            }
+        }
+
+        .ma-notification-btn {
+            position: relative;
+            padding: 0;
+            border: 0;
+            min-height: auto;
+            @include maFlex(center, center);
+
+            .ma-notification-icon {
+                width: $font24;
+                height: $font24;
+                flex: none;
+            }
+
+            .ma-notification-count {
+                position: absolute;
+                right: -6px;
+                top: -8px;
+                min-width: 18px;
+                min-height: 18px;
+                border-radius: $borderRadius50;
+                border: 1px solid $white;
+                background: $danger;
+                color: $white;
+                font-size: 9px;
+                font-weight: $fontSemiBold;
+                @include maFlex(center, center);
+                padding: 0 4px;
+                line-height: 1;
+            }
+        }
+
+        .ma-user-toggle {
+            @include maFlex(flex-start, center);
+            gap: 10px;
+            border: 0;
+            background: $white;
+            border-radius: $borderRadius12;
+            padding: 0;
+            text-align: left;
+
+            .ma-chevron {
+                color: $textSecondary;
+                font-size: $font12;
+            }
+
+            .ma-avatar {
+                width: 35px;
+                height: 35px;
+                border-radius: $borderRadius50;
+                border: 1px solid rgba($primary, .2);
+                background: rgba($primary, .1);
+                color: $primary;
+                font-size: $font12;
+                font-weight: $fontBold;
+                @include maFlex(center, center);
+            }
+
+            .ma-user-name {
+                margin: 0;
+                color: $textPrimary;
+                font-size: $font14;
+                font-weight: $fontSemiBold;
+                line-height: 1.1;
+                display: block;
+            }
+
+            .ma-user-role {
+                margin: 4px 0 0;
+                color: $textSecondary;
+                font-size: $font12;
+                font-weight: $fontRegular;
+                line-height: 1;
+                display: block;
+            }
+        }
+
+        .ma-dropdown-menu {
+            min-width: 240px;
+            border-radius: $borderRadius8;
+            border: 1px solid rgba($primary, .2);
+            box-shadow: $shadowLg;
+            padding: 8px;
+            margin-top: 8px;
+            display: block;
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(8px);
+            pointer-events: none;
+            @include maTransition(all .2s ease);
+
+            &.show {
+                opacity: 1;
+                visibility: visible;
+                pointer-events: auto;
+            }
+
+            .dropdown-item {
+                min-height: 40px;
+                border-radius: $borderRadius8;
+                color: $textPrimary;
+                font-size: $font14;
+                @include maFlex(flex-start, center);
+                gap: 10px;
+
+                i {
+                    color: $primary;
+                }
+
+                &:hover,
+                &:focus {
+                    background: rgba($primary, .08);
+                    color: $primary;
+                }
+            }
+        }
+
+        .ma-notification-menu {
+            min-width: 320px;
+            padding: 0;
+
+            .ma-dropdown-header {
+                padding: 14px 16px;
+                border-bottom: 1px solid $borderColor;
+                color: $textPrimary;
+                font-size: $font16;
+                font-weight: $fontSemiBold;
+            }
+
+            .ma-notification-list {
+                max-height: 280px;
+                overflow-y: auto;
+            }
+
+            .ma-notification-item {
+                padding: 12px 16px;
+                border-bottom: 1px solid rgba($borderColor, .8);
+                @include maFlex(flex-start, center);
+                gap: 10px;
+
+                .ma-notification-indicator {
+                    width: 8px;
+                    height: 8px;
+                    border-radius: $borderRadius50;
+                    background: rgba($textSecondary, .45);
+                    flex-shrink: 0;
+                }
+
+                .ma-notification-text {
+                    color: $textSecondary;
+                    font-size: $font14;
+                }
+
+                &.unread {
+                    background: rgba($primary, .05);
+
+                    .ma-notification-indicator {
+                        background: $primary;
+                    }
+
+                    .ma-notification-text {
+                        color: $textPrimary;
+                        font-weight: $fontMedium;
+                    }
+                }
+
+                &:hover {
+                    background: rgba($primary, .08);
+                }
+            }
+
+            .ma-dropdown-footer {
+                padding: 12px 16px;
+                text-align: center;
+                background: rgba($primary, .04);
+
+                a {
+                    color: $primary;
+                    font-size: $font14;
+                    font-weight: $fontSemiBold;
+                }
+            }
+        }
+    }
+}
+
+@include maMedia($lg) {
+    .ma-dashboard {
+        .ma-topbar {
+            padding: 0 12px;
+            height: 60px;
+
+            .ma-notification-menu {
+                min-width: $sidebarWidthExpanded;
+                right: 0;
+                left: auto;
+            }
+
+            .ma-user-toggle {
+                .ma-profile-meta,
+                .ma-chevron {
+                    display: none;
+                }
+
+                .ma-avatar {
+                    width: 34px;
+                    height: 34px;
+                    border-radius: $borderRadius8;
+                }
+            }
+
+            .ma-topbar-search {
+                .form-control {
+                    min-width: 180px;
+                }
+            }
+        }
+    }
+}
+
+@include maMedia($sm) {
+    .ma-dashboard {
+        .ma-topbar {
+            .ma-breadcrumb {
+                .ma-crumb-root,
+                .ma-crumb-icon.is-middle,
+                .ma-crumb-dash-link,
+                .ma-crumb-icon.is-last {
+                    display: none;
+                }
+            }
+
+            .ma-topbar-search {
+                display: none;
+            }
+        }
+    }
+}

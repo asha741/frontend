@@ -1,0 +1,136 @@
+  <div class="modal-header">
+  <h2 class="modal-title h5 mb-0">{{ title }}</h2>
+  <button type="button" class="btn-close" aria-label="Close" (click)="close()"></button>
+</div>
+
+<div class="modal-body">
+  <div class="ma-upload-wrapper">
+    @if (!selectedFile()) {
+      <div
+        class="ma-upload-box"
+        [class.is-dragover]="dragOver()"
+        (click)="fileInput.click()"
+        (dragover)="onDragOver($event)"
+        (dragleave)="onDragLeave($event)"
+        (drop)="onDrop($event)"
+      >
+        <img src="/assets/images/icons/upload-lg.svg" alt="" class="ma-upload-icon ma-svg" />
+        <p class="ma-upload-instruction">{{ instructions }}</p>
+        <p class="ma-upload-info">Supported: {{ acceptLabel }}</p>
+        <input
+          #fileInput
+          type="file"
+          [attr.accept]="acceptAttr"
+          (change)="onFileSelected($event)"
+          aria-label="Upload file"
+        />
+      </div>
+      @if (fileError()) {
+        <div class="ma-upload-error">{{ fileError() }}</div>
+      }
+    } @else {
+      <div class="ma-file-row">
+        <span class="ma-file-row__icon"><i class="fa-solid fa-file-lines"></i></span>
+        <div class="ma-file-row__meta">
+          <span class="ma-file-row__name" [title]="selectedFile()!.name">{{ selectedFile()!.name }}</span>
+        </div>
+        <button
+          type="button"
+          class="ma-file-row__remove"
+          (click)="removeFile()"
+          [disabled]="importing()"
+          aria-label="Remove file"
+        >
+          <i class="fa-regular fa-trash-can"></i>
+        </button>
+      </div>
+    }
+
+    @if (uploadError()) {
+      <div class="ma-upload-error">{{ uploadError() }}</div>
+    }
+
+    @if (importSummary()) {
+      <div class="ma-import-summary">
+        <div class="ma-import-summary__stats">
+          <span class="ma-import-stat ma-import-stat--total">
+            Total Rows <strong>{{ importSummary()!.total_rows ?? '-' }}</strong>
+          </span>
+          <span class="ma-import-stat ma-import-stat--created">
+            Created <strong>{{ importSummary()!.created ?? 0 }}</strong>
+          </span>
+          <span class="ma-import-stat ma-import-stat--skipped">
+            Skipped <strong>{{ importSummary()!.skipped ?? 0 }}</strong>
+          </span>
+        </div>
+
+        @if (importResultRows().length) {
+          <div class="ma-import-error-table-wrap">
+            <table class="table ma-import-error-table">
+              <thead>
+                <tr>
+                  <th>Row</th>
+                  <th>Status</th>
+                  <th>Field</th>
+                  <th>Message</th>
+                </tr>
+              </thead>
+              <tbody>
+                @for (result of importResultRows(); track $index) {
+                  <tr [class.ma-import-row--error]="!result.ok">
+                    <td data-label="Row">{{ result.row ?? '-' }}</td>
+                    <td data-label="Status">
+                      <span class="ma-import-status" [class.ma-import-status--ok]="result.ok">
+                        {{ result.ok ? 'Success' : 'Error' }}
+                      </span>
+                    </td>
+                    <td data-label="Field">
+                      @if (result.field) {
+                        <div class="ma-import-field-chips">
+                          @for (f of splitFields(result.field); track $index) {
+                            <span class="ma-import-field-chip">{{ f }}</span>
+                          }
+                        </div>
+                      } @else {
+                        -
+                      }
+                    </td>
+                    <td data-label="Message">
+                      @if (result.message) {
+                        <div class="ma-import-error-messages">
+                          @for (m of splitMessages(result.message); track $index) {
+                            <div class="ma-import-error-messages__item">{{ m }}</div>
+                          }
+                        </div>
+                      } @else {
+                        -
+                      }
+                    </td>
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </div>
+        }
+      </div>
+    }
+  </div>
+</div>
+
+<div class="modal-footer">
+  @if (importSummary()) {
+    <button type="button" class="btn ma-btn btn-primary" (click)="close()">Cancel</button>
+  } @else {
+    <button type="button" class="btn ma-btn btn-outline-primary btn-grey-btn" (click)="cancel()" [disabled]="importing()">
+      Cancel
+    </button>
+    <button
+      type="button"
+      class="btn ma-btn btn-primary"
+      (click)="doImport()"
+      [disabled]="!selectedFile() || importing()"
+    >
+      {{ importing() ? 'Importing…' : 'Import' }}
+    </button>
+  }
+</div>

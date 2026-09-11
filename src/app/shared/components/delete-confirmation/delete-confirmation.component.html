@@ -1,0 +1,11 @@
+<div class="modal-header">
+  <h2 class="modal-title h5 mb-0">{{ title }}</h2>
+  <button type="button" class="btn-close" aria-label="Close" (click)="close()"></button>
+</div>
+<div class="modal-body">
+  <div class="col-sm-12">{{ message }}</div>
+</div>
+<div class="modal-footer">
+  <button class="btn ma-btn btn-outline-primary btn-grey-btn" type="button" (click)="cancel()">{{ cancelButtonText }}</button>
+  <button class="btn ma-btn btn-danger" type="button" (click)="confirmDelete()">{{ confirmButtonText }}</button>
+</div>

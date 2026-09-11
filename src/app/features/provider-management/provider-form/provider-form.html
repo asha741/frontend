@@ -1,0 +1,254 @@
+<div class="ma-page-header">
+  <div class="ma-page-header__meta">
+    <div class="ma-back-header">
+      <h2 class="ma-page-title">{{ isEdit() ? 'Edit Provider' : 'Add Provider' }}</h2>
+    </div>
+  </div>
+</div>
+
+<form class="ma-form" [formGroup]="form" (ngSubmit)="onSave()" novalidate appFocusFirstInput>
+  <div class="ma-card mb-3">
+    <div class="ma-card-header">
+      <div class="ma-card-title-wrap">
+        <h2 class="ma-card-title">Provider Information</h2>
+      </div>
+    </div>
+    <div class="ma-card-body">
+      <div class="row g-3">
+        <div class="col-12 col-md-4">
+          <div class="ma-form-group mb-0">
+            <label class="ma-form-label" for="maProviderFirstName">First Name <span class="ma-required">*</span></label>
+            <input
+              id="maProviderFirstName"
+              type="text"
+              class="form-control"
+              formControlName="first_name"
+              placeholder="Enter first name"
+              appTrimWhitespace
+              maxlength="50"
+              [class.is-invalid]="isSubmitted() && f['first_name'].errors"
+            />
+            @if (isSubmitted() && f['first_name'].errors) {
+              <div class="invalid-feedback d-block">
+                @if (f['first_name'].hasError('required') || f['first_name'].hasError('whitespace')) { First Name is required. }
+                @else if (f['first_name'].hasError('minlength')) { Minimum 2 characters required. }
+                @else if (f['first_name'].hasError('maxlength')) { Maximum 50 characters allowed. }
+                @else { Please enter a valid First Name. }
+              </div>
+            }
+          </div>
+        </div>
+        <div class="col-12 col-md-4">
+          <div class="ma-form-group mb-0">
+            <label class="ma-form-label" for="maProviderMiddleName">Middle Name</label>
+            <input
+              id="maProviderMiddleName"
+              type="text"
+              class="form-control"
+              formControlName="middle_name"
+              placeholder="Enter middle name"
+              appTrimWhitespace
+              maxlength="50"
+              [class.is-invalid]="isSubmitted() && f['middle_name'].errors"
+            />
+            @if (isSubmitted() && f['middle_name'].errors) {
+              <div class="invalid-feedback d-block">
+                @if (f['middle_name'].hasError('maxlength')) { Maximum 50 characters allowed. }
+              </div>
+            }
+          </div>
+        </div>
+        <div class="col-12 col-md-4">
+          <div class="ma-form-group mb-0">
+            <label class="ma-form-label" for="maProviderLastName">Last Name <span class="ma-required">*</span></label>
+            <input
+              id="maProviderLastName"
+              type="text"
+              class="form-control"
+              formControlName="last_name"
+              placeholder="Enter last name"
+              appTrimWhitespace
+              maxlength="50"
+              [class.is-invalid]="isSubmitted() && f['last_name'].errors"
+            />
+            @if (isSubmitted() && f['last_name'].errors) {
+              <div class="invalid-feedback d-block">
+                @if (f['last_name'].hasError('required') || f['last_name'].hasError('whitespace')) { Last Name is required. }
+                @else if (f['last_name'].hasError('minlength')) { Minimum 2 characters required. }
+                @else if (f['last_name'].hasError('maxlength')) { Maximum 50 characters allowed. }
+                @else { Please enter a valid Last Name. }
+              </div>
+            }
+          </div>
+        </div>
+        <div class="col-12 col-md-6">
+          <div class="ma-form-group mb-0">
+            <label class="ma-form-label" for="maProviderEmail">Email Address <span class="ma-required">*</span></label>
+            <input
+              id="maProviderEmail"
+              type="email"
+              class="form-control"
+              formControlName="email"
+              placeholder="Enter email address"
+              appTrimWhitespace
+              maxlength="100"
+              [class.is-invalid]="isSubmitted() && f['email'].errors"
+            />
+            @if (isSubmitted() && f['email'].errors) {
+              <div class="invalid-feedback d-block">
+                @if (f['email'].hasError('required')) { Email Address is required. }
+                @else if (f['email'].hasError('emailExists')) { Email Address already exists. }
+                @else { Please enter a valid Email Address. }
+              </div>
+            }
+          </div>
+        </div>
+        <div class="col-12 col-md-6">
+          <div class="ma-form-group mb-0">
+            <label class="ma-form-label" for="maProviderContact">Contact Number <span class="ma-required">*</span></label>
+            <input
+              id="maProviderContact"
+              type="tel"
+              class="form-control"
+              formControlName="contact_number"
+              placeholder="(123) 456-7890"
+              appPhoneMask
+              maxlength="14"
+              [class.is-invalid]="isSubmitted() && f['contact_number'].errors"
+            />
+            @if (isSubmitted() && f['contact_number'].errors) {
+              <div class="invalid-feedback d-block">
+                @if (f['contact_number'].hasError('required')) { Contact Number is required. }
+                @else { Please enter a valid 10-digit phone number. }
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ma-card mb-3">
+    <div class="ma-card-header">
+      <div class="ma-card-title-wrap">
+        <h2 class="ma-card-title">Professional Details</h2>
+      </div>
+    </div>
+    <div class="ma-card-body">
+      <div class="row g-3">
+        <div class="col-12 col-md-6">
+          <div class="ma-form-group mb-0">
+            <label class="ma-form-label" for="maProviderId">Provider ID <span class="ma-required">*</span></label>
+            <input
+              id="maProviderId"
+              type="text"
+              class="form-control"
+              formControlName="provider_id"
+              placeholder="e.g. PRV-100"
+              appTrimWhitespace
+              maxlength="16"
+              [class.is-invalid]="isSubmitted() && f['provider_id'].errors"
+            />
+            @if (isSubmitted() && f['provider_id'].errors) {
+              <div class="invalid-feedback d-block">
+                @if (f['provider_id'].hasError('required') || f['provider_id'].hasError('whitespace')) { Provider ID is required. }
+                @else if (f['provider_id'].hasError('maxlength')) { Maximum 16 characters allowed. }
+                @else { Please enter a valid Provider ID. }
+              </div>
+            }
+          </div>
+        </div>
+        <div class="col-12 col-md-6">
+          <div class="ma-form-group mb-0">
+            <label class="ma-form-label" for="maExternalId">External ID</label>
+            <input
+              id="maExternalId"
+              type="text"
+              class="form-control"
+              formControlName="external_id"
+              placeholder="e.g. EXT-100"
+              appTrimWhitespace
+              maxlength="16"
+              [class.is-invalid]="isSubmitted() && f['external_id'].errors"
+            />
+            @if (isSubmitted() && f['external_id'].errors) {
+              <div class="invalid-feedback d-block">
+                @if (f['external_id'].hasError('maxlength')) { Maximum 16 characters allowed. }
+              </div>
+            }
+          </div>
+        </div>
+        <div class="col-12 col-md-6">
+          <div class="ma-form-group mb-0">
+            <label class="ma-form-label" for="maProviderDesignation">Designation <span class="ma-required">*</span></label>
+            <input
+              id="maProviderDesignation"
+              type="text"
+              class="form-control"
+              formControlName="designation"
+              placeholder="Enter designation"
+              appTrimWhitespace
+              maxlength="100"
+              [class.is-invalid]="isSubmitted() && f['designation'].errors"
+            />
+            @if (isSubmitted() && f['designation'].errors) {
+              <div class="invalid-feedback d-block">
+                @if (f['designation'].hasError('required') || f['designation'].hasError('whitespace')) { Designation is required. }
+                @else if (f['designation'].hasError('minlength')) { Minimum 2 characters required. }
+                @else if (f['designation'].hasError('maxlength')) { Maximum 100 characters allowed. }
+                @else { Please enter a valid Designation. }
+              </div>
+            }
+          </div>
+        </div>
+        <div class="col-12 col-md-6">
+          <div class="ma-form-group mb-0">
+            <label class="ma-form-label" for="maProviderLicense">License <span class="ma-required">*</span></label>
+            <kendo-multiselect
+              id="maProviderLicense"
+              formControlName="license"
+              [data]="licenseOptions"
+              textField="label"
+              valueField="value"
+              [valuePrimitive]="true"
+              placeholder="Select License"
+              [class.is-invalid]="isSubmitted() && f['license'].errors"
+            ></kendo-multiselect>
+            @if (isSubmitted() && f['license'].errors) {
+              <div class="invalid-feedback d-block">Please select a License.</div>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ma-card">
+    <div class="ma-card-header">
+      <div class="ma-card-title-wrap">
+        <h2 class="ma-card-title">Status</h2>
+      </div>
+    </div>
+    <div class="ma-card-body">
+      <div class="form-check form-switch">
+        <input
+          class="form-check-input"
+          type="checkbox"
+          role="switch"
+          id="maProviderActive"
+          formControlName="status"
+        />
+        <label class="form-check-label" for="maProviderActive">
+          {{ f['status'].value ? 'Active' : 'Inactive' }}
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <div class="ma-btn-group justify-content-end mt-3">
+    <a routerLink="/provider-management" class="btn ma-btn btn-outline-primary btn-grey-btn">Cancel</a>
+    <button type="submit" class="btn ma-btn btn-primary" [disabled]="submitting()">
+      {{ submitting() ? 'Saving…' : 'Save' }}
+    </button>
+  </div>
+</form>

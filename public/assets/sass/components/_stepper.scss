@@ -1,0 +1,115 @@
+/* ==========================================================================
+   STEPPER COMPONENT
+   ========================================================================== */
+
+.ma-stepper {
+    @include maStepper;
+    margin-bottom: 24px;
+
+    @include maMedia($sm) {
+        flex-direction: column;
+        gap: 20px;
+
+        .stepper-item::after {
+            display: none !important;
+        }
+
+        .stepper-item::before {
+            content: "";
+            position: absolute;
+            width: 2px;
+            height: 40px;
+            background: $borderColor;
+            top: $stepperCircleSize;
+            left: calc($stepperCircleSize / 2 - 1px);
+        }
+
+        .stepper-item:last-child::before {
+            display: none;
+        }
+    }
+}
+
+.stepper-item {
+    position: relative;
+    flex: 1;
+    text-align: center;
+
+    &::after {
+        content: "";
+        position: absolute;
+        width: 100%;
+        height: $stepperLineHeight;
+        background: $borderColor;
+        top: calc($stepperCircleSize / 2 - $stepperLineHeight / 2);
+        left: calc(50% + $stepperCircleSize / 2);
+        z-index: 0;
+    }
+
+    &:last-child::after {
+        display: none;
+    }
+
+    &.completed::after,
+    &.current + .completed::after {
+        background: $primary;
+    }
+}
+
+.stepper-circle {
+    width: $stepperCircleSize;
+    height: $stepperCircleSize;
+    @include maFlexCenter;
+    border-radius: 50%;
+    border: 2px solid $borderColor;
+    background: $white;
+    font-weight: $fontBold;
+    color: $textSecondary;
+    font-size: $font16;
+    margin-bottom: 8px;
+    position: relative;
+    z-index: 10;
+    @include maTransition;
+}
+
+.stepper-item {
+    &.completed .stepper-circle {
+        background: $primary;
+        color: $white;
+        border-color: $primary;
+
+        &::before {
+            content: "✓";
+            position: absolute;
+        }
+    }
+
+    &.current .stepper-circle {
+        border: 2px solid $primary;
+        color: $primary;
+        box-shadow: 0 0 0 4px rgba($primary, 0.1);
+    }
+
+    &.pending .stepper-circle {
+        background: $disabledBg;
+        color: $disabledText;
+        border-color: $disabledBgV2;
+    }
+}
+
+.stepper-label {
+    font-size: $font12;
+    font-weight: $fontMedium;
+    color: $textSecondary;
+    white-space: nowrap;
+    @include maTextEllipsis;
+}
+
+.stepper-item.completed .stepper-label {
+    color: $primary;
+}
+
+.stepper-item.current .stepper-label {
+    color: $primary;
+    font-weight: $fontBold;
+}

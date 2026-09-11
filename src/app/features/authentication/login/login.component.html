@@ -1,0 +1,153 @@
+
+    <main class="ma-login">
+      <div class="container-fluid px-0">
+        <div class="row g-0 ma-login-row">
+          <!-- Left Panel -->
+          <div class="col-lg-6 ma-login-left">
+            <div class="ma-login-content">
+              <div class="ma-login-logo-wrap" aria-label="MediAudit brand block">
+                <img src="assets/images/logo-login.svg" alt="MediAudit Logo" class="ma-login-logo">
+              </div>
+              <p class="ma-kicker">Healthcare Compliance</p>
+              <h2 class="ma-login-heading"><strong>AI-Powered</strong> Healthcare Compliance Platform</h2>
+              <div class="ma-login-divider" aria-hidden="true"></div>
+              <p class="ma-login-description">Streamline healthcare audits, reduce risk, and ensure regulatory
+                compliance with intelligent automation.</p>
+              <div class="ma-login-stats" aria-label="Platform impact statistics">
+                <div class="ma-stat-item">
+                  <h2 class="ma-stat-value">98%</h2>
+                  <p class="ma-stat-label">Compliance Rate</p>
+                </div>
+                <div class="ma-stat-item">
+                  <h2 class="ma-stat-value">500+</h2>
+                  <p class="ma-stat-label">Hospitals Onboarded</p>
+                </div>
+                <div class="ma-stat-item">
+                  <h2 class="ma-stat-value">3x</h2>
+                  <p class="ma-stat-label">Faster Audits</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Panel -->
+          <div class="col-lg-6 ma-login-right">
+            <div class="ma-login-logo-wrap-mobile mb-4" aria-label="MediAudit brand block">
+              <img src="assets/images/logo-pr.svg" alt="MediAudit Logo" class="ma-login-logo">
+            </div>
+            <div class="ma-auth-card">
+              <div class="ma-auth-head">
+                <h2 class="ma-head-lg">Welcome Back!</h2>
+                <p>Please sign in to continue managing your dashboard.</p>
+              </div>
+
+              <!-- Role Switcher -->
+              <!-- <div class="ma-role-switcher" role="tablist" aria-label="Choose admin role">
+                <button class="ma-role-btn" type="button"
+                        [class.active]="selectedRole() === 'super-admin'"
+                        (click)="selectRole('super-admin')"
+                        [attr.aria-pressed]="selectedRole() === 'super-admin'">
+                  <img src="assets/images/icons/super-admin.svg" alt="Super Admin Icon" class="ma-svg ma-role-icon">
+                  Super Admin
+                </button>
+                <button class="ma-role-btn" type="button"
+                        [class.active]="selectedRole() === 'admin'"
+                        (click)="selectRole('admin')"
+                        [attr.aria-pressed]="selectedRole() === 'admin'">
+                  <img src="assets/images/icons/organization-admin.svg" alt="Organization Admin Icon" class="ma-svg ma-role-icon">
+                  Organization Admin
+                </button>
+              </div> -->
+
+              <!-- Login Form -->
+              <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate appFocusFirstInput>
+                <div class="ma-form-group">
+                  <label class="ma-form-label" for="maEmail">
+                    Email Address <span class="ma-required">*</span>
+                  </label>
+                  <div class="input-group ma-input-icon">
+                    <span class="input-group-text">
+                      <img src="assets/images/icons/email.svg" alt="Email Icon" class="ma-svg">
+                    </span>
+                    <input type="email" class="form-control" id="maEmail"
+                           formControlName="email"
+                           appTrimWhitespace
+                           maxlength="100"
+                           placeholder="liam.johnson@example.com"
+                           [class.is-invalid]="isSubmitted() && f['email'].errors">
+                  </div>
+                  @if (isSubmitted() && f['email'].errors) {
+                    <div class="invalid-feedback d-block">
+                      @if (f['email'].hasError('required')) { Email address is required. }
+                      @else { Please enter a valid email address. }
+                    </div>
+                  }
+                </div>
+
+                <div class="ma-form-group">
+                  <label class="ma-form-label" for="maPassword">
+                    Password <span class="ma-required">*</span>
+                  </label>
+                  <div class="input-group ma-input-icon">
+                    <span class="input-group-text">
+                      <img src="assets/images/icons/password.svg" alt="Password Icon" class="ma-svg">
+                    </span>
+                    <input [type]="showPassword() ? 'text' : 'password'"
+                           class="form-control" id="maPassword"
+                           formControlName="password"
+                           appTrimWhitespace
+                           maxlength="12"
+                           placeholder="Enter your password"
+                           [class.is-invalid]="isSubmitted() && f['password'].errors">
+                    <button type="button" class="input-group-text ma-password-toggle"
+                            (click)="showPassword.update(v => !v)"
+                            [attr.aria-label]="showPassword() ? 'Hide password' : 'Show password'">
+                      <i class="fa-solid" [class.fa-eye]="!showPassword()" [class.fa-eye-slash]="showPassword()"></i>
+                    </button>
+                  </div>
+                  @if (isSubmitted() && f['password'].errors) {
+                    <div class="invalid-feedback d-block">Password is required.</div>
+                  }
+                </div>
+
+                <div class="ma-auth-meta">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" formControlName="rememberMe" id="maRememberMe">
+                    <label class="form-check-label" for="maRememberMe">Remember Me</label>
+                  </div>
+                  <a routerLink="/auth/forgot-password" class="ma-link">Forgot Password?</a>
+                </div>
+
+                @if (loginError() || isLocked()) {
+                  <div class="alert ma-auth-alert" role="alert"
+                       [class.alert-warning]="isLocked()" [class.alert-danger]="!isLocked()">
+                    <span class="d-block">{{ loginError() }}</span>
+                    @if (isLocked()) {
+                      <span class="d-block mt-1">
+                        You can try again in <strong>{{ lockoutDisplay() }}</strong>.
+                      </span>
+                    } @else if (attemptsLeft() !== null && attemptsLeft() !== 0) {
+                      <span class="d-block mt-1">
+                        {{ attemptsLeft() }} attempt{{ attemptsLeft() === 1 ? '' : 's' }} left before
+                        your account is locked.
+                      </span>
+                    }
+                  </div>
+                }
+
+                <button type="submit" class="ma-auth-submit" [disabled]="isLocked()">
+                  <span>{{ isLocked() ? 'Try again in ' + lockoutDisplay() : 'Sign In' }}</span>
+                  <i class="fa-solid" [class.fa-arrow-right]="!isLocked()" [class.fa-lock]="isLocked()"></i>
+                </button>
+              </form>
+
+              <p class="ma-terms">Protected by enterprise-grade encryption. By signing in you accept our
+                <a class="ma-link" href="#">Terms</a> and <a class="ma-link" href="#">Privacy Policy</a>.
+              </p>
+            </div>
+            <!-- <p class="ma-bottom-link">Need access? <a class="ma-link" href="#">Request an account</a></p> -->
+          </div>
+        </div>
+      </div>
+    </main>
+  

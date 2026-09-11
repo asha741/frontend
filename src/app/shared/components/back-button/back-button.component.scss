@@ -1,0 +1,10 @@
+.back-button {
+  display: inline-flex;
+  align-items: center;
+  cursor: pointer;
+  color: var(--primary, #0d6efd);
+
+  &:hover {
+    opacity: 0.85;
+  }
+}

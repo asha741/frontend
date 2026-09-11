@@ -1,0 +1,119 @@
+<div class="ma-page-header">
+  <div class="ma-page-header__meta d-flex align-items-center gap-3">
+    <div>
+      <h2 class="ma-page-title">{{ isEdit() ? 'Edit User' : 'Add User' }}</h2>
+      <p class="ma-page-subtitle">{{ isEdit() ? 'Update team member details' : 'Create a new team member via invitation' }}</p>
+    </div>
+  </div>
+</div>
+
+<section class="ma-surface-card ma-users-section-card ma-user-form-card">
+  <div class="ma-card__body">
+    <form [formGroup]="form" (ngSubmit)="onSave()" appFocusFirstInput>
+      <div class="row g-3 mb-3">
+        <div class="col-12 col-md-6">
+          <div class="ma-form-group mb-0">
+            <label class="ma-form-label" for="maFirstName">First Name <span class="ma-required">*</span></label>
+            <input class="form-control" id="maFirstName" type="text" formControlName="first_name"
+              appTrimWhitespace
+              maxlength="50"
+              placeholder="Enter first name" [class.is-invalid]="isSubmitted() && f['first_name'].errors" />
+            @if (isSubmitted() && f['first_name'].errors) {
+            <div class="invalid-feedback d-block">
+              @if (f['first_name'].hasError('required')) { First Name is required. }
+              @else if (f['first_name'].hasError('minlength')) { Minimum 2 characters required. }
+              @else if (f['first_name'].hasError('maxlength')) { Maximum 50 characters allowed. }
+              @else { Please enter a valid First Name. }
+            </div>
+            }
+          </div>
+        </div>
+
+        <div class="col-12 col-md-6">
+          <div class="ma-form-group mb-0">
+            <label class="ma-form-label" for="maLastName">Last Name <span class="ma-required">*</span></label>
+            <input class="form-control" id="maLastName" type="text" formControlName="last_name"
+              appTrimWhitespace
+              maxlength="50"
+              placeholder="Enter last name" [class.is-invalid]="isSubmitted() && f['last_name'].errors" />
+            @if (isSubmitted() && f['last_name'].errors) {
+            <div class="invalid-feedback d-block">
+              @if (f['last_name'].hasError('required')) { Last Name is required. }
+              @else if (f['last_name'].hasError('minlength')) { Minimum 2 characters required. }
+              @else if (f['last_name'].hasError('maxlength')) { Maximum 50 characters allowed. }
+              @else { Please enter a valid Last Name. }
+            </div>
+            }
+          </div>
+        </div>
+
+        <div class="col-12 col-md-6">
+          <div class="ma-form-group mb-0">
+            <label class="ma-form-label" for="maEmail">Email Address <span class="ma-required">*</span></label>
+            <input class="form-control" id="maEmail" type="email" formControlName="email"
+              appTrimWhitespace
+              maxlength="100"
+              [readonly]="isEdit()"
+              placeholder="name@example.com" [class.is-invalid]="isSubmitted() && f['email'].errors" />
+            @if (isSubmitted() && f['email'].errors) {
+            <div class="invalid-feedback d-block">
+              @if (f['email'].hasError('required')) { Email Address is required. }
+              @else if (f['email'].hasError('emailExists')) { Email address already exists. }
+              @else { Please enter a valid email address. }
+            </div>
+            }
+          </div>
+        </div>
+
+        <div class="col-12 col-md-6">
+          <div class="ma-form-group mb-0">
+            <label class="ma-form-label" for="maPhone">Contact Number <span class="ma-required">*</span></label>
+            <input class="form-control" id="maPhone" type="text" formControlName="contactNumber" appPhoneMask maxlength="14"
+              placeholder="(123) 456-7890"
+              [class.is-invalid]="isSubmitted() && f['contactNumber'].errors" />
+            @if (isSubmitted() && f['contactNumber'].errors) {
+            <div class="invalid-feedback d-block">
+              @if (f['contactNumber'].hasError('required')) { Contact Number is required. }
+              @else { Please enter a valid 10-digit phone number. }
+            </div>
+            }
+          </div>
+        </div>
+
+        <div class="col-12 col-md-6">
+          <div class="ma-form-group mb-0">
+            <label class="ma-form-label" for="maRole">Role <span class="ma-required">*</span></label>
+            <!-- Type-ahead: nothing loads until 3+ characters are typed. -->
+            <app-search-autocomplete formControlName="role_name"
+              [endpoint]="API_ROUTES.GET_ROLES_DROPDOWN" valueAs="label" placeholder="Search role"
+              [invalid]="!!(isSubmitted() && f['role_name'].errors)">
+            </app-search-autocomplete>
+            @if (isSubmitted() && f['role_name'].errors) {
+            <div class="invalid-feedback d-block">
+              @if (f['role_name'].hasError('invalidSelection')) { Please select a valid role. }
+              @else { Please select a role. }
+            </div>
+            }
+            @if (isSelfEdit()) {
+            <small class="text-muted">You can't change your own role.</small>
+            }
+          </div>
+        </div>
+
+      </div>
+
+      @if (!isEdit()) {
+      <div class="mt-4 mb-2 text-muted" style="font-size: 0.9rem;">
+        <i class="fa-solid fa-circle-info me-2"></i>An invitation email will be sent with login credentials and a portal access link.
+      </div>
+      }
+
+      <div class="ma-btn-group mt-3 justify-content-end">
+        <a routerLink="/team-management" class="btn ma-btn btn-outline-primary btn-grey-btn">Cancel</a>
+        <button class="btn ma-btn btn-primary" type="submit" >
+          {{ isEdit() ? 'Update User' : 'Add User' }}
+        </button>
+      </div>
+    </form>
+  </div>
+</section>

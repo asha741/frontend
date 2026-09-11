@@ -1,0 +1,150 @@
+// Bootstrap Variable Overrides
+@import "abstracts/variables";
+@import "vendors/bootstrap-theme";
+
+// Bootstrap
+@import "bootstrap/bootstrap";
+
+// Abstracts
+@import "abstracts/mixins";
+
+// Base
+@import "base/reset";
+@import "base/typography";
+@import "base/utilities";
+
+// Layout
+@import "layout/header";
+@import "layout/dashboard-header";
+@import "layout/footer";
+@import "layout/cmnSection";
+@import "layout/sidebar";
+@import "layout/stepForm";
+
+// Components
+@import "components/buttons";
+@import "components/cards";
+@import "components/forms";
+@import "components/tables";
+@import "components/badges";
+@import "components/pagination";
+@import "components/upload";
+@import "components/dropdown";
+@import "components/search";
+@import "components/filter";
+@import "components/tabs";
+@import "components/stepper";
+@import "components/chart";
+@import "components/document-card";
+@import "components/statistics-card";
+
+// Pages
+@import "pages/auth";
+@import "pages/dashboard";
+@import "pages/profile";
+@import "pages/organizations";
+@import "pages/masters";
+@import "pages/provider-claims";
+@import "pages/validate-claim";
+@import "pages/claim-detail";
+@import "pages/claim-analyst";
+@import "pages/reports";
+
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    position: relative;
+    margin: 0;
+    padding: 0;
+    font-size: $font14;
+    font-weight: $fontRegular;
+    font-family: $fontFamilyPrimary;
+    overflow-x: hidden;
+}
+
+body.ma-sidebar-open-body {
+    overflow: hidden;
+}
+
+button {
+    outline: none;
+}
+
+a {
+    text-decoration: none;
+}
+
+a,
+.btn,
+button,
+:after,
+:before,
+path {
+    @include maTransition;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    margin-bottom: 0;
+    color: $textPrimary;
+}
+
+:focus-visible {
+    outline: 2px solid rgba($primary, .45);
+    outline-offset: 2px;
+}
+
+/* ==========================================================================
+   Heading Styles
+   ========================================================================== */
+.ma-head-xl {
+    @include maHeading;
+    font-size: $font36;
+    @include maMedia($xl) {
+        font-size: 32px;
+    }
+    @include maMedia($lg) {
+        font-size: 28px;
+    }
+    @include maMedia($md) {
+        font-size: 24px;
+    }
+}
+
+.ma-head-lg {
+    @include maHeading;
+    font-size: $font32;
+    @include maMedia($xl) {
+        font-size: 30px;
+    }
+    @include maMedia($lg) {
+        font-size: 24px;
+    }
+}
+
+.ma-head-md {
+    @include maHeading;
+    font-size: $font24;
+}
+
+.ma-head-sm {
+    @include maHeading;
+    font-size: $font20;
+}
+
+.ma-head-xs {
+    @include maHeading;
+    font-size: $font18;
+}
+
+
+
+
+

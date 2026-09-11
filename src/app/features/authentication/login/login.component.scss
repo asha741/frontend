@@ -1,0 +1,14 @@
+// Component styles
+
+.ma-auth-alert {
+  padding: 10px 12px;
+  margin-bottom: 16px;
+  font-size: 14px;
+}
+
+// The template's submit button has no disabled state of its own, and it stays
+// disabled for the whole lockout countdown.
+.ma-auth-submit:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}

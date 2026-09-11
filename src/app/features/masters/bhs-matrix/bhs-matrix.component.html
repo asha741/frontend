@@ -1,0 +1,240 @@
+  <div class="ma-master-card__head">
+    <h3 class="ma-master-card__title">BHS Matrix Master</h3>
+    <p class="ma-master-card__subtitle">Manage Behavioral Health Services master records.</p>
+  </div>
+  <div class="ma-master-card__toolbar">
+    <div class="row g-2 align-items-center w-100">
+      <!-- Search input -->
+      <div class="col-12 col-lg-4">
+        <div class="ma-input-group ma-filter-item ma-filter-item--search">
+          <i class="fa-solid fa-magnifying-glass ma-input-icon"></i>
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Search BHS Matrix..."
+            aria-label="Search BHS Matrix by BHS ID, Service Category, Service, Procedure Code, or ICD-10"
+            [(ngModel)]="search"
+            appTrimWhitespace
+            maxlength="100"
+            (keydown.enter)="onSearch()"
+          />
+        </div>
+      </div>
+      <!-- Search & Reset buttons -->
+      <div class="col-12 col-lg-auto d-flex gap-2">
+        <button
+          type="button"
+          class="btn ma-btn btn-primary"
+          (click)="onSearch()"
+        >
+          Search
+        </button>
+        <button
+          type="button"
+          class="btn ma-btn btn-outline-secondary"
+          (click)="clearSearch()"
+        >
+          Reset
+        </button>
+      </div>
+      <!-- Add / Sample File / Import / Export -->
+      <div class="col-12 col-lg-auto ms-lg-auto">
+        <div class="row g-2 ma-filter-item ma-filter-item--action">
+          <!-- Split button: one Sample File, a menu for the format. -->
+          @if (perms.can(PERMISSION_MODULE.Bhs, PERMISSION_ACTION.Create)) {
+            <div class="col-12 col-lg-auto">
+              <div class="dropdown w-100">
+                <button
+                  type="button"
+                  class="btn ma-btn btn-outline-primary btn-grey-btn dropdown-toggle w-100"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                  aria-label="Download sample file"
+                  [disabled]="downloadingSample()"
+                >
+                  {{ downloadingSample() ? 'Downloading…' : 'Sample File' }}
+                  <i class="fa-solid fa-download ms-2"></i>
+                </button>
+                <ul class="dropdown-menu ma-dropdown-menu">
+                  <li>
+                    <button class="dropdown-item" type="button" (click)="downloadSampleFile('csv')">
+                      <i class="fa-solid fa-file-csv me-2"></i> CSV (.csv)
+                    </button>
+                  </li>
+                  <li>
+                    <button class="dropdown-item" type="button" (click)="downloadSampleFile('xlsx')">
+                      <i class="fa-solid fa-file-excel me-2"></i> Excel (.xlsx)
+                    </button>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            <div class="col-12 col-lg-auto">
+              <button class="btn ma-btn btn-outline-primary btn-grey-btn w-100" type="button" (click)="openImportModal()">
+                Import <i class="fa-solid fa-file-import ms-2"></i>
+              </button>
+            </div>
+          }
+
+          <!-- Split button: one Export, a menu for the format. -->
+          @if (bhsData().total > 0 && perms.can(PERMISSION_MODULE.Bhs, PERMISSION_ACTION.Export)) {
+            <div class="col-12 col-lg-auto">
+              <div class="dropdown w-100">
+                <button
+                  type="button"
+                  class="btn ma-btn btn-outline-primary btn-grey-btn dropdown-toggle w-100"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                  aria-label="Export BHS Matrix"
+                  [disabled]="exporting()"
+                >
+                  {{ exporting() ? 'Exporting…' : 'Export' }}
+                  <i class="fa-solid fa-file-export ms-2"></i>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end ma-dropdown-menu">
+                  <li>
+                    <button class="dropdown-item" type="button" (click)="exportBhs('csv')">
+                      <i class="fa-solid fa-file-csv me-2"></i> CSV (.csv)
+                    </button>
+                  </li>
+                  <li>
+                    <button class="dropdown-item" type="button" (click)="exportBhs('xlsx')">
+                      <i class="fa-solid fa-file-excel me-2"></i> Excel (.xlsx)
+                    </button>
+                  </li>
+                </ul>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="table-responsive">
+    <kendo-grid
+      class="ma-kendo-grid table ma-master-table ma-master-table--bhs"
+      [data]="bhsData()"
+      [pageSize]="state.take"
+      [skip]="state.skip"
+      [sortable]="true"
+      [sort]="state.sort"
+      [pageable]="{ buttonCount: 3, type: 'numeric', pageSizes: pageSizes }"
+      [scrollable]="'none'"
+      (dataStateChange)="dataStateChange($event)"
+    >
+
+      <kendo-grid-column title="Sr. No." [width]="80" [filterable]="false" [sortable]="false">
+        <ng-template kendoGridCellTemplate let-rowIndex="rowIndex">
+          {{ rowIndex + 1 }}
+        </ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column field="bhs_id" title="BHS ID" [width]="120">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div class="k-text-ellipsis" [ngbTooltip]="dataItem.bhs_id">{{ dataItem.bhs_id}}</div>
+        </ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column field="service_category" title="Service Category" [width]="170">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div class="k-text-ellipsis" [ngbTooltip]="dataItem.service_category">
+            {{ dataItem.service_category}}
+          </div>
+        </ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column field="service_name" title="Service" [width]="220">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div class="k-text-ellipsis" [ngbTooltip]="dataItem.service_name">
+            {{ dataItem.service_name}}
+          </div>
+        </ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column field="proc_code" title="Proc-Code" [width]="120">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div class="k-text-ellipsis" [ngbTooltip]="dataItem.proc_code">{{ dataItem.proc_code}}</div>
+        </ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column field="mod1" title="Mod1" [width]="90" [sortable]="false">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div class="k-text-ellipsis" [ngbTooltip]="dataItem.mod1">{{ dataItem.mod1}}</div>
+        </ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column field="mod2" title="Mod2" [width]="90" [sortable]="false">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div class="k-text-ellipsis" [ngbTooltip]="dataItem.mod2">{{ dataItem.mod2}}</div>
+        </ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column field="mod3" title="Mod3" [width]="90" [sortable]="false">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div class="k-text-ellipsis" [ngbTooltip]="dataItem.mod3">{{ dataItem.mod3}}</div>
+        </ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column field="mod4" title="Mod4" [width]="90" [sortable]="false">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div class="k-text-ellipsis" [ngbTooltip]="dataItem.mod4">{{ dataItem.mod4}}</div>
+        </ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column field="allowed_pos" title="Place(s)-of-Service Allowed" [width]="200" [sortable]="false">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div class="k-text-ellipsis" [ngbTooltip]="dataItem.allowed_pos">{{ dataItem.allowed_pos}}</div>
+        </ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column field="icd_10" title="ICD-10" [width]="110">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div
+            class="k-text-ellipsis"
+            [ngbTooltip]="dataItem.icd_10"
+            tooltipClass="ma-tooltip-wide"
+          >{{ dataItem.icd_10}}</div>
+        </ng-template>
+      </kendo-grid-column>
+
+      @if (perms.canAny(PERMISSION_MODULE.Bhs, PERMISSION_ACTION.Update, PERMISSION_ACTION.Delete)) {
+        <kendo-grid-column title="Actions" [width]="110" [filterable]="false" [sortable]="false">
+          <ng-template kendoGridCellTemplate let-dataItem>
+            <div class="ma-table-actions">
+              @if (perms.can(PERMISSION_MODULE.Bhs, PERMISSION_ACTION.Update)) {
+                <button
+                  class="ma-btn-icon-sm"
+                  type="button"
+                  ngbTooltip="Edit"
+                  placement="top"
+                  [attr.aria-label]="'Edit ' + (dataItem.bhs_id || '')"
+                  (click)="editBhs(dataItem)"
+                >
+                  <i class="fa-regular fa-pen-to-square"></i>
+                </button>
+              }
+              @if (perms.can(PERMISSION_MODULE.Bhs, PERMISSION_ACTION.Delete)) {
+                <button
+                  class="ma-btn-icon-sm"
+                  type="button"
+                  ngbTooltip="Delete"
+                  placement="top"
+                  [attr.aria-label]="'Delete ' + (dataItem.bhs_id || '')"
+                  (click)="deleteBhs(dataItem)"
+                >
+                  <i class="fa-regular fa-trash-can"></i>
+                </button>
+              }
+            </div>
+          </ng-template>
+        </kendo-grid-column>
+      }
+
+      <ng-template kendoGridNoRecordsTemplate>
+        <div class="ma-grid-empty">No BHS Matrix records match your current search.</div>
+      </ng-template>
+    </kendo-grid>
+  </div>
+

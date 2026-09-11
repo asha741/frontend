@@ -1,0 +1,18 @@
+<!-- Global loading overlay — driven by ApiService via LoaderService (ref-counted). -->
+<app-loader [show]="loader.loading()"></app-loader>
+
+<router-outlet></router-outlet>
+
+<!-- Global toast container — ToastService.toasts is rendered here. -->
+<div aria-live="polite" aria-atomic="true" class="custom-toaster">
+  @for (toast of toastService.toasts; track $index) {
+    <ngb-toast
+      [header]="toast.header ?? 'Agency Admin'"
+      [class]="toast.classname"
+      [autohide]="false"
+      (hide)="toastService.remove(toast)"
+      class="mb-2">
+      {{ toast.body }}
+    </ngb-toast>
+  }
+</div>

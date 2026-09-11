@@ -1,0 +1,84 @@
+<div class="ma-page-header">
+  <div class="ma-page-header__meta">
+    <h2 class="ma-page-title">{{ isEdit() ? 'Edit Role' : 'Create Role' }}</h2>
+    <p class="ma-page-subtitle">{{ isEdit() ? 'Update role details and permissions' : 'Create a new role with permission matrix' }}</p>
+  </div>
+</div>
+
+<section class="ma-surface-card ma-users-section-card ma-role-card">
+  <div class="ma-card__body">
+    <form [formGroup]="form" (ngSubmit)="onSave()" appFocusFirstInput>
+      <div class="row g-3 mb-3">
+        <div class="col-12 col-md-6">
+          <div class="ma-form-group mb-0">
+            <label class="ma-form-label" for="maRoleName">Role Name <span class="ma-required">*</span></label>
+            <input class="form-control" id="maRoleName" type="text" formControlName="name" appTrimWhitespace maxlength="50" placeholder="Enter role name" [class.is-invalid]="isSubmitted() && f['name'].errors">
+            @if (isSubmitted() && f['name'].errors) {
+              <div class="invalid-feedback d-block">
+                @if (f['name'].hasError('required')) { Role Name is required. }
+                @else if (f['name'].hasError('minlength')) { Minimum 2 characters required. }
+                @else if (f['name'].hasError('maxlength')) { Maximum 50 characters allowed. }
+                @else { Please enter a valid Role Name. }
+              </div>
+            }
+          </div>
+        </div>
+        <div class="col-12 col-md-6">
+          <div class="ma-form-group mb-0">
+            <label class="ma-form-label" for="maRoleDescription">Description <span class="ma-required">*</span></label>
+            <input class="form-control" id="maRoleDescription" type="text" formControlName="description" appTrimWhitespace maxlength="250" placeholder="Description of this role..." [class.is-invalid]="isSubmitted() && f['description'].errors">
+            @if (isSubmitted() && f['description'].errors) {
+              <div class="invalid-feedback d-block">
+                @if (f['description'].hasError('required')) { Description is required. }
+                @else if (f['description'].hasError('minlength')) { Minimum 5 characters required. }
+                @else if (f['description'].hasError('maxlength')) { Maximum 250 characters allowed. }
+                @else { Please enter a valid Description. }
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+
+      <h3 class="ma-head-xs fw-semibold mb-3">Permissions</h3>
+
+      <div class="table-responsive">
+        <table class="table align-middle ma-data-table ma-role-permission-table" aria-label="Permission matrix">
+          <thead>
+            <tr>
+              <th class="ma-perm-th-module">Module</th>
+              <th class="w-100">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (group of permissionGroups(); track group.module) {
+              <tr>
+                <td class="ma-perm-td-module ma-td-large">{{ group.moduleLabel }}</td>
+                <td class="w-100">
+                  <div class="ma-perm-grid">
+                    @for (perm of group.permissions; track perm.id) {
+                      <div class="d-flex align-items-center me-4 mb-2">
+                        <input class="form-check-input ma-permission-checkbox" type="checkbox"
+                          [id]="'perm-' + perm.id" [checked]="perm.selected"
+                          (change)="onPermissionChange(perm, group, $event)">
+                        <label class="ms-2 k-cursor-pointer" [for]="'perm-' + perm.id">{{ perm.actionLabel }}</label>
+                      </div>
+                    }
+                  </div>
+                </td>
+              </tr>
+            } @empty {
+              <tr>
+                <td colspan="2" class="text-center text-muted py-4">No permissions available.</td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <div class="ma-btn-group mt-3 justify-content-end">
+        <a [routerLink]="['/team-management']" [queryParams]="{ tab: 'roles' }" class="btn ma-btn btn-outline-primary btn-grey-btn">Cancel</a>
+        <button class="btn ma-btn btn-primary" type="submit">{{ isEdit() ? 'Update Role' : 'Create Role' }}</button>
+      </div>
+    </form>
+  </div>
+</section>

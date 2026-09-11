@@ -1,0 +1,104 @@
+/* ==========================================================================
+   REUSABLE BADGES
+   ========================================================================== */
+
+.ma-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: $borderRadius4;
+    font-size: $font12;
+    font-weight: $fontMedium;
+    line-height: 1;
+    border: 1px solid transparent;
+    white-space: nowrap;
+    width: fit-content;
+
+    &--primary {
+        color: $blueText;
+        background: $blueBg;
+        border-color: $blueBg;
+    }
+
+    &--success {
+        color: $successText;
+        background: $successBg;
+        border-color: $successBorder;
+    }
+
+    &--warning {
+        color: $warningText;
+        background: $warningBg;
+        border-color: $warningBorder;
+    }
+
+    &--viewer,
+    &.badge-viewer {
+        color: $warningTextV2;
+        background: $warningBgV2;
+        border-color: $warningBgV2;
+    }
+
+    &--super-admin,
+    &.badge-super-admin {
+        color: $purpleText;
+        background: $purpleBg;
+        border-color: $purpleBg;
+    }
+
+    &--admin,
+    &.badge-admin {
+        color: $blueText;
+        background: $blueBg;
+        border-color:$blueBg;
+    }
+
+    &--reviewer,
+    &.badge-reviewer {
+        color: $disabledTextV2;
+        background: $disabledBgV2;
+        border-color: $disabledBgV2;
+    }
+
+    &--active,
+    &.badge-active {
+        color: $activeText;
+        background: $activeBg;
+        border-color: $activeBg;
+    }
+
+    &--inactive,
+    &.badge-inactive {
+        color: $disabledText;
+        background: $disabledBg;
+        border-color: $disabledBg;
+    }
+
+    &--draft,
+    &.badge-draft {
+        color: $warningTextV2;
+        background: $warningBgV2;
+        border-color: $warningBgV2;
+    }
+
+    &--pending,
+    &.badge-pending {
+        color: $warningText;
+        background: $warningBg;
+        border-color: $warningBorder;
+    }
+
+    &--accepted,
+    &.badge-accepted {
+        color: $successText;
+        background: $successBg;
+        border-color: $successBorder;
+    }
+    &--danger {
+        color: $darkRed;
+        background: $lightRed;
+        border-color: $lightRed;
+    }
+}

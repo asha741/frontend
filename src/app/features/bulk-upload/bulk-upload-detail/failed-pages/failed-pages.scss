@@ -1,0 +1,17 @@
+.failed-pages-page {
+  // The document name sits under the title as a plain caption, and can be long
+  // enough to push the header wide — keep it on one line with an ellipsis.
+  .ma-page-subtitle {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 100%;
+  }
+
+  // Reasons are free text and can run long; let them wrap instead of
+  // stretching the Reason column.
+  .ma-cell-wrap {
+    white-space: normal;
+    word-break: break-word;
+  }
+}

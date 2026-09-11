@@ -1,0 +1,83 @@
+<main class="failed-notes-page">
+  <!-- SECTION 1: FAILURE REASON -->
+  <div class="ma-table-card h-100 mb-4">
+    <div class="ma-table-card-head">
+      <h2 class="ma-table-title"> Reason</h2>
+    </div>
+    <div class="ma-card-body">
+      @if (rule(); as r) {
+        <div class="ma-failure-meta mb-3 d-flex align-items-center gap-2">
+          @if (r.status) {
+            <span class="ma-badge" [class]="r.status | badgeClass">{{ r.status }}</span>
+          }
+          @if (r.priority) {
+            <span class="ma-badge" [class]="r.priority | badgeClass: 'priority'">
+              <i class="fa-regular fa-flag"></i> {{ r.priority | uppercase }}
+            </span>
+          }
+        </div>
+
+        @if (r.failure_reason) {
+          <div class="ma-markdown" [innerHTML]="r.failure_reason | markdown"></div>
+        } @else {
+          <p class="ma-grey-text mb-0">No failure reason was recorded for this rule.</p>
+        }
+
+        @if (r.recommendation) {
+          <div class="ma-finding__recommendation ma-markdown mt-3">
+            <i class="fa-regular fa-lightbulb"></i>
+            <div [innerHTML]="r.recommendation | markdown"></div>
+          </div>
+        }
+      } @else {
+        <p class="ma-grey-text mb-0">No records found.</p>
+      }
+    </div>
+  </div>
+
+  <!-- SECTION 2: FAILED NOTES -->
+  <div class="ma-table-card h-100">
+    <div class="ma-table-card-head ma-table-card-head--stacked">
+      <h2 class="ma-table-title"> Notes</h2>
+      <p class="ma-page-subtitle mb-0">
+        <span class="ma-grey-text">Rule:</span> {{ rule()?.rule_id }} — {{ rule()?.rule_name }}
+      </p>
+    </div>
+    <div class="table-responsive ma-table-bnone">
+      <table class="table align-middle ma-data-table ma-findings-table">
+        <thead>
+          <tr>
+            <th width="90">Sr. No.</th>
+            <th width="140">Visit ID</th>
+            <th width="120">Note Page</th>
+            <th>Failed Sections</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (note of failedNotes(); track $index) {
+            <tr>
+              <td data-label="Sr. No.">{{ $index + 1 }}</td>
+              <td data-label="Visit ID">{{ note.visit_id }}</td>
+              <td data-label="Note Page">Page {{ note.note_page }}</td>
+              <td data-label="Failed Sections">
+                @if (note.failed_sections.length) {
+                  <ul class="ma-finding__sections mb-0">
+                    @for (section of note.failed_sections; track $index) {
+                      <li class="ma-finding__section-item ma-markdown" [innerHTML]="section | markdown"></li>
+                    }
+                  </ul>
+                } @else {
+                  ——
+                }
+              </td>
+            </tr>
+          } @empty {
+            <tr class="ma-empty-state">
+              <td colspan="4" class="text-center justify-content-center py-5">No records found.</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</main>

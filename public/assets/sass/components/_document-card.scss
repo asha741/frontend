@@ -1,0 +1,108 @@
+/* ==========================================================================
+   DOCUMENT CARD COMPONENT
+   ========================================================================== */
+
+.ma-document-card {
+    @include maDocumentCard;
+    gap: 12px;
+
+    .document-icon {
+        width: 32px;
+        height: 32px;
+        @include maFlexCenter;
+        background: $light;
+        border-radius: $borderRadius8;
+        color: $primary;
+        font-size: 18px;
+        flex-shrink: 0;
+    }
+
+    .document-info {
+        @include maFlexColumn(flex-start);
+        gap: 4px;
+        flex: 1;
+        min-width: 0;
+    }
+
+    .document-name {
+        font-size: $font14;
+        font-weight: $fontMedium;
+        color: $textPrimary;
+        @include maTextEllipsis;
+    }
+
+    .document-size {
+        font-size: $font12;
+        color: $textSecondary;
+    }
+
+    .document-actions {
+        @include maFlexBetween;
+        gap: 8px;
+    }
+
+    .document-action-btn {
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: $primary;
+        font-size: $font16;
+        @include maTransition;
+        padding: 4px;
+        display: flex;
+
+        &:hover {
+            opacity: 0.7;
+        }
+
+        &.download {
+            color: $primary;
+        }
+
+        &.delete {
+            color: $danger;
+        }
+
+        &.preview {
+            color: $primary;
+        }
+    }
+}
+
+.ma-document-list {
+    @include maFlexColumn(flex-start);
+    gap: 12px;
+
+    .ma-document-card {
+        width: 100%;
+    }
+}
+
+.ma-document-grid {
+    @include maResponsiveColumns($desktop: 3, $tablet: 2, $mobile: 1);
+}
+
+/* ==========================================================================
+   EMPTY DOCUMENT STATE
+   ========================================================================== */
+
+.ma-document-empty {
+    @include maFlexCenter;
+    flex-direction: column;
+    gap: 8px;
+    padding: 24px;
+    background: $light;
+    border-radius: $borderRadius12;
+    text-align: center;
+
+    .empty-icon {
+        font-size: 32px;
+        color: $textSecondary;
+        opacity: 0.5;
+    }
+
+    .empty-text {
+        font-size: $font14;
+        color: $textSecondary;
+    }
+}

@@ -1,0 +1,51 @@
+::ng-deep .ma-kendo-grid {
+  height: auto !important;
+  max-height: none !important;
+
+  .k-grid-content,
+  .k-grid-content-locked {
+    overflow-y: visible !important;
+    height: auto !important;
+    max-height: none !important;
+  }
+}
+
+// Unlike the other Travel Time grids, this table's columns (especially the
+// Visit 1 / Visit 2 detail blocks) carry too much content to squeeze into a
+// fixed 100%-width layout without truncating headers/cells — so it keeps its
+// natural width (the sum of each column's declared px width) and scrolls
+// horizontally inside .table-responsive instead, same as the Audit Logs grid.
+:host ::ng-deep .ma-master-table--travel-time-result {
+  th .k-column-title {
+    white-space: nowrap;
+  }
+}
+
+// Visit 1 / Visit 2 cells: Time / Patient / Location / Address stacked vertically.
+.ma-visit-cell {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 12px;
+  line-height: 1.4;
+  white-space: normal;
+  overflow-wrap: break-word;
+}
+
+.ma-cell-wrap {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  white-space: normal;
+  overflow-wrap: break-word;
+  word-break: normal;
+  line-height: 1.3;
+}
+
+.table-responsive {
+  overflow-x: auto !important;
+  overflow-y: visible !important;
+  height: auto !important;
+  max-height: none !important;
+}

@@ -1,0 +1,148 @@
+<main class="validate-claim-page">
+  <div class="ma-page-header">
+    <div>
+      <h2 class="ma-page-title">Validate Claim</h2>
+      <p class="ma-page-subtitle">Submit patient documents for AI validation and analyst review</p>
+    </div>
+  </div>
+
+  <form class="ma-validate-form" [formGroup]="form" (ngSubmit)="onSubmit()" novalidate appFocusFirstInput >
+    <!-- Provider Section -->
+    <div class="ma-card">
+      <div class="ma-card-header">
+        <div class="ma-card-title-wrap m-0">
+          <h3 class="ma-card-title">Provider Name <span class="ma-required">*</span></h3>
+        </div>
+      </div>
+      <div class="ma-card-body">
+        <div class="ma-form-group mb-0">
+          <!-- Type-ahead: nothing loads until 3+ characters are typed. -->
+          <app-search-autocomplete
+            formControlName="provider_id"
+            [endpoint]="API_ROUTES.GET_PROVIDER_LOOKUP"
+            placeholder="Search provider by name"
+            [invalid]="!!(isSubmitted() && f['provider_id'].errors)"
+          ></app-search-autocomplete>
+          @if (isSubmitted() && f['provider_id'].errors) {
+            <div class="invalid-feedback d-block">
+              @if (f['provider_id'].hasError('invalidSelection')) { Please select a valid provider. }
+              @else { Provider is required. }
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- Upload Sections -->
+    <div class="row">
+      @for (cat of categories; track cat.key) {
+        <div class="col-md-6 col-xxl-4">
+          <div class="ma-card">
+            <div class="ma-card-header">
+              <div class="ma-card-title-wrap m-0">
+                <h3 class="ma-card-title">{{ cat.title }} <span class="ma-required">*</span></h3>
+              </div>
+            </div>
+            <div class="ma-card-body">
+              <div class="ma-upload-wrapper">
+                <div
+                  class="ma-upload-box"
+                  [class.is-dragover]="dragOver() === cat.key"
+                  (click)="fileInput.click()"
+                  (dragover)="onDragOver($event, cat.key)"
+                  (dragleave)="onDragLeave($event)"
+                  (drop)="onDrop($event, cat.key)"
+                >
+                  <img
+                    src="/assets/images/icons/upload-lg.svg"
+                    alt=""
+                    class="ma-upload-icon ma-svg"
+                  />
+                  <p class="ma-upload-instruction">Drag &amp; drop files here or click to browse</p>
+                  <p class="ma-upload-info">Supported: PDF only (Max 25MB)</p>
+                  <input
+                    #fileInput
+                    type="file"
+                    accept=".pdf,application/pdf"
+                    (change)="onFilesSelected($event, cat.key)"
+                    [attr.aria-label]="'Upload ' + cat.title"
+                  />
+                </div>
+
+                <div class="ma-upload-previews" [class.has-files]="filesFor(cat.key)().length">
+                  @for (
+                    file of filesFor(cat.key)();
+                    track file.name + file.size;
+                    let i = $index
+                  ) {
+                    <div class="ma-file-row">
+                      <span class="ma-file-row__icon"><i [class]="fileIcon(file.name)"></i></span>
+                      <div class="ma-file-row__meta">
+                        <span class="ma-file-row__name" [title]="file.name">{{ file.name }}</span>
+                        
+                      </div>
+                      <button
+                        type="button"
+                        class="ma-file-row__remove"
+                        (click)="removeFile(cat.key, i)"
+                        [disabled]="uploadingFor(cat.key)()"
+                        aria-label="Remove file"
+                      >
+                        <i class="fa-regular fa-trash-can"></i>
+                      </button>
+                    </div>
+                  }
+                </div>
+
+                @if (isSubmitted() && !filesFor(cat.key)().length) {
+                  <div class="ma-upload-error">At least one document is required.</div>
+                }
+              </div>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+
+    <!-- Patient Section -->
+    <div class="ma-card">
+      <div class="ma-card-header">
+        <div class="ma-card-title-wrap m-0">
+          <h3 class="ma-card-title">Patient <span class="ma-required">*</span></h3>
+        </div>
+      </div>
+      <div class="ma-card-body">
+        <div class="ma-form-group mb-0">
+          <!-- Type-ahead: nothing loads until 3+ characters are typed. -->
+          <app-search-autocomplete
+            formControlName="patient_id"
+            [endpoint]="API_ROUTES.GET_PATIENT_LOOKUP"
+            placeholder="Search patient by name"
+            [invalid]="!!(isSubmitted() && f['patient_id'].errors)"
+          ></app-search-autocomplete>
+          @if (isSubmitted() && f['patient_id'].errors) {
+            <div class="invalid-feedback d-block">
+              @if (f['patient_id'].hasError('invalidSelection')) { Please select a valid patient. }
+              @else { Patient is required. }
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="ma-btn-group justify-content-end mt-2">
+      <button
+        type="button"
+        class="btn ma-btn btn-outline-primary btn-grey-btn"
+        (click)="cancel()"
+        [disabled]="submitting()"
+      >
+        Cancel
+      </button>
+      <button type="submit" class="btn ma-btn btn-primary" [disabled]="submitting() || anyUploading()">
+        Submit
+      </button>
+    </div>
+  </form>
+</main>

@@ -1,0 +1,28 @@
+
+    <aside class="ma-sidebar" aria-label="Sidebar navigation">
+      <div class="ma-sidebar-head">
+        <a routerLink="/dashboard" class="ma-brand text-decoration-none">
+          <img src="assets/images/logo.svg" alt="MediAudit logo" class="ma-brand-logo" />
+          <img src="assets/images/logo-icon.svg" alt="MediAudit logo" class="ma-brand-logo ma-brand-sm" />
+        </a>
+        <button type="button" class="ma-sidebar-close" (click)="close.emit()" aria-label="Close sidebar">
+          <i class="fa-solid fa-times" aria-hidden="true"></i>
+        </button>
+      </div>
+      <nav class="ma-sidebar-nav">
+        @for (item of navItems(); track item.route) {
+          <div class="ma-nav-item">
+            <a class="ma-nav-link"
+               [routerLink]="item.route"
+               routerLinkActive="active"
+               [attr.data-nav-label]="item.label"
+               (click)="close.emit()">
+              <img [src]="'assets/images/icons/' + item.icon" class="am-svg" [alt]="item.label" />
+              <span>{{ item.label }}</span>
+            </a>
+          </div>
+        }
+      </nav>
+
+    </aside>
+  

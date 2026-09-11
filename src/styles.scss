@@ -1,0 +1,402 @@
+// /* Global Angular overrides — template CSS is loaded via index.html */
+
+// * { box-sizing: border-box; }
+
+// body {
+//   margin: 0;
+//   font-family: inherit;
+//   background-color: #f5f6fa;
+// }
+
+// /* Utility: status badges */
+// .ma-status-badge {
+//   display: inline-block;
+//   padding: 2px 10px;
+//   border-radius: 12px;
+//   font-size: 0.78rem;
+//   font-weight: 600;
+//   text-transform: capitalize;
+// }
+// .ma-status--active   { background: #d1fae5; color: #065f46; }
+// .ma-status--inactive { background: #fee2e2; color: #991b1b; }
+// .ma-status--pending  { background: #fef3c7; color: #92400e; }
+// .ma-status--suspended{ background: #e5e7eb; color: #374151; }
+// .ma-status--success  { background: #d1fae5; color: #065f46; }
+// .ma-status--failed   { background: #fee2e2; color: #991b1b; }
+
+// /* Avatar sizes */
+// .ma-avatar {
+//   display: inline-flex;
+//   align-items: center;
+//   justify-content: center;
+//   border-radius: 50%;
+//   font-weight: 700;
+//   background: #0d6efd;
+//   color: #fff;
+//   width: 36px;
+//   height: 36px;
+//   font-size: 0.875rem;
+// }
+// .ma-avatar--sm { width: 28px; height: 28px; font-size: 0.75rem; }
+// .ma-avatar--lg { width: 72px; height: 72px; font-size: 1.5rem; }
+
+// /* Password toggle button */
+// .ma-password-toggle {
+//   cursor: pointer;
+//   border-left: 0 !important;
+// }
+
+// /* Sidebar overlay */
+// .ma-sidebar-overlay.active {
+//   display: block !important;
+// }
+
+// /* Page header */
+// .ma-page-header {
+//   display: flex;
+//   align-items: center;
+//   justify-content: space-between;
+//   flex-wrap: wrap;
+//   gap: 1rem;
+//   margin-bottom: 1.5rem;
+// }
+// .ma-page-header__actions { display: flex; align-items: center; }
+
+// /* Surface card */
+// .ma-surface-card {
+//   background: #fff;
+//   border-radius: 12px;
+//   box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+//   overflow: hidden;
+// }
+// .ma-card__head {
+//   display: flex;
+//   align-items: center;
+//   justify-content: space-between;
+//   padding: 1rem 1.25rem;
+//   border-bottom: 1px solid #f0f0f0;
+// }
+// .ma-card__title { margin: 0; font-size: 1rem; font-weight: 600; }
+// .ma-card__body { padding: 1.25rem; }
+
+// /* Table */
+// .ma-table { margin-bottom: 0; }
+// .ma-table th { font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: #6b7280; border-top: none; }
+// .ma-table td { vertical-align: middle; }
+
+// /* Buttons */
+// .ma-btn--primary {
+//   background: #0d6efd;
+//   border-color: #0d6efd;
+//   color: #fff;
+// }
+// .ma-btn--outline {
+//   background: transparent;
+//   border-color: #dee2e6;
+//   color: #374151;
+// }
+// .ma-btn--icon {
+//   width: 32px;
+//   height: 32px;
+//   padding: 0;
+//   display: inline-flex;
+//   align-items: center;
+//   justify-content: center;
+//   border-radius: 8px;
+//   background: #f3f4f6;
+//   border-color: transparent;
+// }
+
+// /* Activity list */
+// .ma-activity-list { list-style: none; padding: 0; margin: 0; }
+// .ma-activity-item {
+//   display: flex;
+//   gap: 0.75rem;
+//   padding: 0.75rem 0;
+//   border-bottom: 1px solid #f3f4f6;
+// }
+// .ma-activity-item:last-child { border-bottom: none; }
+// .ma-activity-dot {
+//   flex-shrink: 0;
+//   width: 8px;
+//   height: 8px;
+//   border-radius: 50%;
+//   background: #0d6efd;
+//   margin-top: 6px;
+// }
+// .ma-activity-desc { margin: 0; font-size: 0.875rem; font-weight: 500; }
+// .ma-activity-meta { color: #9ca3af; font-size: 0.8rem; }
+
+// /* Permissions table */
+// .ma-permissions-table td, .ma-permissions-table th { padding: 0.5rem 1rem; }
+
+.ma-btn {
+  line-height: 28px;
+}
+
+.ma-topbar .ma-topbar-right {
+  flex: none;
+}
+
+@media (max-width: 1199px) {
+  .ma-topbar .ma-topbar-right {
+    gap: 12px;
+  }
+}
+
+@media (max-width: 767px) {
+  .ma-topbar .ma-topbar-right {
+    gap: 8px;
+  }
+
+  .ma-topbar {
+    height: auto;
+    min-height: 70px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+  }
+
+  // .ma-topbar-left (hamburger + breadcrumb) must be allowed to shrink, or
+  // nested flex containers default to min-width: auto and refuse to wrap
+  // within the available space — that overflow was what pushed the
+  // avatar/user menu in .ma-topbar-right off-screen. Letting the breadcrumb
+  // wrap to a second line here (rather than truncating) keeps the full
+  // trail readable, with the topbar growing to fit it.
+  .ma-topbar .ma-topbar-left {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .ma-topbar .ma-topbar-right {
+    flex: none;
+  }
+
+  // The template's global assets/css/style.css hides breadcrumb pieces at
+  // TWO separate breakpoints, each an old design meant for a short 2-level
+  // trail: below 768px it hides the root crumb + separator arrows, and
+  // below 576px (a narrower rule agency-admin's stylesheet has that
+  // super-admin's doesn't) it additionally hides EVERY middle link and
+  // EVERY separator icon outright. With multi-level trails, phones under
+  // 576px wide were left showing only the current page — no root, no
+  // middle org/section link, no arrows — while 576-767px widths only lost
+  // the root/arrows. Restore all of it now that the trail wraps instead of
+  // overflowing. !important matches each rule's own specificity regardless
+  // of stylesheet load order; this 767px query already covers the narrower
+  // 575.98px range too.
+  .ma-dashboard .ma-topbar .ma-breadcrumb .ma-crumb-root,
+  .ma-dashboard .ma-topbar .ma-breadcrumb .ma-crumb-icon,
+  .ma-dashboard .ma-topbar .ma-breadcrumb .ma-crumb-link {
+    display: inline-flex !important;
+  }
+
+  .ma-dashboard .ma-topbar .ma-breadcrumb .ma-crumb-link a {
+    display: inline-block !important;
+  }
+
+  .ma-table-actions {
+      justify-content: flex-start;
+   }
+}
+
+.table, .tr {
+  border-color: #E2E8F0 !important;
+}
+
+// ── Rendered markdown (markdown-it output via the `markdown` pipe) ──────
+// Global rather than component-scoped because more than one component renders
+// AI-authored markdown (the claim view table + the Failure Reason page), and
+// they must look identical. markdown-it emits real block elements, so the job
+// here is trimming browser defaults that would otherwise blow out row height.
+.ma-markdown {
+  line-height: 1.5;
+  word-break: break-word;
+
+  > :first-child { margin-top: 0; }
+  > :last-child { margin-bottom: 0; }
+
+  p, ul, ol, pre, blockquote, table { margin: 0 0 0.5rem; }
+  ul, ol { padding-left: 1.1rem; }
+  li + li { margin-top: 0.2rem; }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-size: 1rem;
+    font-weight: 600;
+    margin: 0.5rem 0 0.35rem;
+  }
+
+  code {
+    background: #f1f5f9;
+    padding: 0.1rem 0.3rem;
+    border-radius: 0.25rem;
+    font-size: 0.85em;
+  }
+
+  pre {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.5rem;
+    padding: 0.6rem 0.75rem;
+    overflow-x: auto;
+
+    code {
+      background: transparent;
+      padding: 0;
+    }
+  }
+
+  blockquote {
+    padding-left: 0.75rem;
+    border-left: 3px solid #e2e8f0;
+    color: #475569;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+
+    th, td {
+      border: 1px solid #e2e8f0;
+      padding: 0.35rem 0.5rem;
+    }
+  }
+
+  img { max-width: 100%; }
+}
+
+// Collapse long content to 2 lines; used in grid cells with a tooltip for the full text.
+.ma-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+// Collapse long content to 3 lines; the paired "Read more" link opens the full text.
+.ma-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+// Collapse long content to 6 lines; the paired "Read more" link opens the full text.
+.ma-clamp-6 {
+  display: -webkit-box;
+  -webkit-line-clamp: 6;
+  line-clamp: 6;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+// "Read more" — a plain inline link under a clamped block, not a chunky button.
+.ma-read-more {
+  align-self: flex-start;
+  padding: 0;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-decoration: none;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+// Kendo chart tooltips that render our own `.ma-chart-tooltip` card supply their
+// entire chrome (background, radius, shadow). Kendo's popup also paints a
+// series-coloured box behind it, which reads as a doubled-up card — strip it.
+// The popup is appended to <body>, so this must live in global styles, and the
+// `:has()` guard keeps default Kendo tooltips (dashboard, provider charts) intact.
+.k-chart-tooltip:has(.ma-chart-tooltip),
+.k-tooltip:has(.ma-chart-tooltip) {
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+// The callout arrow inherits the same series colour — hide it with the box.
+.k-animation-container:has(.ma-chart-tooltip) .k-callout {
+  display: none;
+}
+input::-ms-reveal,
+input::-ms-clear {
+  display: none;
+}
+// ── In-page breadcrumb (mobile) ─────────────────────────────────────────
+// Below 768px the breadcrumb leaves the cramped topbar and renders at the top
+// of the routed page content instead (see admin-layout.component.html) —
+// tablet and up keep it in the topbar, where there is still room for it. On
+// the content background it stays plain text — no card, no chrome — and sits
+// tight above the page title. The crumb styling is restated here (rather than
+// inherited) because the template's topbar rules are scoped to .ma-topbar; the
+// extra .ma-content prefix is what outranks breadcrumb.component.scss.
+// Colours are the template palette literals ($textSecondary / $primary /
+// $textMuted) — this file has no access to the theme's sass variables.
+.ma-content {
+  .ma-content-breadcrumb {
+    display: none;
+
+    app-breadcrumb {
+      display: block;
+      min-width: 0;
+    }
+
+    .ma-breadcrumb {
+      margin: 0;
+      padding: 0;
+      gap: 6px;
+      row-gap: 4px; // a little air when the trail wraps to a second line
+      line-height: 1;
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      flex-direction: row;
+      flex-wrap: wrap;
+
+      .ma-crumb-link,
+      .ma-crumb-link a {
+        color: #64748b;
+        font-size: 14px;
+        font-weight: 500;
+        text-decoration: none;
+        transition: color 0.15s ease;
+      }
+
+      .ma-crumb-link a:hover {
+        color: #4a76fd;
+      }
+
+      .ma-crumb-icon {
+        color: rgba(100, 116, 139, 0.5);
+        font-size: 12px;
+        line-height: 1;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: row;
+        flex-wrap: nowrap;
+      }
+
+      .ma-crumb-current {
+        color: #4a76fd;
+        font-size: 14px;
+        font-weight: 600;
+      }
+    }
+  }
+}
+
+@media (max-width: 767.98px) {
+  .ma-dashboard .ma-topbar .ma-topbar-left app-breadcrumb {
+    display: none;
+  }
+
+  .ma-content .ma-content-breadcrumb {
+    display: block;
+    max-width: 100%;
+    margin-bottom: 10px;
+  }
+}

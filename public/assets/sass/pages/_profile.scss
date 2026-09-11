@@ -1,0 +1,149 @@
+/* ==========================================================================
+   PROFILE PAGE
+   ========================================================================== */
+
+.ma-profile-page {
+    .ma-profile-panel {
+        height: 100%;
+    }
+    .ma-profile-card {
+        height: 100%;
+
+        .ma-card__body {
+            padding: 24px 20px;
+            height: 100%;
+        }
+
+        &__avatar-wrap {
+            position: relative;
+            width: 90px;
+            margin: 0 auto 16px;
+        }
+
+        &__avatar {
+            @include maIconWrapper(90px, 90px);
+            border: 2px solid rgba($primary, .2);
+            background: rgba($primary, .08);
+            color: $primary;
+            font-size: $font32;
+            font-weight: $fontBold;
+        }
+
+        &__upload {
+            @include maIconWrapper(30px, $borderRadius50);
+            border: 0;
+            position: absolute;
+            right: 0;
+            bottom: 0;
+            background: $primary;
+            color: $textPrimary;
+            border: 1px solid $borderColor;
+            background: $white;
+            box-shadow: $shadowSm;
+
+            &:hover,
+            &:focus-visible {
+                background: rgba($primary, .9);
+            }
+        }
+
+        &__name {
+            margin: 0;
+            text-align: center;
+            color: $textPrimary;
+            font-size: $font20;
+            font-weight: $fontSemiBold;
+        }
+
+        &__role {
+            margin: 2px 0 16px;
+            text-align: center;
+            color: $textSecondary;
+            font-size: $font14;
+        }
+
+        &__actions {
+            @include maFlex(flex-start, stretch, column);
+            gap: 10px;
+        }
+
+        &__action {
+            width: 100%;
+
+            &.ma-btn {
+                @include maFlex(flex-start, center);
+                white-space: nowrap;
+                background: $white;
+                color: $textPrimary;
+                border-color: $borderColor;
+                border-radius: $borderRadius8;
+                box-shadow: none;
+                i {
+                    font-size: $font16;
+                }
+                &.ma-logout-btn {
+                    background: rgba($danger, .08);
+                    color: $danger;
+                    border-color: rgba($danger, .2);
+                }
+            }
+
+            &.is-active {
+                background-color: $primary;
+                border-color: $primary;
+                color: $white;
+            }
+        }
+    }
+
+    .ma-profile-panel {
+        .ma-card__body {
+            padding: 20px;
+        }
+
+        &__view {
+            width: 100%;
+        }
+
+        &__footer {
+            @include maFlex(flex-end, center);
+            gap: 12px;
+            margin-top: 20px;
+        }
+    }
+}
+
+@include maMedia($lg) {
+    .ma-profile-page {
+        .ma-profile-card {
+            .ma-card__body {
+                padding: 20px 16px;
+            }
+
+            &__actions {
+                flex-direction: row;
+                flex-wrap: wrap;
+            }
+
+            &__action {
+                width: auto;
+                flex: 1 1 160px;
+            }
+        }
+    }
+}
+
+@include maMedia($sm) {
+    .ma-profile-page {
+        .ma-profile-panel {
+            &__footer {
+                justify-content: stretch;
+                flex-direction: column-reverse;
+
+                .ma-btn {
+                    width: 100%;
+                }
+            }
+        }
+    }
+}

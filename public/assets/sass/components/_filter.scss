@@ -1,0 +1,73 @@
+/* ==========================================================================
+   FILTER COMPONENT
+   ========================================================================== */
+
+.ma-filter-row {
+    @include maFilterRow;
+
+    .filter-group {
+        @include maFlexColumn(flex-start);
+        gap: 4px;
+    }
+
+    .filter-label {
+        font-size: $font12;
+        font-weight: $fontMedium;
+        color: $textSecondary;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .filter-input,
+    .filter-select {
+        @include maInput;
+        width: $filterInputWidth;
+        min-width: 140px;
+    }
+
+    .filter-select {
+        @include maSelect;
+    }
+
+    .filter-divider {
+        height: 32px;
+        width: 1px;
+        background: $borderColor;
+        margin: 0 8px;
+    }
+
+    .filter-text {
+        align-self: flex-end;
+        font-size: $font12;
+        color: $textSecondary;
+        margin-bottom: 4px;
+    }
+
+    @include maMedia($md) {
+        flex-direction: column;
+        gap: 12px;
+
+        .filter-input,
+        .filter-select {
+            width: 100%;
+        }
+
+        .filter-divider {
+            height: 1px;
+            width: 100%;
+            margin: 4px 0;
+        }
+    }
+}
+
+.ma-filter-actions {
+    @include maFlexBetween;
+    gap: 12px;
+    .ma-btn-inline-icon {
+        flex: 1;
+    }
+}
+
+.ma-filter-wrap {
+    padding: 0;
+}

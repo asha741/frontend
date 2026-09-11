@@ -1,0 +1,273 @@
+// Selected-file row: [icon] [name / size] ............... [remove]
+// Same markup/styling as `claim-analyst/validate-claim`'s upload preview row.
+.ma-file-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  transition: border-color 0.2s ease;
+
+  &:hover {
+    border-color: rgba(74, 118, 253, 0.35);
+  }
+}
+
+.ma-file-row__icon {
+  flex: 0 0 auto;
+  font-size: 20px;
+  line-height: 1;
+  color: #10b981;
+}
+
+.ma-file-row__meta {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ma-file-row__name {
+  font-size: 13px;
+  font-weight: 500;
+  color: #0f172a;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ma-file-row__size {
+  font-size: 12px;
+  color: #64748b;
+}
+
+.ma-file-row__remove {
+  flex: 0 0 auto;
+  width: 30px;
+  height: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: #fef2f2;
+    border-color: #dc3545;
+    color: #dc3545;
+  }
+}
+
+.ma-upload-box {
+  cursor: pointer;
+
+  input[type='file'] {
+    display: none;
+  }
+}
+
+// ── Import result summary ────────────────────────────────────────────
+.ma-import-summary {
+  margin-top: 16px;
+}
+
+.ma-import-summary__stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+
+.ma-import-stat {
+  flex: 1 1 140px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 14px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 12px;
+  color: #64748b;
+
+  strong {
+    font-size: 18px;
+    color: #0f172a;
+  }
+
+  &--created strong {
+    color: #10b981;
+  }
+
+  &--skipped strong {
+    color: #dc3545;
+  }
+}
+
+// Row-error banner shown above the error table — states plainly what went
+// wrong (the backend's `detail` line) so the table below reads as detail,
+// not the headline.
+.ma-import-alert {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 14px;
+  margin-bottom: 14px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  border-radius: 8px;
+  color: #991b1b;
+}
+
+.ma-import-alert__icon {
+  flex: 0 0 auto;
+  margin-top: 2px;
+  font-size: 14px;
+  color: #dc3545;
+}
+
+.ma-import-alert__text {
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.ma-import-error-table-wrap {
+  max-height: 320px;
+  overflow-y: auto;
+}
+
+.ma-import-error-table {
+  // Fixed layout + explicit widths so long comma-separated field lists wrap
+  // onto new lines within their own cell instead of forcing the whole table
+  // into horizontal scroll.
+  table-layout: fixed;
+  width: 100%;
+  margin-bottom: 0;
+
+  th:nth-child(1),
+  td:nth-child(1) {
+    width: 100px;
+  }
+
+  th:nth-child(2),
+  td:nth-child(2) {
+    width: 22%;
+  }
+
+  th {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    color: #64748b;
+    white-space: nowrap;
+  }
+
+  td {
+    font-size: 13px;
+    color: #0f172a;
+    vertical-align: top;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+  }
+}
+
+// Tint failed rows so they stand out against the rest of the table.
+.ma-import-row--error td {
+  background: #fff8f8;
+}
+
+.ma-import-error-messages {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  &__item {
+    &:not(:last-child) {
+      padding-bottom: 4px;
+      border-bottom: 1px dashed #e2e8f0;
+    }
+  }
+}
+
+// Field names as individual chips instead of one long comma-separated
+// string — on narrow screens a plain string wraps one or two words per
+// line and reads like a broken list; chips wrap as discrete units instead.
+.ma-import-error-fields {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+
+  &__chip {
+    padding: 2px 8px;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 500;
+    color: #64748b;
+    white-space: nowrap;
+  }
+}
+
+// Turn each error row into its own labeled card on small screens instead of
+// a horizontal-scrolling 3-column table.
+@media (max-width: 575.98px) {
+  .ma-import-error-table-wrap {
+    max-height: 360px;
+  }
+
+  .ma-import-error-table {
+    thead {
+      display: none;
+    }
+
+    tbody {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    tr,
+    td {
+      display: block;
+      width: 100%;
+    }
+
+    tr {
+      padding: 12px;
+      background: #fff8f8;
+      border: 1px solid #fecaca;
+      border-radius: 8px;
+    }
+
+    td {
+      padding: 0;
+      border: none;
+
+      &:not(:first-child) {
+        margin-top: 8px;
+      }
+
+      &::before {
+        content: attr(data-label);
+        display: block;
+        margin-bottom: 4px;
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.3px;
+        text-transform: uppercase;
+        color: #94a3b8;
+      }
+    }
+  }
+}

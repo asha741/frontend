@@ -1,0 +1,61 @@
+/* ==========================================================================
+   ORGANIZATIONS PAGE
+   ========================================================================== */
+
+.ma-org-page {
+    .ma-org-form-card {
+        .ma-card__body {
+            padding: 20px;
+        }
+
+        &__section {
+            margin-bottom: 24px;
+
+            &:last-of-type {
+                margin-bottom: 20px;
+            }
+        }
+
+        &__section-title {
+            margin: 0 0 16px;
+            padding: 0 0 16px;
+            color: $textPrimary;
+            font-size: $font18;
+            font-weight: $fontSemiBold;
+            border-bottom: 1px solid $borderColor;
+        }
+
+        &__alert {
+            margin-bottom: 20px;
+            border-radius: $borderRadius8;
+            border-color: $warningBorder;
+            background: $warningBg;
+            color: $warningText;
+            font-size: $font14;
+        }
+
+        &__footer {
+            @include maFlex(flex-end, center);
+            gap: 12px;
+        }
+    }
+}
+
+@include maMedia($sm) {
+    .ma-org-page {
+        .ma-org-form-card {
+            .ma-card__body {
+                padding: 16px;
+            }
+
+            &__footer {
+                flex-direction: column;
+                align-items: stretch;
+
+                .ma-btn {
+                    width: 100%;
+                }
+            }
+        }
+    }
+}

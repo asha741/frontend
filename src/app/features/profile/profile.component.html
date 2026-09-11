@@ -1,0 +1,276 @@
+<div class="ma-profile-page">
+<div class="ma-page-header">
+  <div class="ma-page-header__meta">
+    <h2 class="ma-page-title">Profile Management</h2>
+    <p class="ma-page-subtitle">Manage your personal information and security settings</p>
+  </div>
+</div>
+
+<div class="row g-4">
+  <div class="col-12 col-lg-4 col-xl-3">
+    <article class="ma-card ma-profile-card">
+      <div class="ma-card__body">
+        <div class="ma-profile-card__avatar-wrap">
+          @if (auth.userAvatarUrl()) {
+            <img [src]="auth.userAvatarUrl()" class="ma-profile-card__avatar" style="object-fit: cover;">
+          } @else {
+            <span class="ma-profile-card__avatar" aria-label="User initials">{{ auth.userInitials() || 'SA' }}</span>
+          }
+          <input type="file" (change)="onProfileImageSelected($event)" accept=".jpg,.jpeg,.png" class="d-none" #fileInput />
+          <button class="ma-profile-card__upload" type="button" aria-label="Upload avatar" (click)="fileInput.click()">
+            <i class="fa-solid fa-camera"></i>
+          </button>
+        </div>
+        <p class="ma-profile-card__hint">JPG, PNG or JPEG.<br>Max size 2MB.</p>
+        <h3 class="ma-profile-card__name">{{ auth.userFullName() || '' }}</h3>
+        <p class="ma-profile-card__role">{{ auth.userRoleLabel() || '' }}</p>
+
+        <div class="ma-profile-card__actions" role="tablist" aria-label="Profile actions">
+          <button class="btn ma-btn btn-outline-primary ma-profile-card__action" type="button"
+            [class.is-active]="activePanel() === 'details'" (click)="activePanel.set('details')"
+            aria-controls="maProfileDetailsPanel" [attr.aria-selected]="activePanel() === 'details'">
+            <i class="fa-regular fa-circle-user me-2"></i> Profile Details
+          </button>
+          <button class="btn ma-btn btn-outline-primary ma-profile-card__action" type="button"
+            [class.is-active]="activePanel() === 'password'" (click)="activePanel.set('password')"
+            aria-controls="maProfilePasswordPanel" [attr.aria-selected]="activePanel() === 'password'">
+            <i class="fa-solid fa-lock me-2"></i> Change Password
+          </button>
+          <!--
+          <a href="#" class="btn ma-btn btn-outline-primary ma-profile-card__action ma-logout-btn mt-0 mt-lg-3"
+            type="button" aria-label="Logout" (click)="logout($event)">
+            <i class="fa-solid fa-right-from-bracket me-2"></i> Logout
+          </a>
+          -->
+        </div>
+      </div>
+    </article>
+  </div>
+
+  <div class="col-12 col-lg-8 col-xl-9">
+    <article class="ma-card ma-profile-panel">
+      <div class="ma-card__header">
+        <h3 class="ma-card__title" id="maProfilePanelTitle">
+          {{ activePanel() === 'password' ? 'Change Password' : 'Profile Information' }}
+        </h3>
+        <p class="ma-card__subtitle">
+          {{ activePanel() === 'password' ? 'Update your account password' : 'Update your  information' }}
+        </p>
+      </div>
+
+      <div class="ma-card__body">
+        <section id="maProfileDetailsPanel" class="ma-profile-panel__view"
+          [class.d-none]="activePanel() !== 'details'" aria-labelledby="maProfilePanelTitle">
+          @if (isOrgAdmin()) {
+            <!-- Own section, own button: this hits /organization/dashboard/profile
+                 (org-level), a different endpoint from the personal-details form
+                 below, so it can't share that form's submit / API call. -->
+            <div class="ma-profile-section mb-4" [formGroup]="profileForm">
+              <h4 class="ma-profile-section__title">Organization Details</h4>
+              <div class="row g-3 align-items-center">
+                <div class="col-12 col-md-6 ma-org-image-col">
+                  <div class="ma-org-image-field">
+                    <div class="ma-profile-card__avatar-wrap ma-org-logo-wrap">
+                      @if (orgLogoPreviewUrl() || profile()?.org_logo_url) {
+                        <img [src]="orgLogoPreviewUrl() || profile()!.org_logo_url" class="ma-profile-card__avatar" style="object-fit: cover;">
+                      } @else {
+                        <span class="ma-profile-card__avatar" aria-label="Organization logo placeholder">
+                          <i class="fa-solid fa-building"></i>
+                        </span>
+                      }
+                      <input type="file" (change)="onOrgLogoSelected($event)" accept=".jpg,.jpeg,.png" class="d-none" #orgLogoInput />
+                      <button class="ma-profile-card__upload" type="button" aria-label="Upload organization logo"
+                        (click)="orgLogoInput.click()" [disabled]="uploadingOrgLogo() || savingOrgProfile()">
+                        @if (uploadingOrgLogo()) {
+                          <i class="fa-solid fa-spinner fa-spin"></i>
+                        } @else {
+                          <i class="fa-solid fa-camera"></i>
+                        }
+                      </button>
+                    </div>
+                    <div>
+                      <label class="ma-form-label d-block mb-1">Organization Image</label>
+                      <p class="ma-profile-card__hint mb-0">JPG, PNG or JPEG.<br>Max size 2MB.</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-12 col-md-6 ps-md-4 ma-org-name-field">
+                  <div class="ma-form-group mb-0">
+                    <label class="ma-form-label" for="maOrgName">Organization Name <span class="ma-required">*</span></label>
+                    <input class="form-control" id="maOrgName" type="text" formControlName="orgName"
+                           appTrimWhitespace maxlength="100"
+                           [class.is-invalid]="isOrgSubmitted() && pf['orgName'].errors">
+                    @if (isOrgSubmitted() && pf['orgName'].errors) {
+                      <div class="invalid-feedback d-block">
+                        @if (pf['orgName'].hasError('required')) { Organization Name is required. }
+                        @else if (pf['orgName'].hasError('minlength')) { Minimum length is 2 characters. }
+                        @else { Maximum length is 100 characters. }
+                      </div>
+                    }
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <h4 class="ma-profile-section__title">Contact Person Details</h4>
+          }
+          <form [formGroup]="profileForm" (ngSubmit)="updateProfile()" appFocusFirstInput>
+            <div class="row g-3">
+              <div class="col-12 col-md-6">
+                <div class="ma-form-group mb-0">
+                  <label class="ma-form-label" for="maFirstName">First Name <span class="ma-required">*</span></label>
+                  <input class="form-control" id="maFirstName" type="text" formControlName="firstName"
+                         appTrimWhitespace maxlength="50"
+                         [class.is-invalid]="isProfileSubmitted() && pf['firstName'].errors" required>
+                  @if (isProfileSubmitted() && pf['firstName'].errors) {
+                    <div class="invalid-feedback d-block">
+                      @if (pf['firstName'].hasError('required')) { First Name is required. }
+                      @if (pf['firstName'].hasError('minlength')) { Minimum length is 2 characters. }
+                      @if (pf['firstName'].hasError('maxlength')) { Maximum length is 50 characters. }
+                    </div>
+                  }
+                </div>
+              </div>
+              <div class="col-12 col-md-6">
+                <div class="ma-form-group mb-0">
+                  <label class="ma-form-label" for="maLastName">Last Name <span class="ma-required">*</span></label>
+                  <input class="form-control" id="maLastName" type="text" formControlName="lastName"
+                         appTrimWhitespace maxlength="50"
+                         [class.is-invalid]="isProfileSubmitted() && pf['lastName'].errors" required>
+                  @if (isProfileSubmitted() && pf['lastName'].errors) {
+                    <div class="invalid-feedback d-block">
+                      @if (pf['lastName'].hasError('required')) { Last Name is required. }
+                      @if (pf['lastName'].hasError('minlength')) { Minimum length is 2 characters. }
+                      @if (pf['lastName'].hasError('maxlength')) { Maximum length is 50 characters. }
+                    </div>
+                  }
+                </div>
+              </div>
+              <div class="col-12 col-md-6">
+                <div class="ma-form-group mb-0">
+                  <label class="ma-form-label" for="maEmailProfile">Email <span class="ma-required">*</span></label>
+                  <!-- Read-only: the email identifies the account. It stays in the
+                       form (and so in the payload) because the API requires it. -->
+                  <input class="form-control" id="maEmailProfile" type="email" formControlName="email"
+                         appTrimWhitespace maxlength="100" readonly
+                         [class.is-invalid]="isProfileSubmitted() && pf['email'].errors" required>
+                  @if (isProfileSubmitted() && pf['email'].errors) {
+                    <div class="invalid-feedback d-block">
+                      @if (pf['email'].hasError('required')) { Email is required. }
+                      @else if (pf['email'].hasError('emailExists')) { Email address already exists. }
+                      @else { Please enter a valid email address. }
+                    </div>
+                  }
+                </div>
+              </div>
+              <div class="col-12 col-md-6">
+                <div class="ma-form-group mb-0">
+                  <label class="ma-form-label" for="maContactNumber">Contact Number <span class="ma-required">*</span></label>
+                  <input class="form-control" id="maContactNumber" type="text" formControlName="contactNumber" appPhoneMask
+                         maxlength="14" placeholder="(123) 456-7890"
+                         [class.is-invalid]="isProfileSubmitted() && pf['contactNumber'].errors" required>
+                  @if (isProfileSubmitted() && pf['contactNumber'].errors) {
+                    <div class="invalid-feedback d-block">
+                      @if (pf['contactNumber'].hasError('required')) { Contact Number is required. }
+                      @else { Please enter a valid 10-digit phone number. }
+                    </div>
+                  }
+                </div>
+              </div>
+            </div>
+
+            <div class="ma-profile-panel__footer mt-4">
+              <button class="btn ma-btn btn-outline-primary btn-grey-btn" type="button" (click)="cancelProfile()">Cancel</button>
+              <button class="btn ma-btn btn-primary" type="submit">Update Profile</button>
+            </div>
+          </form>
+        </section>
+
+        <section id="maProfilePasswordPanel" class="ma-profile-panel__view"
+          [class.d-none]="activePanel() !== 'password'" aria-labelledby="maProfilePanelTitle">
+          <form [formGroup]="passwordForm" (ngSubmit)="changePassword()" appFocusFirstInput>
+            <div class="row g-3">
+              <div class="col-12">
+                <div class="ma-form-group mb-0">
+                  <label class="ma-form-label" for="maCurrentPassword">Current Password <span
+                      class="ma-required">*</span></label>
+                  <div class="input-group ma-input-icon">
+                    <input [type]="showCurrentPassword() ? 'text' : 'password'" class="form-control"
+                           id="maCurrentPassword" formControlName="currentPassword" appTrimWhitespace maxlength="12"
+                           [class.is-invalid]="isPasswordSubmitted() && pwf['currentPassword'].errors" required>
+                    <button type="button" class="input-group-text ma-password-toggle"
+                            (click)="showCurrentPassword.update(v => !v)"
+                            [attr.aria-label]="showCurrentPassword() ? 'Hide password' : 'Show password'">
+                      <i class="fa-solid" [class.fa-eye]="!showCurrentPassword()" [class.fa-eye-slash]="showCurrentPassword()"></i>
+                    </button>
+                  </div>
+                  @if (isPasswordSubmitted() && pwf['currentPassword'].errors) {
+                    <div class="invalid-feedback d-block">Current Password is required.</div>
+                  }
+                </div>
+              </div>
+              <div class="col-12 col-md-6">
+                <div class="ma-form-group mb-0">
+                  <label class="ma-form-label" for="maNewPassword">New Password <span
+                      class="ma-required">*</span></label>
+                  <div class="input-group ma-input-icon">
+                    <input [type]="showNewPassword() ? 'text' : 'password'" class="form-control"
+                           id="maNewPassword" formControlName="newPassword" appTrimWhitespace maxlength="12"
+                           [class.is-invalid]="isPasswordSubmitted() && pwf['newPassword'].errors" required>
+                    <button type="button" class="input-group-text ma-password-toggle"
+                            (click)="showNewPassword.update(v => !v)"
+                            [attr.aria-label]="showNewPassword() ? 'Hide password' : 'Show password'">
+                      <i class="fa-solid" [class.fa-eye]="!showNewPassword()" [class.fa-eye-slash]="showNewPassword()"></i>
+                    </button>
+                  </div>
+                  @if (isPasswordSubmitted() && pwf['newPassword'].errors) {
+                    <div class="invalid-feedback d-block">
+                      @if (pwf['newPassword'].errors['required']) { New Password is required. }
+                      @else if (pwf['newPassword'].errors['minLength']) { Minimum 8 characters required. }
+                      @else if (pwf['newPassword'].errors['maxLength']) { Maximum 12 characters allowed. }
+                      @else if (pwf['newPassword'].errors['upperCase']) { At least one uppercase letter required. }
+                      @else if (pwf['newPassword'].errors['lowerCase']) { At least one lowercase letter required. }
+                      @else if (pwf['newPassword'].errors['specialChar']) { At least one special character required. }
+                      @else if (pwf['newPassword'].errors['number']) { At least one number required. }
+                      @else if (pwf['newPassword'].errors['sameAsCurrent']) { New Password cannot be the same as Current Password.  }
+                    </div>
+                  }
+                </div>
+              </div>
+              <div class="col-12 col-md-6">
+                <div class="ma-form-group mb-0">
+                  <label class="ma-form-label" for="maConfirmPassword">Confirm New Password <span
+                      class="ma-required">*</span></label>
+                  <div class="input-group ma-input-icon">
+                    <input [type]="showConfirmPassword() ? 'text' : 'password'" class="form-control"
+                           id="maConfirmPassword" formControlName="confirmPassword" appTrimWhitespace maxlength="12"
+                           [class.is-invalid]="isPasswordSubmitted() && pwf['confirmPassword'].errors" required>
+                    <button type="button" class="input-group-text ma-password-toggle"
+                            (click)="showConfirmPassword.update(v => !v)"
+                            [attr.aria-label]="showConfirmPassword() ? 'Hide password' : 'Show password'">
+                      <i class="fa-solid" [class.fa-eye]="!showConfirmPassword()" [class.fa-eye-slash]="showConfirmPassword()"></i>
+                    </button>
+                  </div>
+                  @if (isPasswordSubmitted() && pwf['confirmPassword'].errors) {
+                    <div class="invalid-feedback d-block">
+                      @if (pwf['confirmPassword'].errors['required']) { Confirm New password is required. }
+                      @else if (pwf['confirmPassword'].errors['fieldMismatch']) { Confirm Password must match New Password.  }
+                    </div>
+                  }
+                </div>
+              </div>
+            </div>
+
+            <div class="ma-profile-panel__footer mt-4">
+              <button class="btn ma-btn btn-outline-primary btn-grey-btn" type="button" (click)="cancelPassword()">Cancel</button>
+              <button class="btn ma-btn btn-primary" type="submit" [disabled]="savingPassword()">
+                {{ savingPassword() ? 'Changing...' : 'Change Password' }}
+              </button>
+            </div>
+          </form>
+        </section>
+      </div>
+    </article>
+  </div>
+</div>
+</div>

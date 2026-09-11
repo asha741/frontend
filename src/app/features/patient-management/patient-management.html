@@ -1,0 +1,349 @@
+<div class="ma-page-header">
+  <div class="ma-page-header__meta">
+    <h2 class="ma-page-title">Patient Management</h2>
+    <p class="ma-page-subtitle">Manage patient records and information</p>
+  </div>
+</div>
+
+<!-- ══ Filters ═══════════════════════════════════════════════════════ -->
+<section class="ma-filter-wrap mt-3">
+  <div class="row g-2 align-items-center ma-filter-grid">
+    <!-- Search input -->
+    <div class="col-12 col-lg-3">
+      <div class="ma-input-group ma-filter-item ma-filter-item--search">
+        <i class="fa-solid fa-magnifying-glass ma-input-icon"></i>
+        <input
+          id="patientSearchInput"
+          type="text"
+          class="form-control"
+          placeholder="Search"
+          aria-label="Search patients"
+          [(ngModel)]="search"
+          appTrimWhitespace
+          maxlength="100"
+          (keydown.enter)="onSearch()"
+        />
+      </div>
+    </div>
+
+    <!-- Created Date From -->
+    <div class="col-12 col-sm-6 col-lg-2">
+      <div class="ma-input-group is-calendar ma-filter-item ma-filter-item--date">
+        <input
+          id="dateFrom"
+          class="form-control bg-white"
+          placeholder="From date"
+          aria-label="From date"
+          name="dateFrom"
+          readonly
+          ngbDatepicker
+          #fromPicker="ngbDatepicker"
+          [(ngModel)]="fromDate"
+          [maxDate]="$any(toDate)"
+          (click)="fromPicker.toggle()"
+        />
+        <i
+          class="fa-regular fa-calendar ma-input-icon"
+          role="button"
+          aria-label="Open from-date picker"
+          (click)="fromPicker.toggle()"
+        ></i>
+      </div>
+    </div>
+
+    <!-- Created Date To -->
+    <div class="col-12 col-sm-6 col-lg-2">
+      <div class="ma-input-group is-calendar ma-filter-item ma-filter-item--date">
+        <input
+          id="dateTo"
+          class="form-control bg-white"
+          placeholder="To date"
+          aria-label="To date"
+          name="dateTo"
+          readonly
+          ngbDatepicker
+          #toPicker="ngbDatepicker"
+          [(ngModel)]="toDate"
+          [minDate]="$any(fromDate)"
+          (click)="toPicker.toggle()"
+        />
+        <i
+          class="fa-regular fa-calendar ma-input-icon"
+          role="button"
+          aria-label="Open to-date picker"
+          (click)="toPicker.toggle()"
+        ></i>
+      </div>
+    </div>
+
+    <!-- Search & Reset buttons -->
+    <div class="col-12 col-lg-auto d-flex gap-2">
+      <button
+        type="button"
+        class="btn ma-btn btn-primary"
+        (click)="onSearch()"
+        style="min-height: 45px; padding: 0 20px"
+      >
+        Search
+      </button>
+      <button
+        type="button"
+        class="btn ma-btn btn-outline-secondary"
+        (click)="clearSearch()"
+        style="min-height: 45px; padding: 0 20px"
+      >
+        Reset
+      </button>
+    </div>
+
+    <!-- Actions -->
+    <div class="col-12 col-lg-auto ms-lg-auto">
+      <div class="row g-2 ma-filter-item ma-filter-item--action">
+        <!-- Split button: one Sample File, a menu for the format. -->
+        <div class="col-12 col-lg-auto">
+          <div class="dropdown w-100">
+            <button
+              type="button"
+              class="btn ma-btn btn-outline-primary btn-grey-btn dropdown-toggle w-100"
+              style="min-height: 45px"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+              aria-label="Download sample file"
+              [disabled]="downloadingSample()"
+            >
+              {{ downloadingSample() ? 'Downloading…' : 'Sample File' }}
+              <i class="fa-solid fa-download ms-2"></i>
+            </button>
+            <ul class="dropdown-menu ma-dropdown-menu">
+              <li>
+                <button class="dropdown-item" type="button" (click)="downloadSampleFile('csv')">
+                  <i class="fa-solid fa-file-csv me-2"></i> CSV (.csv)
+                </button>
+              </li>
+              <li>
+                <button class="dropdown-item" type="button" (click)="downloadSampleFile('xlsx')">
+                  <i class="fa-solid fa-file-excel me-2"></i> Excel (.xlsx)
+                </button>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        @if (perms.can(PERMISSION_MODULE.Patient, PERMISSION_ACTION.Create)) {
+          <div class="col-12 col-lg-auto">
+            <button
+              class="btn ma-btn btn-outline-primary btn-grey-btn w-100"
+              style="min-height: 45px"
+              (click)="openImportModal()"
+              title="Import Patients"
+            >
+              Import <i class="fa-solid fa-file-import ms-2"></i>
+            </button>
+          </div>
+        }
+
+        <!-- Split button: one Export, a menu for the format. -->
+        @if (perms.can(PERMISSION_MODULE.Patient, PERMISSION_ACTION.Export)) {
+          <div class="col-12 col-lg-auto">
+            <div class="dropdown w-100">
+              <button
+                type="button"
+                class="btn ma-btn btn-outline-primary btn-grey-btn dropdown-toggle w-100"
+                style="min-height: 45px"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+                aria-label="Export Patients"
+                [disabled]="exporting()"
+              >
+                {{ exporting() ? 'Exporting…' : 'Export' }}
+                <i class="fa-solid fa-file-export ms-2"></i>
+              </button>
+              <ul class="dropdown-menu dropdown-menu-end ma-dropdown-menu">
+                <li>
+                  <button class="dropdown-item" type="button" (click)="exportPatients('csv')">
+                    <i class="fa-solid fa-file-csv me-2"></i> CSV (.csv)
+                  </button>
+                </li>
+                <li>
+                  <button class="dropdown-item" type="button" (click)="exportPatients('xlsx')">
+                    <i class="fa-solid fa-file-excel me-2"></i> Excel (.xlsx)
+                  </button>
+                </li>
+              </ul>
+            </div>
+          </div>
+        }
+
+        @if (perms.can(PERMISSION_MODULE.Patient, PERMISSION_ACTION.Create)) {
+          <div class="col-12 col-lg-auto">
+            <a
+              routerLink="/patient-management/add-patient"
+              class="btn ma-btn btn-primary ma-btn-inline-icon w-100"
+              aria-label="Add Patient"
+              style="white-space: nowrap; min-height: 45px"
+            >
+              <span>Add Patient</span>
+              <i class="fa-solid fa-plus ms-2" aria-hidden="true"></i>
+            </a>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══ Patients grid ═════════════════════════════════════════════════ -->
+<section class="ma-surface-card ma-users-section-card ma-user-list-card mt-4">
+  <div class="table-responsive">
+    <kendo-grid
+      class="ma-kendo-grid table ma-master-table ma-master-table--patient"
+      [data]="patientsData()"
+      [pageSize]="state.take"
+      [skip]="state.skip"
+      [sortable]="true"
+      [sort]="state.sort"
+      filterable="menu"
+      [filter]="state.filter"
+      [pageable]="{ buttonCount: 3, type: 'numeric', pageSizes: pageSizes }"
+      [scrollable]="'none'"
+      (dataStateChange)="dataStateChange($event)"
+    >
+      <!-- ── Sr. No. ──────────────────────────────────────────────── -->
+      <kendo-grid-column title="Sr. No." [width]="80" [filterable]="false" [sortable]="false">
+        <ng-template kendoGridCellTemplate let-rowIndex="rowIndex">
+          {{ rowIndex + 1 }}
+        </ng-template>
+      </kendo-grid-column>
+
+      <!-- ── Patient ID ───────────────────────────────────────────── -->
+      <kendo-grid-column field="patient_id" title="Patient ID" [width]="150" [filterable]="false">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div class="k-text-ellipsis" [ngbTooltip]="dataItem.patient_id">
+            {{ dataItem.patient_id || '-' }}
+          </div>
+        </ng-template>
+      </kendo-grid-column>
+
+      <!-- ── Patient Name ─────────────────────────────────────────── -->
+      <kendo-grid-column
+        field="first_name"
+        title="Patient Name"
+        [width]="200"
+        [filterable]="false"
+      >
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div class="k-text-ellipsis" [ngbTooltip]="patientName(dataItem)">
+            {{ patientName(dataItem) }}
+          </div>
+        </ng-template>
+      </kendo-grid-column>
+
+      <!-- ── Email ────────────────────────────────────────────────── -->
+      <kendo-grid-column
+        field="email"
+        title="Email Address"
+        [width]="240"
+        [filterable]="false"
+      >
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div class="k-text-ellipsis" [ngbTooltip]="dataItem.email">{{ dataItem.email || '-' }}</div>
+        </ng-template>
+      </kendo-grid-column>
+
+      <!-- ── Contact Number ───────────────────────────────────────── -->
+      <kendo-grid-column
+        field="contact_number"
+        title="Contact Number"
+        [width]="200"
+        [sortable]="false"
+        [filterable]="false"
+      >
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div style="white-space: nowrap;">
+            {{ (dataItem.contact_number || dataItem.contactNumber) | usPhone }}
+          </div>
+        </ng-template>
+      </kendo-grid-column>
+
+      <!-- ── Status ───────────────────────────────────────────────── -->
+      <kendo-grid-column
+        field="status"
+        title="Status"
+        [width]="130"
+        type="boolean"
+        [sortable]="false"
+      >
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <span class="ma-badge" [class]="dataItem.status | badgeClass">{{
+            dataItem.status || '-'
+          }}</span>
+        </ng-template>
+        <ng-template
+          kendoGridFilterMenuTemplate
+          let-filter
+          let-column="column"
+          let-filterService="filterService"
+        >
+          <kendo-grid-boolean-filter-menu
+            [column]="column"
+            [filter]="filter"
+            [filterService]="filterService"
+            class="radio-btn-group"
+          >
+            <kendo-filter-eq-operator></kendo-filter-eq-operator>
+          </kendo-grid-boolean-filter-menu>
+        </ng-template>
+        <kendo-grid-messages filterIsTrue="Active" filterIsFalse="Inactive"></kendo-grid-messages>
+      </kendo-grid-column>
+
+      <!-- ── Created Date ─────────────────────────────────────────── -->
+      <kendo-grid-column field="created_at" title="Created Date" [width]="160" [filterable]="false">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          {{
+            dataItem.created_at || dataItem.createdAt
+              ? (dataItem.created_at || dataItem.createdAt | date: 'MM-dd-yyyy')
+              : ''
+          }}
+        </ng-template>
+      </kendo-grid-column>
+
+      <!-- ── Actions ──────────────────────────────────────────────── -->
+      @if (perms.canAny(PERMISSION_MODULE.Patient, PERMISSION_ACTION.Update, PERMISSION_ACTION.Delete)) {
+        <kendo-grid-column title="Actions" [width]="110" [filterable]="false" [sortable]="false">
+          <ng-template kendoGridCellTemplate let-dataItem>
+            <div class="ma-table-actions">
+              @if (perms.can(PERMISSION_MODULE.Patient, PERMISSION_ACTION.Update)) {
+                <button
+                  class="ma-btn-icon-sm"
+                  type="button"
+                  ngbTooltip="Patient Profile"
+                  placement="top"
+                  [attr.aria-label]="'Patient Profile ' + (dataItem.patient_id || '')"
+                  (click)="openPatientProfile(dataItem)"
+                >
+                  <i class="fa-regular fa-pen-to-square"></i>
+                </button>
+              }
+              @if (perms.can(PERMISSION_MODULE.Patient, PERMISSION_ACTION.Delete)) {
+                <button
+                  class="ma-btn-icon-sm"
+                  type="button"
+                  ngbTooltip="Delete"
+                  placement="top"
+                  [attr.aria-label]="'Delete ' + (dataItem.patient_id || '')"
+                  (click)="deletePatient(dataItem)"
+                >
+                  <i class="fa-regular fa-trash-can"></i>
+                </button>
+              }
+            </div>
+          </ng-template>
+        </kendo-grid-column>
+      }
+
+      <ng-template kendoGridNoRecordsTemplate>
+        <div class="ma-grid-empty">No patients match your current filters.</div>
+      </ng-template>
+    </kendo-grid>
+  </div>
+</section>

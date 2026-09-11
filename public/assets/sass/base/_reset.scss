@@ -1,0 +1,41 @@
+/* ==========================================================================
+   RESET
+   ========================================================================== */
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    min-width: 320px;
+    overflow-x: hidden;
+}
+
+img,
+svg,
+video {
+    max-width: 100%;
+    height: auto;
+}
+
+a {
+    text-decoration: none;
+}
+
+ul,
+ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+textarea {
+    resize: none;
+}
+
+button:focus,
+input:focus,
+textarea:focus,
+select:focus {
+    box-shadow: none;
+}

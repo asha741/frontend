@@ -1,0 +1,31 @@
+// Fit the non-scrollable grid to the viewport: with a fixed table layout the
+// declared column widths act as proportional weights inside 100% width, so an
+// unbroken long value (e.g. a name with no spaces) can't force the column—and
+// the whole table—to blow out. Long cell values wrap onto multiple lines via
+// .ma-cell-wrap in the template instead of overflowing past the column.
+:host ::ng-deep .ma-master-table--patient-claims {
+  table {
+    table-layout: fixed;
+    width: 100%;
+  }
+
+  th .k-column-title {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+// Wraps long values onto multiple lines, capped at 2 with an ellipsis so an
+// unbroken run of characters (no spaces to wrap on) can't blow the row out —
+// the full value is still available via the cell's tooltip.
+.ma-cell-wrap {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  white-space: normal;
+  overflow-wrap: break-word;
+  word-break: normal;
+  line-height: 1.3;
+}

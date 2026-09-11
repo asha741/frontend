@@ -1,0 +1,220 @@
+<div class="row">
+  <div class="col-12 col-md-6 col-xl-4 mb-3">
+    <article class="ma-stat-card h-100">
+      <span class="ma-stat-icon ma-is-blue">
+        <img src="assets/images/icons/user-access.svg" alt="Total Claims Icon" class="ma-svg" />
+      </span>
+      <div class="ma-stat-content">
+        <p class="ma-stat-title">Total Claims</p>
+        <h2 class="ma-stat-value">{{ kpis().total_claims }}</h2>
+      </div>
+    </article>
+  </div>
+  <div class="col-12 col-md-6 col-xl-4 mb-3">
+    <article class="ma-stat-card h-100">
+      <span class="ma-stat-icon ma-is-green_v2">
+        <img src="assets/images/icons/ai-validation-completed.svg" alt="Total Treatment Plans Icon" class="ma-svg" />
+      </span>
+      <div class="ma-stat-content">
+        <p class="ma-stat-title">Total Treatment Plans</p>
+        <h2 class="ma-stat-value">{{ kpis().total_treatment_plans }}</h2>
+      </div>
+    </article>
+  </div>
+  <div class="col-12 col-md-6 col-xl-4 mb-3">
+    <article class="ma-stat-card h-100">
+      <span class="ma-stat-icon ma-is-skyblue">
+        <img src="assets/images/icons/ocr-processed.svg" alt="Progress / Clinical Notes Icon" class="ma-svg" />
+      </span>
+      <div class="ma-stat-content">
+        <p class="ma-stat-title">Progress / Clinical Notes</p>
+        <h2 class="ma-stat-value">{{ kpis().total_progress_notes }}</h2>
+      </div>
+    </article>
+  </div>
+  <div class="col-12 col-md-6 col-xl-4 mb-3">
+    <article class="ma-stat-card h-100">
+      <span class="ma-stat-icon ma-is-blue">
+        <img src="assets/images/icons/user-access.svg" alt="DLA 20 Notes Icon" class="ma-svg" />
+      </span>
+      <div class="ma-stat-content">
+        <p class="ma-stat-title">DLA 20 Notes</p>
+        <h2 class="ma-stat-value">{{ kpis().total_dla_20 }}</h2>
+      </div>
+    </article>
+  </div>
+  <div class="col-12 col-md-6 col-xl-4 mb-3">
+    <article class="ma-stat-card h-100">
+      <span class="ma-stat-icon ma-is-skyblue">
+        <img src="assets/images/icons/ocr-processed.svg" alt="Failed Claims Icon" class="ma-svg" />
+      </span>
+      <div class="ma-stat-content">
+        <p class="ma-stat-title">Failed Claims</p>
+        <h2 class="ma-stat-value">{{ kpis().failed_claims }}</h2>
+      </div>
+    </article>
+  </div>
+  <div class="col-12 col-md-6 col-xl-4 mb-3">
+    <article class="ma-stat-card h-100">
+      <span class="ma-stat-icon ma-is-green_v2">
+        <img src="assets/images/icons/ai-validation-completed.svg" alt="Valid Claims Icon" class="ma-svg" />
+      </span>
+      <div class="ma-stat-content">
+        <p class="ma-stat-title">Valid Claims</p>
+        <h2 class="ma-stat-value">{{ kpis().valid_claims }}</h2>
+      </div>
+    </article>
+  </div>
+</div>
+
+<section class="ma-filter-wrap">
+  <div class="row g-2 align-items-center ma-filter-grid">
+    <div class="col-12 col-lg-3">
+      <div class="ma-input-group ma-filter-item ma-filter-item--search">
+        <i class="fa-solid fa-magnifying-glass ma-input-icon"></i>
+        <input
+          type="text"
+          class="form-control"
+          placeholder="Search"
+          aria-label="Search claims"
+          [(ngModel)]="search"
+          appTrimWhitespace
+          maxlength="100"
+          (keydown.enter)="onSearch()"
+        />
+      </div>
+    </div>
+
+    <div class="col-12 col-sm-6 col-lg-2">
+      <div class="ma-input-group is-calendar ma-filter-item ma-filter-item--date">
+        <input
+          class="form-control bg-white"
+          placeholder="From date"
+          aria-label="From date"
+          name="claimsDateFrom"
+          readonly
+          ngbDatepicker
+          #fromPicker="ngbDatepicker"
+          [(ngModel)]="fromDate"
+          [maxDate]="$any(toDate)"
+          (click)="fromPicker.toggle()"
+        />
+        <i class="fa-regular fa-calendar ma-input-icon" role="button" aria-label="Open from-date picker" (click)="fromPicker.toggle()"></i>
+      </div>
+    </div>
+
+    <div class="col-12 col-sm-6 col-lg-2">
+      <div class="ma-input-group is-calendar ma-filter-item ma-filter-item--date">
+        <input
+          class="form-control bg-white"
+          placeholder="To date"
+          aria-label="To date"
+          name="claimsDateTo"
+          readonly
+          ngbDatepicker
+          #toPicker="ngbDatepicker"
+          [(ngModel)]="toDate"
+          [minDate]="$any(fromDate)"
+          (click)="toPicker.toggle()"
+        />
+        <i class="fa-regular fa-calendar ma-input-icon" role="button" aria-label="Open to-date picker" (click)="toPicker.toggle()"></i>
+      </div>
+    </div>
+
+    <div class="col-12 col-lg-auto d-flex gap-2">
+      <button type="button" class="btn ma-btn btn-primary" (click)="onSearch()" style="min-height: 45px; padding: 0 20px">
+        Search
+      </button>
+      <button type="button" class="btn ma-btn btn-outline-secondary" (click)="clearSearch()" style="min-height: 45px; padding: 0 20px">
+        Reset
+      </button>
+    </div>
+  </div>
+</section>
+
+<section class="ma-surface-card ma-users-section-card ma-user-list-card mt-4">
+  <div class="table-responsive">
+    <kendo-grid
+      class="ma-kendo-grid table ma-master-table--patient-claims"
+      [data]="claimsData()"
+      [pageSize]="state.take"
+      [skip]="state.skip"
+      [sortable]="true"
+      [sort]="state.sort"
+      filterable="menu"
+      [filter]="state.filter"
+      [pageable]="{ buttonCount: 3, type: 'numeric', pageSizes: pageSizes }"
+      [scrollable]="'none'"
+      (dataStateChange)="dataStateChange($event)"
+    >
+      <kendo-grid-column title="Sr. No." [width]="80" [filterable]="false" [sortable]="false">
+        <ng-template kendoGridCellTemplate let-rowIndex="rowIndex">
+          {{ rowIndex + 1 }}
+        </ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column field="claim_id" title="Claim ID" [width]="150" [filterable]="false">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div class="text-truncate" [ngbTooltip]="dataItem.claim_id">{{ dataItem.claim_id || '-' }}</div>
+        </ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column field="provider_name" title="Provider Name" [width]="180" [filterable]="false">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div class="ma-cell-wrap" [ngbTooltip]="dataItem.provider_name">{{ dataItem.provider_name || '-' }}</div>
+        </ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column field="document_count" title="Documents" [width]="130" [sortable]="true" [filterable]="false">
+        <ng-template kendoGridCellTemplate let-dataItem>{{ dataItem.document_count ?? '-' }}</ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column field="ai_status" title="AI Status" [width]="130" [sortable]="false" [filterable]="false">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <span class="ma-badge" [class]="dataItem.ai_status | badgeClass">{{ dataItem.ai_status || '-' }}</span>
+        </ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column field="compliance_score" title="Compliance Score" [width]="160" [sortable]="true" [filterable]="false">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          {{ dataItem.compliance_score != null ? dataItem.compliance_score + '%' : '-' }}
+        </ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column field="review_status" title="Review Status" [width]="140" [sortable]="false" [filterable]="false">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <span class="ma-badge" [class]="dataItem.review_status | badgeClass">{{ dataItem.review_status || '-' }}</span>
+        </ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column field="uploaded_at" title="Upload Date" [width]="150" [filterable]="false" [sortable]="true">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          {{ dataItem.uploaded_at ? (dataItem.uploaded_at | date: 'MM-dd-yyyy') : '' }}
+        </ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column title="Action" [width]="100" [filterable]="false" [sortable]="false" [hidden]="!perms.canAccessMenu(MenuType.Claim)">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div class="ma-table-actions">
+            @if (perms.canAccessMenu(MenuType.Claim)) {
+              <button
+                class="ma-btn-icon-sm"
+                type="button"
+                ngbTooltip="View Details"
+                placement="top"
+                [attr.aria-label]="'View details for ' + (dataItem.claim_id || '')"
+                (click)="viewClaim(dataItem)"
+              >
+                <i class="fa-regular fa-eye"></i>
+              </button>
+            }
+          </div>
+        </ng-template>
+      </kendo-grid-column>
+
+      <ng-template kendoGridNoRecordsTemplate>
+        <div class="ma-grid-empty">No claims are available for this patient.</div>
+      </ng-template>
+    </kendo-grid>
+  </div>
+</section>

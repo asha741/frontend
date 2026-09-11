@@ -1,0 +1,34 @@
+<div class="modal-header">
+  <h2 class="modal-title h5 mb-0">{{ title }}</h2>
+  <button type="button" class="btn-close" aria-label="Close" (click)="close()"></button>
+</div>
+<div class="modal-body">
+  <div class="col-sm-12 mb-2">{{ message }}</div>
+
+  @if (remarkVisible) {
+    <div class="col-sm-12 mt-3">
+      <label for="statusReason" class="form-label">
+        {{ reasonLabel }}
+        @if (isRequiredReason) {
+          <span class="text-danger ms-1">*</span>
+        }
+      </label>
+      <textarea
+        id="statusReason"
+        class="form-control"
+        [class.is-invalid]="isRequiredReason && showReasonError && !reason?.trim()"
+        rows="3"
+        maxlength="500"
+        [(ngModel)]="reason"
+        appTrimWhitespace
+        [required]="isRequiredReason"></textarea>
+      @if (isRequiredReason && showReasonError && !reason?.trim()) {
+        <div class="invalid-feedback d-block">{{ reasonLabel }} is required.</div>
+      }
+    </div>
+  }
+</div>
+<div class="modal-footer">
+  <button class="btn ma-btn btn-outline-primary btn-grey-btn" type="button" (click)="cancel()">{{ cancelButtonText }}</button>
+  <button class="btn ma-btn btn-primary" type="button" (click)="confirm()">{{ confirmButtonText }}</button>
+</div>

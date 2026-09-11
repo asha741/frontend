@@ -1,0 +1,50 @@
+// The page reuses the app's existing .claim-analyst-page detail classes
+// (.ma-card, .ma-label-value, .ma-label, .ma-value, .ma-badge) plus
+// Bootstrap utilities.
+
+@media (max-width: 767.98px) {
+  .ma-tabs .nav-tabs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .ma-tabs .nav-tabs .nav-link {
+    flex: 0 0 auto;
+  }
+}
+
+.ma-status-info-icon {
+  margin-left: 6px;
+  color: var(--bs-danger, #dc3545);
+  cursor: pointer;
+}
+
+:host ::ng-deep .ma-master-table--bulk-upload-extract {
+  // Kendo draws a full 1px inset box-shadow border around every cellRowspan
+  // (grouped) cell by default (`.k-table-td-row-span`), even though normal
+  // body cells in this grid have no border at all — that boxed outline is
+  // the "extra border" around grouped patient rows.
+  .k-table-td-row-span {
+    box-shadow: none;
+  }
+
+  // A group's first physical row already gets the normal Patient/Provider
+  // column divider (Provider Name is genuinely the 2nd `<td>` there, next
+  // to the rowspan cell). A group's later rows don't render the merged
+  // Sr. No./Patient Name cells at all, so this grid's 7 columns collapse to
+  // 5 `<td>`s there and Provider Name becomes that row's literal
+  // `:first-child` — losing its left border to Kendo's own `:first-child {
+  // border-inline-start-width: 0 }` rule. Restore it only on those
+  // continuation rows (detected by the missing 6th/7th cell — every column
+  // still carries a `rowspan` attribute, even at value "1", so `[rowspan]`
+  // alone can't tell rows apart), so the divider reads consistently from a
+  // group's 2nd row onward without adding a stray line on a single-row
+  // "group" (which keeps all 7 cells, including Sr. No./Patient Name).
+  tr.k-table-row:not(:has(td:nth-child(7))) > td:first-child {
+    border-inline-start-width: 1px;
+    border-inline-start-style: solid;
+    border-inline-start-color: var(--kendo-color-border, #d1d5db);
+  }
+}

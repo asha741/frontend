@@ -1,0 +1,301 @@
+<!-- Page header -->
+<div class="ma-page-header">
+  <div class="ma-page-header__meta">
+    <h2 class="ma-page-title">Team Management</h2>
+    <p class="ma-page-subtitle">Manage team members, roles, and permissions</p>
+  </div>
+</div>
+
+<!-- Tabs -->
+<div class="ma-tabs">
+  <ul class="nav nav-tabs" role="tablist">
+    @if (canViewUsers()) {
+      <li class="nav-item" role="presentation">
+        <button type="button" class="nav-link" [class.active]="activeTab() === 'users'" (click)="switchTab('users')">
+          Users
+        </button>
+      </li>
+    }
+    @if (canManageRoles()) {
+      <li class="nav-item" role="presentation">
+        <button type="button" class="nav-link" [class.active]="activeTab() === 'roles'" (click)="switchTab('roles')">
+          Roles &amp; Permission
+        </button>
+      </li>
+    }
+  </ul>
+</div>
+
+<div class="tab-content">
+  <!-- ══════════════════════ USERS TAB ══════════════════════ -->
+  @if (activeTab() === 'users') {
+  <!-- Stat cards -->
+  <div class="ma-stat-grid mb-0">
+    <article class="ma-stat-card ma-match-height">
+      <span class="ma-stat-icon ma-is-green">
+        <img src="assets/images/icons/user-access.svg" alt="Total Users Icon" class="ma-svg" />
+      </span>
+      <div class="ma-stat-content">
+        <p class="ma-stat-title">Total Users</p>
+        <h2 class="ma-stat-value">{{ kpiData()?.total_users ?? '—' }}</h2>
+      </div>
+    </article>
+    <article class="ma-stat-card ma-match-height">
+      <span class="ma-stat-icon ma-is-green_v2">
+        <img src="assets/images/icons/active.svg" alt="Active Users Icon" class="ma-svg" />
+      </span>
+      <div class="ma-stat-content">
+        <p class="ma-stat-title">Active Users</p>
+        <h2 class="ma-stat-value">{{ kpiData()?.active_users ?? '—' }}</h2>
+      </div>
+    </article>
+    <article class="ma-stat-card ma-match-height">
+      <span class="ma-stat-icon ma-is-orange">
+        <img src="assets/images/icons/pendings.svg" alt="Pending Invitations Icon" class="ma-svg" />
+      </span>
+      <div class="ma-stat-content">
+        <p class="ma-stat-title">Pending Invitations</p>
+        <h2 class="ma-stat-value">{{ kpiData()?.pending_invitations ?? '—' }}</h2>
+      </div>
+    </article>
+  </div>
+
+  <!-- ══ Filters ══════════════════════════════════════════════════════ -->
+  <section class="ma-filter-wrap mt-3">
+    <div class="row g-2 align-items-center ma-filter-grid">
+      <!-- Search input -->
+      <div class="col-12 col-lg-3">
+        <div class="ma-input-group ma-filter-item ma-filter-item--search">
+          <i class="fa-solid fa-magnifying-glass ma-input-icon"></i>
+          <input id="userSearchInput" type="text" class="form-control" placeholder="Search"
+            aria-label="Search users" [(ngModel)]="search" appTrimWhitespace maxlength="100" (keydown.enter)="onSearch()" />
+        </div>
+      </div>
+
+      <!-- Created Date From -->
+      <div class="col-12 col-sm-6 col-lg-2">
+        <div class="ma-input-group is-calendar ma-filter-item ma-filter-item--date">
+          <input
+            id="dateFrom"
+            class="form-control bg-white"
+            placeholder="From date"
+            aria-label="From date"
+            name="dateFrom"
+            readonly
+            ngbDatepicker
+            container="body"
+            #fromPicker="ngbDatepicker"
+            [(ngModel)]="fromDate"
+            [maxDate]="$any(toDate)"
+            (click)="fromPicker.toggle()"
+          />
+          <i
+            class="fa-regular fa-calendar ma-input-icon"
+            role="button"
+            aria-label="Open from-date picker"
+            (click)="fromPicker.toggle()"
+          ></i>
+        </div>
+      </div>
+
+      <!-- Created Date To -->
+      <div class="col-12 col-sm-6 col-lg-2">
+        <div class="ma-input-group is-calendar ma-filter-item ma-filter-item--date">
+          <input
+            id="dateTo"
+            class="form-control bg-white"
+            placeholder="To date"
+            aria-label="To date"
+            name="dateTo"
+            readonly
+            ngbDatepicker
+            container="body"
+            #toPicker="ngbDatepicker"
+            [(ngModel)]="toDate"
+            [minDate]="$any(fromDate)"
+            (click)="toPicker.toggle()"
+          />
+          <i
+            class="fa-regular fa-calendar ma-input-icon"
+            role="button"
+            aria-label="Open to-date picker"
+            (click)="toPicker.toggle()"
+          ></i>
+        </div>
+      </div>
+
+      <!-- Search & Reset buttons -->
+      <div class="col-12 col-lg-auto d-flex gap-2">
+        <button type="button" class="btn ma-btn btn-primary" (click)="onSearch()"
+          style="min-height: 45px; padding: 0 20px">
+          Search
+        </button>
+        <button type="button" class="btn ma-btn btn-outline-secondary" (click)="clearSearch()"
+          style="min-height: 45px; padding: 0 20px">
+          Reset
+        </button>
+      </div>
+
+      <!-- Add User -->
+      @if (perms.can(PERMISSION_MODULE.User, PERMISSION_ACTION.Create)) {
+        <div class="col-12 col-lg-auto ms-lg-auto">
+            <div class="ma-filter-actions ma-filter-item ma-filter-item--action">
+          <a routerLink="/team-management/user-form" class="btn ma-btn btn-primary ma-btn-inline-icon" aria-label="Add new user"
+            style="white-space: nowrap; min-height: 45px">
+            <span>Add User</span>
+            <i class="fa-solid fa-plus" aria-hidden="true"></i>
+          </a>
+          </div>
+        </div>
+      }
+    </div>
+  </section>
+
+  <!-- ══ Users grid ═══════════════════════════════════════════════════ -->
+  <section class="ma-surface-card ma-users-section-card ma-user-list-card mt-4">
+    <div class="table-responsive">
+      <kendo-grid class="ma-kendo-grid table" [data]="usersData()" [pageSize]="state.take" [skip]="state.skip"
+        [sortable]="true" [sort]="state.sort" filterable="menu" [filter]="state.filter"
+        [pageable]="{ buttonCount: 3, type: 'numeric', pageSizes: pageSizes }" [scrollable]="'none'"
+        (dataStateChange)="dataStateChange($event)">
+        <!-- ── Sr. No. ──────────────────────────────────────────────── -->
+        <kendo-grid-column title="Sr. No." [width]="80" [filterable]="false" [sortable]="false">
+          <ng-template kendoGridCellTemplate let-rowIndex="rowIndex">
+            {{ rowIndex + 1 }}
+          </ng-template>
+        </kendo-grid-column>
+
+        <!-- ── Admin ID ─────────────────────────────────────────────── -->
+        <kendo-grid-column field="user_id" title="Admin ID" [width]="140" [filterable]="false" [sortable]="false">
+          <ng-template kendoGridCellTemplate let-dataItem>
+            <div class="text-truncate" [ngbTooltip]="dataItem.user_id">
+              {{ dataItem.admin_id || '—' }}
+            </div>
+          </ng-template>
+        </kendo-grid-column>
+
+        <!-- ── Name ─────────────────────────────────────────────────── -->
+        <kendo-grid-column field="first_name" title="Name" [width]="200" [sortable]="false" [filterable]="false">
+          <ng-template kendoGridCellTemplate let-dataItem>
+            <div class="ma-cell-wrap" [ngbTooltip]="dataItem.first_name + ' ' + dataItem.last_name">
+              {{ dataItem.first_name }} {{ dataItem.last_name }}
+            </div>
+          </ng-template>
+        </kendo-grid-column>
+
+        <!-- ── Email ─────────────────────────────────────────────────── -->
+        <kendo-grid-column field="email" title="Email" [width]="240" [sortable]="false" [filterable]="false">
+          <ng-template kendoGridCellTemplate let-dataItem>
+            <div class="text-truncate" [ngbTooltip]="dataItem.email">{{ dataItem.email }}</div>
+          </ng-template>
+        </kendo-grid-column>
+
+        <!-- ── Contact ───────────────────────────────────────────────── -->
+        <kendo-grid-column field="contact_number" title="Contact" [width]="170" [sortable]="false" [filterable]="false">
+          <ng-template kendoGridCellTemplate let-dataItem>
+            <div class="text-truncate" [ngbTooltip]="dataItem.contact_number | usPhone">
+              {{ dataItem.contact_number | usPhone }}
+            </div>
+          </ng-template>
+        </kendo-grid-column>
+
+        <!-- ── Role (filtered from the top bar, so no column filter here) ── -->
+        <kendo-grid-column field="role" title="Role" [width]="160" [sortable]="false">
+          <ng-template kendoGridCellTemplate let-dataItem>
+            <div class="text-truncate" [ngbTooltip]="dataItem.role">{{ dataItem.role }}</div>
+          </ng-template>
+          <ng-template kendoGridFilterMenuTemplate let-filter let-column="column" let-filterService="filterService">
+            <dropdownlist-filter [isPrimitive]="true" [field]="column.field" [currentFilter]="filter"
+              [filterService]="filterService" textField="label" valueField="value" [data]="roleOptions">
+            </dropdownlist-filter>
+          </ng-template>
+        </kendo-grid-column>
+
+        <!-- ── Status (boolean radio: Active / Inactive) ─────────────── -->
+        <kendo-grid-column field="status" title="Status" [width]="120" type="boolean" [sortable]="false">
+          <ng-template kendoGridCellTemplate let-dataItem>
+            <!-- Without user:update the status is shown, but not changeable. -->
+            @if (perms.can(PERMISSION_MODULE.User, PERMISSION_ACTION.Update)) {
+              <div class="form-check form-switch d-flex align-items-center gap-2">
+                <input class="form-check-input k-cursor-pointer" type="checkbox" [checked]="isActive(dataItem)"
+                  [disabled]="isSelf(dataItem) || invitationLabel(dataItem) !== 'Accepted'"
+                  (change)="onStatusChange(dataItem, $event)" [ngbTooltip]="isActive(dataItem) ? 'Active' : 'Inactive'" />
+             
+              </div>
+            } @else {
+              <span class="ma-badge" [class]="(isActive(dataItem) ? 'active' : 'inactive') | badgeClass">
+                {{ isActive(dataItem) ? 'Active' : 'Inactive' }}
+              </span>
+            }
+          </ng-template>
+          <ng-template kendoGridFilterMenuTemplate let-filter let-column="column" let-filterService="filterService">
+            <kendo-grid-boolean-filter-menu [column]="column" [filter]="filter" [filterService]="filterService"
+              class="radio-btn-group">
+              <kendo-filter-eq-operator></kendo-filter-eq-operator>
+            </kendo-grid-boolean-filter-menu>
+          </ng-template>
+          <kendo-grid-messages filterIsTrue="Active" filterIsFalse="Inactive"></kendo-grid-messages>
+        </kendo-grid-column>
+
+        <!-- ── Invitation Status (dropdown filter — values from /meta/enums) ── -->
+        <kendo-grid-column field="invitation_status" title="Invitation" [width]="130" [sortable]="false">
+          <ng-template kendoGridCellTemplate let-dataItem>
+            <span class="ma-badge" [class]="invitationLabel(dataItem) | badgeClass: 'invitation'">{{
+              invitationLabel(dataItem)
+              }}</span>
+          </ng-template>
+          <ng-template kendoGridFilterMenuTemplate let-filter let-column="column" let-filterService="filterService">
+            <dropdownlist-filter [isPrimitive]="true" [field]="column.field" [currentFilter]="filter"
+              [filterService]="filterService" textField="label" valueField="value" [data]="invitationOptions">
+            </dropdownlist-filter>
+          </ng-template>
+        </kendo-grid-column>
+
+        <!-- ── Register Date ─────────────────────────────────────────── -->
+        <kendo-grid-column field="created_at" title="Created Date" [width]="150" [filterable]="false">
+          <ng-template kendoGridCellTemplate let-dataItem>
+            {{ dataItem.created_at ? (dataItem.created_at | date: 'MM-dd-yyyy') : '' }}
+          </ng-template>
+        </kendo-grid-column>
+
+        <!-- ── Actions ──────────────────────────────────────────────── -->
+        @if (perms.canAny(PERMISSION_MODULE.User, PERMISSION_ACTION.Update, PERMISSION_ACTION.Delete)) {
+          <kendo-grid-column title="Actions" [width]="130" [filterable]="false" [sortable]="false">
+            <ng-template kendoGridCellTemplate let-dataItem>
+              <div class="ma-table-actions">
+                <!-- Users can't edit their own account. -->
+                @if (!isSelf(dataItem) && !isLastOrgAdmin(dataItem) && perms.can(PERMISSION_MODULE.User, PERMISSION_ACTION.Update)) {
+                  <button class="ma-btn-icon-sm" type="button" (click)="editUser(dataItem)" [ngbTooltip]="'Edit user'">
+                    <i class="fa-regular fa-pen-to-square"></i>
+                  </button>
+                }
+                <!-- Users can't delete their own account. -->
+                @if (!isSelf(dataItem) && !isLastOrgAdmin(dataItem) && perms.can(PERMISSION_MODULE.User, PERMISSION_ACTION.Delete)) {
+                  <button class="ma-btn-icon-sm" type="button" (click)="deleteUser(dataItem)" [ngbTooltip]="'Delete user'">
+                    <i class="fa-regular fa-trash-can"></i>
+                  </button>
+                }
+                @if (invitationLabel(dataItem) !== 'Accepted') {
+                <button class="ma-btn-icon-sm" type="button" (click)="resendInvitation(dataItem)"
+                  [ngbTooltip]="'Resend invitation'">
+                  <i class="fa-regular fa-paper-plane"></i>
+                </button>
+                }
+              </div>
+            </ng-template>
+          </kendo-grid-column>
+        }
+
+        <ng-template kendoGridNoRecordsTemplate>
+          <div class="ma-grid-empty">No users match your current filters.</div>
+        </ng-template>
+      </kendo-grid>
+    </div>
+  </section>
+  }
+
+  <!-- ══════════════════════ ROLES TAB ══════════════════════ -->
+  @if (activeTab() === 'roles') {
+  <app-roles-list />
+  }
+</div>
