@@ -1,7 +1,8 @@
-import { Component, OnInit, computed, signal } from '@angular/core';
+import { Component, OnDestroy, OnInit, TemplateRef, ViewChild, computed, signal } from '@angular/core';
 import { DatePipe, UpperCasePipe } from '@angular/common';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
+import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap';
 
 import { ApiService } from '../../../core/services/api.service';
 import { API_ROUTES } from '../../../core/constants/api-routes';
@@ -11,6 +12,11 @@ import { EmptyStateComponent } from '../../../shared/components/empty-state/empt
 import { MarkdownPipe } from '../../../shared/pipes/markdown.pipe';
 import { TrimWhitespaceDirective } from '../../../shared/directives/trim-whitespace.directive';
 import { BadgeClassPipe } from '../../../shared/pipes/badge-class.pipe';
+import {
+  AI_STATUS_POLL_MS,
+  aiProgressPercent,
+  isAiInProgress as aiStatusInProgress,
+} from '../../../core/utils/ai-status.util';
 
 interface ClaimDocument {
   category: string;
@@ -48,6 +54,9 @@ interface ClaimDetail {
   review_status: string;
   reviewer_notes?: string;
   ai_status: string;
+  /** Present while the AI is still running — see /organization/claims/status. */
+  ai_processing_progress?: number;
+  ai_processing_stage?: string;
   documents: ClaimDocument[];
   compliance_score: number;
   rule_results: ClaimRuleResult[];
@@ -79,7 +88,7 @@ type TabKey = 'all' | 'high' | 'medium' | 'low';
  * tracks review progress via a stepper, and lets a reviewer save notes or
  * finalize the review (Pass/Failed).
  */
-export class ViewClaimAnalyst implements OnInit {
+export class ViewClaimAnalyst implements OnInit, OnDestroy {
   /** Reviewer Actions form — POSTed to `/organization/claims/review`. */
   readonly reviewForm: FormGroup;
 
@@ -89,6 +98,7 @@ export class ViewClaimAnalyst implements OnInit {
     public api: ApiService,
     public crypto: CryptoService,
     public fb: FormBuilder,
+    public modal: NgbModal,
   ) {
     this.reviewForm = this.fb.group({
       reviewer_notes: ['', [Validators.maxLength(1000)]],
@@ -100,12 +110,21 @@ export class ViewClaimAnalyst implements OnInit {
   readonly activeTab = signal<TabKey>('all');
   readonly isSubmitted = signal(false);
   readonly submitting = signal(false);
-  readonly savingNotes = signal(false);
-  /** Opened from the Patient Claims tab — Reviewer Actions is display-only, no edits/buttons. */
+  /** Opened from the Patient Claims tab — Reviewer Actions is display-only, no edit button. */
   readonly isReadOnly = signal(false);
+
+  /** Reviewer Actions modal — opened from the "Review Status" button beside the compliance score. */
+  @ViewChild('reviewModalTpl') reviewModalTpl!: TemplateRef<unknown>;
+  private reviewModalRef: NgbModalRef | null = null;
 
   /** Review-status enum (`typeId: 3`) — Pending / Pass / Failed. */
   reviewStatusOptions: { label: string; value: string }[] = [];
+
+  /** The pending AI status read, or null when the claim is no longer processing. */
+  private aiStatusTimer: ReturnType<typeof setTimeout> | null = null;
+
+  /** Set on destroy so an in-flight status response is dropped instead of applied. */
+  private destroyed = false;
 
   get f() {
     return this.reviewForm.controls;
@@ -114,9 +133,7 @@ export class ViewClaimAnalyst implements OnInit {
   private claimId: string | null = null;
   private encryptedClaimId: string | null = null;
   private providerId: string | null = null;
-  private encryptedProviderId: string | null = null;
   private patientId: string | null = null;
-  private encryptedPatientId: string | null = null;
 
   readonly documentGroups = computed(() => {
     const docs = this.claim()?.documents ?? [];
@@ -162,14 +179,12 @@ export class ViewClaimAnalyst implements OnInit {
 
     const providerIdParam = this.route.snapshot.paramMap.get('providerId');
     if (providerIdParam) {
-      this.encryptedProviderId = providerIdParam;
       this.providerId = await this.crypto.decryptId(providerIdParam);
     }
 
     const patientIdParam =
       this.route.snapshot.paramMap.get('patientId') ?? this.route.parent?.snapshot.paramMap.get('patientId') ?? null;
     if (patientIdParam) {
-      this.encryptedPatientId = patientIdParam;
       this.patientId = await this.crypto.decryptId(patientIdParam);
       this.isReadOnly.set(true);
     }
@@ -214,6 +229,8 @@ export class ViewClaimAnalyst implements OnInit {
     // Returns the full claim: documents, rule results, flag summary, review state.
     const res = await this.api.request('POST', endpoint, body, { showToaster: false });
 
+    if (this.destroyed) return;
+
     if (res?.status && res.data) {
       const claim = res.data as ClaimDetail;
       this.claim.set(claim);
@@ -223,6 +240,119 @@ export class ViewClaimAnalyst implements OnInit {
         review_status: claim.review_status ?? '',
       });
     }
+
+    // A claim that is still being validated keeps watching itself; one that
+    // isn't costs nothing. The detail payload may not carry a percentage —
+    // when it doesn't, read once straight away so the bar shows a real number
+    // instead of 0% until the next read.
+    this.scheduleAiStatusRead(
+      typeof this.claim()?.ai_processing_progress === 'number' ? AI_STATUS_POLL_MS : 0,
+    );
+  }
+
+  ngOnDestroy(): void {
+    this.destroyed = true;
+    this.stopAiStatusWatch();
+  }
+
+  // ── AI status watch ───────────────────────────────────────────────
+  //
+  // While the AI is still validating, the detail page reads
+  // /organization/claims/status every 20 seconds: a small response carrying
+  // just the progress, so the page can show how far along the claim is
+  // without re-fetching its documents and rule results each time. The
+  // endpoint is batched (`{ claim_ids: [...] }` → one row per claim), so this
+  // page sends a one-element list and reads the row back out.
+
+  /** True while the AI is still working on this claim. */
+  isAiInProgress(): boolean {
+    return aiStatusInProgress(this.claim()?.ai_status);
+  }
+
+  /** Completion percentage, clamped to 0–100 for the progress bar's width. */
+  aiProgress(): number {
+    return aiProgressPercent(this.claim()?.ai_processing_progress);
+  }
+
+  /**
+   * Arms the next status read while the claim is processing, and stops the
+   * loop once it isn't. Called after every claim load, so a reload (Save
+   * Notes, Approve) replaces the pending timer instead of stacking another.
+   *
+   * `delayMs` only ever shortens the FIRST read after a load — every
+   * reschedule from `readAiStatus` takes the full interval, so a failing
+   * request can't turn the loop into a tight retry.
+   */
+  private scheduleAiStatusRead(delayMs = AI_STATUS_POLL_MS): void {
+    this.stopAiStatusWatch();
+    if (this.destroyed || !this.claimId || !this.isAiInProgress()) return;
+
+    this.aiStatusTimer = setTimeout(() => void this.readAiStatus(), delayMs);
+  }
+
+  /**
+   * One status read. Merges the progress into the claim, then either arms the
+   * next read or — once the AI has finished — reloads the full claim, since
+   * the rule results and flag summary only arrive on the detail endpoint.
+   */
+  private async readAiStatus(): Promise<void> {
+    if (this.destroyed || !this.claimId) return;
+    this.aiStatusTimer = null;
+
+    // Silent: this runs on a timer, so no global loader and no toaster.
+    const res = await this.api.request(
+      'POST',
+      API_ROUTES.GET_CLAIM_STATUS,
+      { claim_ids: [this.claimId] },
+      { showToaster: false, showLoader: false },
+    );
+    if (this.destroyed) return;
+
+    const status = this.statusFor(res?.data, this.claimId);
+    if (res?.status && status) {
+      const current = this.claim();
+      if (current) {
+        // Only the fields the status endpoint owns — a partial response must
+        // not blank out the documents or rule results already on screen.
+        this.claim.set({
+          ...current,
+          ai_status: status.ai_status ?? current.ai_status,
+          ai_processing_progress: status.ai_processing_progress ?? current.ai_processing_progress,
+          ai_processing_stage: status.ai_processing_stage ?? current.ai_processing_stage,
+          compliance_score: status.compliance_score ?? current.compliance_score,
+          review_status: status.review_status ?? current.review_status,
+        });
+      }
+
+      if (!aiStatusInProgress(status.ai_status)) {
+        // Finished — pull the full claim so the rule results, flag summary and
+        // reviewer actions reflect the completed run.
+        await this.loadClaim();
+        return;
+      }
+    }
+
+    // A failed read is treated as "still processing" — one dropped request
+    // must not end the watch on a claim that is genuinely still running.
+    this.scheduleAiStatusRead();
+  }
+
+  /**
+   * This claim's row out of a batched status response. The list is keyed by
+   * claim id, but a single-id request can only be about this claim — so an
+   * unkeyed or differently-keyed row is still accepted when it's the only one.
+   */
+  private statusFor(data: any, claimId: string | null): any {
+    if (!data) return null;
+    const rows = Array.isArray(data) ? data : [data];
+    if (!rows.length) return null;
+    const match = rows.find((row) => String(row?.id ?? row?.claim_id ?? '') === String(claimId));
+    return match ?? (rows.length === 1 ? rows[0] : null);
+  }
+
+  private stopAiStatusWatch(): void {
+    if (this.aiStatusTimer) clearTimeout(this.aiStatusTimer);
+    this.aiStatusTimer = null;
   }
 
   /** Switches the rule-results filter tab (all/high/medium/low). */
@@ -282,40 +412,39 @@ export class ViewClaimAnalyst implements OnInit {
   }
 
   /**
-   * Approve Claim stays disabled until AI validation has finished AND the
-   * reviewer has made an actual decision. `Pending` is in the dropdown (the
-   * enum ships it) but it isn't a decision, so it doesn't enable Approve —
-   * use Save Notes to keep working on a claim that's still pending.
+   * Save stays disabled until AI validation has finished AND the reviewer
+   * has made an actual decision. `Pending` is in the dropdown (the enum
+   * ships it) but it isn't a decision, so it doesn't enable Save.
    */
   canApprove(): boolean {
     const status = (this.reviewForm.value.review_status ?? '').toLowerCase();
     return (
       this.isAiComplete() &&
       (status === 'pass' || status === 'failed') &&
-      !this.submitting() &&
-      !this.savingNotes()
+      !this.submitting()
     );
   }
 
-  /**
-   * Saves the notes without finalizing — keeps whatever review status the
-   * claim already carries (typically `Pending`).
-   */
-  async saveNotes(): Promise<void> {
-    if (!this.claimId || this.savingNotes() || this.f['reviewer_notes'].invalid || !this.isAiComplete())
-      return;
+  /** Opens the Reviewer Actions modal, prefilled from the current form state. */
+  openReviewModal(): void {
+    this.isSubmitted.set(false);
+    this.reviewModalRef = this.modal.open(this.reviewModalTpl, { centered: true });
+  }
 
-    this.savingNotes.set(true);
-    // Same review endpoint as approveClaim(), but with the claim's existing
-    // status re-sent so the save doesn't change it.
-    const res = await this.api.request('POST', API_ROUTES.REVIEW_CLAIM, {
-      claim_id: this.claimId,
-      review_status: this.claim()?.review_status ?? 'Pending',
-      reviewer_notes: this.reviewForm.value.reviewer_notes?.trim() ?? '',
-    });
-    this.savingNotes.set(false);
+  closeReviewModal(): void {
+    this.reviewModalRef?.dismiss('canceled');
+    this.reviewModalRef = null;
+  }
 
-    if (res?.status) await this.loadClaim();
+  /** Save button in the Reviewer Actions modal — finalizes the review, closing the modal on success. */
+  async submitReview(): Promise<void> {
+    await this.approveClaim();
+    // approveClaim() resets isSubmitted back to false only once it succeeds —
+    // on a validation failure it stays true so the modal's errors stay visible.
+    if (!this.isSubmitted()) {
+      this.reviewModalRef?.close('saved');
+      this.reviewModalRef = null;
+    }
   }
 
   /**
@@ -339,19 +468,6 @@ export class ViewClaimAnalyst implements OnInit {
       // Re-read the claim so the stepper / badges reflect the new review status.
       await this.loadClaim();
     }
-  }
-
-  /** Discards edits and returns to the page this claim was opened from. */
-  cancelReview(): void {
-    if (this.encryptedProviderId) {
-      this.router.navigate(['/provider-management', this.encryptedProviderId, 'patients']);
-      return;
-    }
-    if (this.encryptedPatientId) {
-      this.router.navigate(['/patient-management/profile', this.encryptedPatientId]);
-      return;
-    }
-    this.router.navigate(['/claim-analyst']);
   }
 
   /** storage_url of whichever document is currently being fetched — drives the per-row spinner. */

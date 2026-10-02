@@ -81,7 +81,7 @@
 
       <kendo-grid-column field="provider_name" title="Provider Name (License)" [width]="240" [filterable]="false">
         <ng-template kendoGridCellTemplate let-dataItem>
-          <div class="ma-cell-wrap">{{ dataItem.provider_name || '-' }} @if (dataItem.license) { ({{ dataItem.license }}) }</div>
+          <div class="ma-cell-wrap">{{ dataItem.provider_name || '-' }} @if (dataItem.provider_license) { ({{ dataItem.provider_license }}) }</div>
         </ng-template>
       </kendo-grid-column>
 

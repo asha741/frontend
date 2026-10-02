@@ -56,38 +56,30 @@ export class ProviderForm implements OnInit {
           noWhitespaceValidator(),
         ],
       ],
-      external_id: ['', [Validators.minLength(1), Validators.maxLength(16)]],
+      external_id: ['', [Validators.minLength(1), Validators.maxLength(16), noWhitespaceValidator()]],
       first_name: [
         '',
         [
           Validators.required,
-          Validators.minLength(2),
+          Validators.minLength(1),
           Validators.maxLength(50),
           noWhitespaceValidator(),
         ],
       ],
-      middle_name: ['', [Validators.minLength(1), Validators.maxLength(50)]],
+      middle_name: ['', [Validators.minLength(1), Validators.maxLength(50), noWhitespaceValidator()]],
       last_name: [
         '',
         [
           Validators.required,
-          Validators.minLength(2),
+          Validators.minLength(1),
           Validators.maxLength(50),
           noWhitespaceValidator(),
         ],
       ],
-      email: ['', [Validators.required, Validators.maxLength(100), Validators.pattern(emailRegex)]],
-      contact_number: ['', [Validators.required, Validators.pattern(/^\(\d{3}\) \d{3}-\d{4}$/)]],
-      designation: [
-        '',
-        [
-          Validators.required,
-          Validators.minLength(2),
-          Validators.maxLength(100),
-          noWhitespaceValidator(),
-        ],
-      ],
-      license: [[] as string[], [Validators.required]],
+      email: ['', [Validators.maxLength(100), noWhitespaceValidator()]],
+      contact_number: ['', [Validators.maxLength(30), noWhitespaceValidator()]],
+      designation: ['', [Validators.maxLength(100), noWhitespaceValidator()]],
+      license: [[] as string[]],
       status: [true],
     });
   }
@@ -190,21 +182,43 @@ export class ProviderForm implements OnInit {
    */
   async onSave(): Promise<void> {
     this.isSubmitted.set(true);
+    this.form.updateValueAndValidity();
     if (this.form.invalid || this.submitting()) return;
 
-    this.submitting.set(true);
     const raw = this.form.getRawValue();
+    const normalizedPhone = raw.contact_number ? raw.contact_number.replace(/\D/g, '') : '';
+    if (raw.contact_number && normalizedPhone.length !== 10) {
+      this.f['contact_number'].setErrors({ phone: true });
+      return;
+    }
+
+    // Annotated: without it the ternary types as `string[] | never[]`, and the
+    // `.some()` below can't resolve a callback signature against that union
+    // (TS7006 — `value` implicitly any).
+    const normalizedLicense: string[] = Array.isArray(raw.license)
+      ? raw.license
+          .map((value: string) => String(value).trim())
+          .filter((value: string) => value.length > 0)
+      : [];
+
+    const allowedLicenses = this.licenseOptions.map((option) => option.value.trim().toLowerCase());
+    const invalidLicense = normalizedLicense.some((value) => !allowedLicenses.includes(String(value).trim().toLowerCase()));
+    if (normalizedLicense.length > 0 && invalidLicense) {
+      this.f['license'].setErrors({ invalidLicense: true });
+      return;
+    }
+
+    this.submitting.set(true);
     const payload: any = {
       provider_id: raw.provider_id,
-      external_id: raw.external_id,
+      external_id: raw.external_id || '',
       first_name: raw.first_name,
-      middle_name: raw.middle_name,
+      middle_name: raw.middle_name || '',
       last_name: raw.last_name,
-      email: raw.email,
-      // Strip the phone mask's formatting (parens/space/dash) before sending.
-      contact_number: raw.contact_number?.replace(/\D/g, ''),
-      designation: raw.designation,
-      license: raw.license,
+      email: raw.email || '',
+      contact_number: normalizedPhone || '',
+      designation: raw.designation || '',
+      license: normalizedLicense.length > 0 ? normalizedLicense : 'No credential needed (N/A)',
       status: raw.status ? 'Active' : 'Inactive',
     };
 

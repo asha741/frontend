@@ -65,8 +65,19 @@ export const routes: Routes = [
       {
         path: 'dashboard',
         canActivate: [PermissionGuard],
-        loadComponent: () => import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent),
-        title: 'Dashboard — MediAudit',
+        children: [
+          {
+            path: '',
+            loadComponent: () => import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent),
+            title: 'Dashboard — MediAudit',
+          },
+          {
+            path: 'org-analytic',
+            loadComponent: () => import('./features/org-analytic/org-analytic').then(m => m.OrgAnalytic),
+            title: 'Org Analytic Dashboard — MediAudit',
+            data: { title: 'Org Analytic Dashboard', subtitle: '', dashboardType: 'organization' },
+          },
+        ],
         data: { title: 'Dashboard', subtitle: '', menuType: MenuType.Dashboard },
       },
       {
@@ -129,6 +140,12 @@ export const routes: Routes = [
             data: { title: 'Edit Provider', subtitle: '' },
           },
           {
+            path: 'view/:id',
+            loadComponent: () => import('./features/provider-management/provider-view/provider-view').then(m => m.ProviderView),
+            title: 'View Provider — MediAudit',
+            data: { title: 'View Provider', subtitle: '' },
+          },
+          {
             path: ':id/patients',
             loadComponent: () => import('./features/provider-management/provider-patients/provider-patients.component').then(m => m.ProviderPatientsComponent),
             title: 'Provider Patients — MediAudit',
@@ -139,6 +156,12 @@ export const routes: Routes = [
             loadComponent: () => import('./features/claim-analyst/view-claim-analyst/view-claim-analyst').then(m => m.ViewClaimAnalyst),
             title: 'View Claim — MediAudit',
             data: { title: 'View Claim', subtitle: '' },
+          },
+          {
+            path: 'provider-analytic/:providerId',
+            loadComponent: () => import('./features/provider-management/provider-analytic/provider-analytic').then(m => m.ProviderAnalytic),
+            title: 'Provider Analytics — MediAudit',
+            data: { title: 'Provider Analytics', subtitle: '' },
           },
         ],
         data: { title: 'Provider Management', subtitle: '', menuType: MenuType.Provider },
@@ -166,6 +189,12 @@ export const routes: Routes = [
             data: { title: 'Edit Patient', subtitle: '' },
           },
           {
+            path: 'view/:id',
+            loadComponent: () => import('./features/patient-management/patient-view/patient-view').then(m => m.PatientView),
+            title: 'View Patient — MediAudit',
+            data: { title: 'View Patient', subtitle: '' },
+          },
+          {
             path: 'profile/:patientId',
             data: { title: 'Patient Profile', subtitle: '' },
             children: [
@@ -181,6 +210,18 @@ export const routes: Routes = [
                 data: { title: 'View Claim', subtitle: '' },
               },
             ],
+          },
+          {
+            path: 'org-analytic',
+            loadComponent: () => import('./features/org-analytic/org-analytic').then(m => m.OrgAnalytic),
+            title: 'Org Analytic Dashboard — MediAudit',
+            data: { title: 'Org Analytic Dashboard', subtitle: '', dashboardType: 'client' },
+          },
+          {
+            path: 'patient-analytic/:patientId',
+            loadComponent: () => import('./features/patient-management/patient-analytic/patient-analytic').then(m => m.PatientAnalytic),
+            title: 'Patient Analytics — MediAudit',
+            data: { title: 'Patient Analytics', subtitle: '' },
           },
         ],
         data: { title: 'Patient Management', subtitle: '', menuType: MenuType.Patient },
@@ -217,6 +258,12 @@ export const routes: Routes = [
                 data: { title: 'Failed Notes', subtitle: '' },
               },
             ]
+          },
+          {
+            path: 'org-analytic',
+            loadComponent: () => import('./features/org-analytic/org-analytic').then(m => m.OrgAnalytic),
+            title: 'Org Analytic Dashboard — MediAudit',
+            data: { title: 'Org Analytic Dashboard', subtitle: '', dashboardType: 'supervisor' },
           },
         ],
         data: { title: 'Claim Analyst', subtitle: '', menuType: MenuType.Claim },
@@ -297,7 +344,10 @@ export const routes: Routes = [
             path: 'upload',
             loadComponent: () => import('./features/travel-time/travel-time-form/travel-time-form').then(m => m.TravelTimeForm),
             title: 'Travel Time — MediAudit',
-            data: { title: 'Travel Time', subtitle: '' },
+            // Names the page itself, not the module — the breadcrumb de-dupes
+            // by URL, so repeating the parent's "Travel Time" here rendered
+            // the trail as "Travel Time > Travel Time".
+            data: { title: 'Validate Notes', subtitle: '' },
           },
           {
             // Read-only view of a batch that has finished extracting: header info
@@ -326,7 +376,9 @@ export const routes: Routes = [
             // batch that is still extracting. Declared after 'upload' and
             // ':id/detail' so those paths win. Componentless, so children inherit `:id`.
             path: ':id',
-            data: { title: 'Travel Time', subtitle: '' },
+            // Same page as 'upload' (resumed for an existing batch), so it
+            // carries the same crumb rather than repeating the module name.
+            data: { title: 'Validate Notes', subtitle: '' },
             children: [
               {
                 path: '',
@@ -339,35 +391,139 @@ export const routes: Routes = [
         data: { title: 'Travel Time', subtitle: '', menuType: MenuType.TravelTime },
       },
       {
-        path: 'claim-data-list',
+        path: 'clone-notes',
         canActivate: [PermissionGuard],
         children: [
           {
             path: '',
-            loadComponent: () => import('./features/claim-data-list/claim-data-list').then(m => m.ClaimDataList),
-            title: 'Claim\'s Data List — MediAudit',
-            data: { title: 'Claim\'s Data List', subtitle: '' },
+            loadComponent: () => import('./features/clone-notes/clone-notes').then(m => m.CloneNotes),
+            title: 'Clone Notes — MediAudit',
+            data: { title: 'Clone Notes', subtitle: '' },
           },
           {
-            path: 'import',
-            loadComponent: () => import('./features/claim-data-list/claim-import/claim-import').then(m => m.ClaimImport),
-            title: 'Import Claim Data — MediAudit',
-            data: { title: 'Import Claim Data', subtitle: '' },
+            path: 'upload',
+            loadComponent: () => import('./features/clone-notes/clone-notes-form/clone-notes-form').then(m => m.CloneNotesForm),
+            title: 'Clone Notes — MediAudit',
+            // Names the page itself, not the module — see the Travel Time
+            // equivalent above.
+            data: { title: 'Validate Notes', subtitle: '' },
           },
           {
+            // Read-only view of a batch that has finished extracting: header info
+            // + per-provider Extract Data table. Componentless, so the result
+            // sub-page inherits the `:id` param.
+            path: ':id/detail',
+            data: { title: 'Batch Detail', subtitle: '' },
+            children: [
+              {
+                path: '',
+                loadComponent: () => import('./features/clone-notes/clone-notes-detail/clone-notes-detail').then(m => m.CloneNotesDetail),
+                title: 'Batch Detail — MediAudit',
+              },
+              {
+                // Clone Notes – Result page for one provider in the batch.
+                path: 'result/:providerId',
+                loadComponent: () => import('./features/clone-notes/clone-notes-result/clone-notes-result').then(m => m.CloneNotesResult),
+                title: 'Clone Notes Result — MediAudit',
+                data: { title: 'Clone Notes Result', subtitle: '' },
+              },
+            ],
+          },
+          {
+            // Same upload/extract page, resumed from a batch id. Declared after
+            // 'upload' and ':id/detail' so those paths win. Componentless, so
+            // children inherit `:id`.
             path: ':id',
-            loadComponent: () => import('./features/claim-data-list/claim-batch-detail/claim-batch-detail').then(m => m.ClaimBatchDetail),
-            title: 'Claim Data Analysis — MediAudit',
-            data: { title: 'Claim Data Analysis', subtitle: '' },
-          },
-          {
-            path: ':id/claim-records/:recordId',
-            loadComponent: () => import('./features/claim-data-list/claim-record-detail/claim-record-detail').then(m => m.ClaimRecordDetail),
-            title: 'Claim Detail — MediAudit',
-            data: { title: 'Claim Detail', subtitle: '' },
+            // Same page as 'upload' (resumed for an existing batch), so it
+            // carries the same crumb rather than repeating the module name.
+            data: { title: 'Validate Notes', subtitle: '' },
+            children: [
+              {
+                path: '',
+                loadComponent: () => import('./features/clone-notes/clone-notes-form/clone-notes-form').then(m => m.CloneNotesForm),
+                title: 'Clone Notes — MediAudit',
+              },
+            ],
           },
         ],
-        data: { title: 'Claim\'s Data List', subtitle: '', menuType: MenuType.Claimdata },
+        data: { title: 'Clone Notes', subtitle: '', menuType: MenuType.CloneNotes },
+      },
+      // {
+      //   path: 'claim-data-list',
+      //   canActivate: [PermissionGuard],
+      //   children: [
+      //     {
+      //       path: '',
+      //       loadComponent: () => import('./features/claim-data-list/claim-data-list').then(m => m.ClaimDataList),
+      //       title: 'Claim\'s Data List — MediAudit',
+      //       data: { title: 'Claim\'s Data List', subtitle: '' },
+      //     },
+      //     {
+      //       path: 'import',
+      //       loadComponent: () => import('./features/claim-data-list/claim-import/claim-import').then(m => m.ClaimImport),
+      //       title: 'Import Claim Data — MediAudit',
+      //       data: { title: 'Import Claim Data', subtitle: '' },
+      //     },
+      //     {
+      //       path: ':id',
+      //       loadComponent: () => import('./features/claim-data-list/claim-batch-detail/claim-batch-detail').then(m => m.ClaimBatchDetail),
+      //       title: 'Claim Data Analysis — MediAudit',
+      //       data: { title: 'Claim Data Analysis', subtitle: '' },
+      //     },
+      //     {
+      //       path: ':id/claim-records/:recordId',
+      //       loadComponent: () => import('./features/claim-data-list/claim-record-detail/claim-record-detail').then(m => m.ClaimRecordDetail),
+      //       title: 'Claim Detail — MediAudit',
+      //       data: { title: 'Claim Detail', subtitle: '' },
+      //     },
+      //   ],
+      //   data: { title: 'Claim\'s Data List', subtitle: '', menuType: MenuType.Claimdata },
+      // },
+      {
+        path: 'analytic-upload',
+        canActivate: [PermissionGuard],
+        children: [
+          {
+            path: '',
+            loadComponent: () => import('./features/analytic-upload/analytic-upload').then(m => m.AnalyticUpload),
+            title: 'Claim Analytic Upload — MediAudit',
+          },
+          {
+            path: 'result/:id',
+            loadComponent: () => import('./features/analytic-upload/analytic-upload-result/analytic-upload-result').then(m => m.AnalyticUploadResult),
+            title: 'Import Result — MediAudit',
+            data: { title: 'Import Result', subtitle: '' },
+          },
+        ],
+        data: { title: 'Claim Analytic Upload', subtitle: '', menuType: MenuType.AnalyticUpload },
+      },
+      {
+        path: 'analytic-rules',
+        canActivate: [PermissionGuard],
+        children: [
+          {
+            path: '',
+            loadComponent: () => import('./features/analytic-rules/analytic-rules').then(m => m.AnalyticRules),
+            title: 'Threshold Configuration — MediAudit',
+            data: { title: 'Threshold Configuration', subtitle: '' },
+          },
+          {
+            path: 'teams/add',
+            loadComponent: () => import('./features/analytic-rules/analytic-teams/team-form/team-form').then(m => m.TeamForm),
+            title: 'Add Team — MediAudit',
+            data: { title: 'Add Team', subtitle: '' },
+          },
+          {
+            // Read-only: the API has no team update endpoint. Declared after
+            // 'teams/add' so that path wins.
+            path: 'teams/:id',
+            loadComponent: () => import('./features/analytic-rules/analytic-teams/team-detail/team-detail').then(m => m.TeamDetail),
+            title: 'Team Detail — MediAudit',
+            data: { title: 'Team Detail', subtitle: '' },
+          },
+        ],
+        // Either tab's Read permission opens the page; the tabs gate themselves.
+        data: { title: 'Threshold Configuration', subtitle: '', menuType: [MenuType.AnalyticTeam, MenuType.AnalyticWorkload] },
       },
       {
         path: 'reports-analytics',
@@ -427,13 +583,13 @@ export const routes: Routes = [
         title: 'Audit Logs — MediAudit',
         data: { title: 'Audit Logs', subtitle: '', menuType: MenuType.Audit },
       },
-      {
-        path: 'settings',
-        canActivate: [PermissionGuard],
-        loadComponent: () => import('./features/settings/settings.component').then(m => m.SettingsComponent),
-        title: 'Settings — MediAudit',
-        data: { title: 'Settings', subtitle: '', menuType: MenuType.Settings },
-      },
+      // {
+      //   path: 'settings',
+      //   canActivate: [PermissionGuard],
+      //   loadComponent: () => import('./features/settings/settings.component').then(m => m.SettingsComponent),
+      //   title: 'Settings — MediAudit',
+      //   data: { title: 'Settings', subtitle: '', menuType: MenuType.Settings },
+      // },
       {
         path: 'profile',
         loadComponent: () => import('./features/profile/profile.component').then(m => m.ProfileComponent),

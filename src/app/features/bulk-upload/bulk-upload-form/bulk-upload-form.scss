@@ -1,3 +1,47 @@
+// Batch ID, status badge, progress bar and polling note on a single line in
+// the page header. `flex-wrap` is what keeps it responsive: the items keep
+// their order and drop onto the next line rather than overflowing.
+.ma-batch-status {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  // Row gap first, so wrapped lines don't collide; column gap second.
+  gap: 8px 12px;
+
+  &__id {
+    white-space: nowrap;
+  }
+
+  // The bar is a flex child here, and its own track is `flex: 1 1 auto` — with
+  // no basis it would collapse to 0 width. Give it one it can shrink from, so
+  // it narrows on small screens instead of forcing a wrap on its own.
+  .ma-ai-progress {
+    flex: 0 1 180px;
+    min-width: 120px;
+    // The base style tops the bar off by 5px for its stacked use; inline in a
+    // centred row that would push it below the text.
+    margin-top: 0;
+  }
+
+  &__note {
+    white-space: nowrap;
+  }
+}
+
+// Phones: let the bar take the width that's left rather than holding 180px,
+// and allow the polling note to wrap instead of overflowing the viewport.
+@media (max-width: 575.98px) {
+  .ma-batch-status {
+    .ma-ai-progress {
+      flex: 1 1 auto;
+    }
+
+    &__note {
+      white-space: normal;
+    }
+  }
+}
+
 .ma-upload-box {
   cursor: pointer;
 

@@ -64,13 +64,74 @@
   }
 }
 
-// ── Reviewer Action (read-only, opened from Patient Claims) ──
+// ── Reviewer Actions modal (read-only, opened from Patient Claims) ──
 .ma-readonly-field {
   min-height: 5rem;
   background: #f8fafc;
   color: #334155;
   white-space: pre-wrap;
   word-break: break-word;
+}
+
+// ── Review Status field: sizing/spacing only — colors stay the project's own. ──
+.ats-assign-field {
+  margin-top: 14px;
+
+  .form-label {
+    margin-bottom: 6px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .form-select {
+    min-height: 38px;
+    padding: 7px 36px 7px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+  }
+
+  small,
+  .small {
+    display: block;
+    margin-top: 5px;
+    font-size: 12px;
+  }
+}
+
+
+
+// ── AI Findings & Analysis: show every row without an inner scrollbar ──
+// `.table-responsive` (public/assets/sass/components/_tables.scss) caps at
+// 540px with a sticky header for every data table app-wide; this page shows
+// the findings list in full instead, so lift the cap just here.
+.claim-analyst-page .ma-table-card .table-responsive {
+  max-height: none;
+  overflow: visible;
+}
+
+// ── AI Findings & Analysis: sticky card head + tabs ──
+// The rows are shown in full (no inner scroll, see above), so the page itself
+// scrolls past them. Pin the title/score/tabs bar to the top of the viewport,
+// just under the app's own sticky topbar ($topbarHeight: 70px, _variables.scss),
+// so it stays visible while the findings scroll underneath it.
+//
+// `.ma-table-card` (_claim-analyst.scss) sets `overflow: hidden` to clip the
+// table's square corners to the card's rounded border. Per spec, that also
+// makes it the "nearest scrolling ancestor" for any sticky descendant, so the
+// sticky head stuck relative to the card's own box instead of the viewport —
+// it just sat offset 70px down from the card top, leaving a blank gap above
+// it. All the card's backgrounds are plain white, so clipping isn't visually
+// needed; drop it here so stickiness resolves against the viewport instead.
+.claim-analyst-page .ma-table-card {
+  overflow: visible;
+}
+
+.claim-analyst-page .ma-table-card .ma-sticky-head {
+  position: sticky;
+  top: 70px;
+  z-index: 10;
+  background: #ffffff;
+  border-radius: inherit;
 }
 
 // ── Eye icon button that opens the Failed Notes drill-down page ──

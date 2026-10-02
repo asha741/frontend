@@ -16,11 +16,21 @@
     background: #f5f7ff;
   }
 
-  // Module column — left-aligned, fixed width
-  .ma-perm-th-module {
+  // Module column — left-aligned, fixed width. The global
+  // `.ma-role-permission-table` rule sets `white-space: nowrap` on every cell,
+  // and the table is `table-layout: fixed`, so a long module name (e.g. "Claim
+  // Analytic Rules Team & Supervisor") ran straight out of its cell and under
+  // the Actions column instead of wrapping. The name wraps here, and the
+  // column is wide enough that most names still sit on one line.
+  .ma-perm-th-module,
+  .ma-perm-td-module {
     text-align: left;
-    min-width: 160px;
-    width: 220px;
+    min-width: 200px;
+    width: 260px;
+    white-space: normal;
+    // Only kicks in for a word too long for the column — a normal name still
+    // breaks at its spaces.
+    overflow-wrap: break-word;
   }
 
   tbody tr td {
@@ -173,5 +183,18 @@
     .form-check-input:checked ~ .form-check-label {
       color: #0d6efd;
     }
+  }
+}
+
+// ── No inner scroll on the permission matrix ─────────────────────────────
+// The global `.table-responsive` caps the wrapper at 540px with its own
+// scrollbar (and a sticky header to match). The permission matrix is short
+// and should grow with the page instead.
+.table-responsive {
+  max-height: none;
+  overflow: visible;
+
+  .ma-role-permission-table thead th {
+    position: static;
   }
 }

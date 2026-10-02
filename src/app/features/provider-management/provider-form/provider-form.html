@@ -83,7 +83,7 @@
         </div>
         <div class="col-12 col-md-6">
           <div class="ma-form-group mb-0">
-            <label class="ma-form-label" for="maProviderEmail">Email Address <span class="ma-required">*</span></label>
+            <label class="ma-form-label" for="maProviderEmail">Email Address</label>
             <input
               id="maProviderEmail"
               type="email"
@@ -96,8 +96,8 @@
             />
             @if (isSubmitted() && f['email'].errors) {
               <div class="invalid-feedback d-block">
-                @if (f['email'].hasError('required')) { Email Address is required. }
-                @else if (f['email'].hasError('emailExists')) { Email Address already exists. }
+                @if (f['email'].hasError('emailExists')) { Email Address already exists. }
+                @else if (f['email'].hasError('whitespace')) { Email Address cannot be blank. }
                 @else { Please enter a valid Email Address. }
               </div>
             }
@@ -105,7 +105,7 @@
         </div>
         <div class="col-12 col-md-6">
           <div class="ma-form-group mb-0">
-            <label class="ma-form-label" for="maProviderContact">Contact Number <span class="ma-required">*</span></label>
+            <label class="ma-form-label" for="maProviderContact">Contact Number</label>
             <input
               id="maProviderContact"
               type="tel"
@@ -113,14 +113,11 @@
               formControlName="contact_number"
               placeholder="(123) 456-7890"
               appPhoneMask
-              maxlength="14"
+              maxlength="30"
               [class.is-invalid]="isSubmitted() && f['contact_number'].errors"
             />
             @if (isSubmitted() && f['contact_number'].errors) {
-              <div class="invalid-feedback d-block">
-                @if (f['contact_number'].hasError('required')) { Contact Number is required. }
-                @else { Please enter a valid 10-digit phone number. }
-              </div>
+              <div class="invalid-feedback d-block">Please enter a valid 10-digit phone number after removing formatting.</div>
             }
           </div>
         </div>
@@ -180,7 +177,7 @@
         </div>
         <div class="col-12 col-md-6">
           <div class="ma-form-group mb-0">
-            <label class="ma-form-label" for="maProviderDesignation">Designation <span class="ma-required">*</span></label>
+            <label class="ma-form-label" for="maProviderDesignation">Designation</label>
             <input
               id="maProviderDesignation"
               type="text"
@@ -193,8 +190,7 @@
             />
             @if (isSubmitted() && f['designation'].errors) {
               <div class="invalid-feedback d-block">
-                @if (f['designation'].hasError('required') || f['designation'].hasError('whitespace')) { Designation is required. }
-                @else if (f['designation'].hasError('minlength')) { Minimum 2 characters required. }
+                @if (f['designation'].hasError('whitespace')) { Designation cannot be blank. }
                 @else if (f['designation'].hasError('maxlength')) { Maximum 100 characters allowed. }
                 @else { Please enter a valid Designation. }
               </div>
@@ -203,7 +199,7 @@
         </div>
         <div class="col-12 col-md-6">
           <div class="ma-form-group mb-0">
-            <label class="ma-form-label" for="maProviderLicense">License <span class="ma-required">*</span></label>
+            <label class="ma-form-label" for="maProviderLicense">License</label>
             <kendo-multiselect
               id="maProviderLicense"
               formControlName="license"
@@ -215,7 +211,7 @@
               [class.is-invalid]="isSubmitted() && f['license'].errors"
             ></kendo-multiselect>
             @if (isSubmitted() && f['license'].errors) {
-              <div class="invalid-feedback d-block">Please select a License.</div>
+              <div class="invalid-feedback d-block">Please select a valid license from the configured list.</div>
             }
           </div>
         </div>

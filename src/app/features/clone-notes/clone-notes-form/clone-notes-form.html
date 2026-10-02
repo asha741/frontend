@@ -1,0 +1,62 @@
+<div class="ma-page-header">
+  <div class="ma-page-header__meta">
+    <h2 class="ma-page-title">Clone Notes</h2>
+    <p class="ma-page-subtitle">Upload a Progress Notes document to start clone notes processing.</p>
+  </div>
+</div>
+
+<!-- ══ Upload Documents ══════════════════════════════════════════════ -->
+<div class="ma-card mt-3">
+  <div class="ma-card-header">
+    <div class="ma-card-title-wrap m-0">
+      <h3 class="ma-card-title">Upload Documents <span class="ma-required">*</span></h3>
+    </div>
+  </div>
+  <div class="ma-card-body">
+    <div class="ma-upload-wrapper">
+      <div class="ma-upload-box" [class.is-dragover]="dragOver()" [class.is-disabled]="!!fileName()"
+        (click)="!fileName() && fileInput.click()" (dragover)="onDragOver($event)"
+        (dragleave)="onDragLeave($event)" (drop)="onDrop($event)">
+        <img src="/assets/images/icons/upload-lg.svg" alt="" class="ma-upload-icon ma-svg" />
+        <p class="ma-upload-instruction">Drag &amp; drop a document here or click to browse</p>
+        <p class="ma-upload-info">Supported format: PDF. Maximum file size: 2 GB.</p>
+        <input #fileInput type="file" accept=".pdf" [disabled]="!!fileName()"
+          (change)="onFileSelected($event)" aria-label="Upload Progress Notes document" />
+        @if (fileError()) {
+          <div class="ma-upload-error">{{ fileError() }}</div>
+        }
+      </div>
+
+      @if (fileName()) {
+      <div class="ma-file-list mt-3">
+        <div class="ma-file-row">
+          <span class="ma-file-row__icon"><i class="fa-solid fa-file-pdf"></i></span>
+          <div class="ma-file-row__meta">
+            <span class="ma-file-row__name" [title]="fileName()!">{{ fileName() }}</span>
+            @if (uploading()) {
+              <span class="ma-file-row__size">Uploading…</span>
+            }
+          </div>
+          @if (!submitting()) {
+            <button type="button" class="ma-file-row__remove" (click)="removeFile()" [disabled]="uploading()"
+              aria-label="Remove file">
+              <i class="fa-regular fa-trash-can"></i>
+            </button>
+          }
+        </div>
+      </div>
+      }
+    </div>
+  </div>
+</div>
+
+<!-- ══ Submit / Cancel ═══════════════════════════════════════════════ -->
+<div class="ma-btn-group justify-content-end mt-3">
+  <button type="button" class="btn ma-btn btn-outline-primary btn-grey-btn" (click)="cancel()">
+    Cancel
+  </button>
+  <button type="button" class="btn ma-btn btn-primary"
+    [disabled]="!fileName() || submitting() || uploading()" (click)="onSubmit()">
+    {{ submitting() ? 'Submitting…' : 'Submit' }}
+  </button>
+</div>

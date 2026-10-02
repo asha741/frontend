@@ -55,9 +55,23 @@
         Reset
       </button>
     </div>
+    <!-- Analytic -->
+    <div class="col-12 col-lg-auto ms-lg-auto">
+      <div class="ma-filter-actions ma-filter-item ma-filter-item--action">
+        <a
+          routerLink="/claim-analyst/org-analytic"
+          class="btn ma-btn btn-outline-primary btn-grey-btn w-100 d-flex align-items-center justify-content-center"
+          style="white-space: nowrap; min-height: 45px"
+          aria-label="Open Analytic report"
+        >
+          Analytic <i class="fa-solid fa-chart-column ms-2"></i>
+        </a>
+      </div>
+    </div>
+
     <!-- Validate Claim -->
     @if (perms.can(PERMISSION_MODULE.Claim, PERMISSION_ACTION.Create)) {
-      <div class="col-12 col-lg-auto ms-lg-auto">
+      <div class="col-12 col-lg-auto">
         <div class="ma-filter-actions ma-filter-item ma-filter-item--action">
           <a
             routerLink="/claim-analyst/validate-claim"
@@ -140,9 +154,30 @@
       </kendo-grid-column>
 
       <!-- ── AI Status ────────────────────────────────────────────── -->
-      <kendo-grid-column field="ai_status" title="AI Status" [width]="150" [sortable]="false">
+      <kendo-grid-column field="ai_status" title="AI Status" [width]="190" [sortable]="false">
         <ng-template kendoGridCellTemplate let-dataItem>
           <span class="ma-badge" [class]="dataItem.ai_status | badgeClass">{{ dataItem.ai_status }}</span>
+          <!-- Still running: how far along this claim is, and which stage it is
+               in. This row re-reads /claims/status every 20 seconds until the
+               AI finishes. -->
+          @if (isAiInProgress(dataItem.ai_status)) {
+            <div
+              class="ma-ai-progress"
+              [attr.aria-label]="'AI processing ' + aiProgress(dataItem) + '% complete'"
+            >
+              <div class="ma-ai-progress__track">
+                <span class="ma-ai-progress__fill" [style.width.%]="aiProgress(dataItem)"></span>
+              </div>
+              <span class="ma-ai-progress__value">{{ aiProgress(dataItem) }}%</span>
+            </div>
+            @if (dataItem.ai_processing_stage) {
+              <!-- Clamped to two lines by .ma-ai-stage; the tooltip carries the
+                   full text for a stage name this column can't fit. -->
+              <small class="ma-ai-stage" [ngbTooltip]="dataItem.ai_processing_stage">{{
+                dataItem.ai_processing_stage
+              }}</small>
+            }
+          }
         </ng-template>
         <ng-template
           kendoGridFilterMenuTemplate
@@ -213,7 +248,7 @@
       </kendo-grid-column>
 
       <!-- ── Actions ──────────────────────────────────────────────── -->
-      <kendo-grid-column title="Action" [width]="130" [filterable]="false" [sortable]="false">
+      <kendo-grid-column title="Action" [width]="160" [filterable]="false" [sortable]="false">
         <ng-template kendoGridCellTemplate let-dataItem>
           <div class="ma-table-actions">
             <button
@@ -223,6 +258,15 @@
               [ngbTooltip]="'View details'"
             >
               <i class="fa-regular fa-eye"></i>
+            </button>
+            <button
+              class="ma-btn-icon-sm"
+              type="button"
+              [disabled]="isDownloadingReport(dataItem)"
+              (click)="downloadAuditReport(dataItem)"
+              [ngbTooltip]="'Download audit report'"
+            >
+              <i class="fa-solid fa-download"></i>
             </button>
             @if (perms.can(PERMISSION_MODULE.Claim, PERMISSION_ACTION.Delete)) {
             <button

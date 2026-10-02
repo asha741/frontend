@@ -1,0 +1,182 @@
+<!-- ══ Team & Supervisor card ═══════════════════════════════════════ -->
+<section class="ma-surface-card ma-master-card mt-3">
+  <div class="ma-master-card__head">
+    <h3 class="ma-master-card__title">Team &amp; Supervisor Mapping</h3>
+    <p class="ma-master-card__subtitle">
+      Mappings used to associate uploaded Excel service data with the correct team and supervisor.
+    </p>
+  </div>
+
+  <!-- ══ Filters ═══════════════════════════════════════════════════ -->
+  <section class="ma-filter-wrap p-3">
+    <div class="row g-2 align-items-center ma-filter-grid">
+      <!-- Search input -->
+      <div class="col-12 col-sm-6 col-lg-4 col-xl-2">
+        <div class="ma-input-group ma-filter-item ma-filter-item--search">
+          <i class="fa-solid fa-magnifying-glass ma-input-icon"></i>
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Search"
+            aria-label="Search teams"
+            [(ngModel)]="search"
+            appTrimWhitespace
+            maxlength="100"
+            (keydown.enter)="onSearch()"
+          />
+        </div>
+      </div>
+
+      <!-- Created Date From -->
+      <div class="col-12 col-sm-6 col-lg-4 col-xl-2">
+        <div class="ma-input-group is-calendar ma-filter-item ma-filter-item--date">
+          <input
+            class="form-control bg-white"
+            placeholder="From date"
+            aria-label="From date"
+            readonly
+            ngbDatepicker
+            #fromPicker="ngbDatepicker"
+            [(ngModel)]="fromDate"
+            [maxDate]="$any(toDate)"
+            (click)="fromPicker.toggle()"
+          />
+          <i
+            class="fa-regular fa-calendar ma-input-icon"
+            role="button"
+            aria-label="Open from-date picker"
+            (click)="fromPicker.toggle()"
+          ></i>
+        </div>
+      </div>
+
+      <!-- Created Date To -->
+      <div class="col-12 col-sm-6 col-lg-4 col-xl-2">
+        <div class="ma-input-group is-calendar ma-filter-item ma-filter-item--date">
+          <input
+            class="form-control bg-white"
+            placeholder="To date"
+            aria-label="To date"
+            readonly
+            ngbDatepicker
+            #toPicker="ngbDatepicker"
+            [(ngModel)]="toDate"
+            [minDate]="$any(fromDate)"
+            (click)="toPicker.toggle()"
+          />
+          <i
+            class="fa-regular fa-calendar ma-input-icon"
+            role="button"
+            aria-label="Open to-date picker"
+            (click)="toPicker.toggle()"
+          ></i>
+        </div>
+      </div>
+
+      <!-- Search & Reset buttons -->
+      <div class="col-12 col-lg-auto d-flex gap-2">
+        <button type="button" class="btn ma-btn btn-primary" (click)="onSearch()" style="min-height: 45px; padding: 0 20px">
+          Search
+        </button>
+        <button type="button" class="btn ma-btn btn-outline-secondary" (click)="clearSearch()" style="min-height: 45px; padding: 0 20px">
+          Reset
+        </button>
+      </div>
+
+      <!-- Actions -->
+      <div class="col-12 col-lg-auto ms-lg-auto">
+        <div class="row g-2 ma-filter-item ma-filter-item--action">
+          @if (perms.can(PERMISSION_MODULE.AnalyticTeam, PERMISSION_ACTION.Create)) {
+            <div class="col-12 col-lg-auto">
+              <a
+                routerLink="/analytic-rules/teams/add"
+                class="btn ma-btn btn-primary ma-btn-inline-icon w-100"
+                aria-label="Add Team"
+                style="white-space: nowrap; min-height: 45px"
+              >
+                <span>Add Team</span>
+                <i class="fa-solid fa-plus ms-2" aria-hidden="true"></i>
+              </a>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="table-responsive pb-3">
+    <kendo-grid
+      class="ma-kendo-grid table"
+      [data]="teamsData()"
+      [pageSize]="state.take"
+      [skip]="state.skip"
+      [sortable]="false"
+      [filterable]="false"
+      [pageable]="{ buttonCount: 3, type: 'numeric', pageSizes: pageSizes }"
+      [scrollable]="'none'"
+      (dataStateChange)="dataStateChange($event)"
+    >
+      <kendo-grid-column title="Sr. No." [width]="80" [filterable]="false" [sortable]="false">
+        <ng-template kendoGridCellTemplate let-rowIndex="rowIndex">
+          {{ rowIndex + 1 }}
+        </ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column field="team_name" title="Team Name" [width]="240" [filterable]="false">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div class="ma-cell-wrap" [ngbTooltip]="dataItem.team_name">{{ dataItem.team_name || '-' }}</div>
+        </ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column field="supervisor_name" title="Supervisor" [width]="220" [filterable]="false">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div class="ma-cell-wrap" [ngbTooltip]="supervisorNames(dataItem)">{{ supervisorNames(dataItem) || '-' }}</div>
+        </ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column field="total_employees" title="Total Employees" [width]="160" [filterable]="false">
+        <ng-template kendoGridCellTemplate let-dataItem>{{ dataItem.total_employees ?? '-' }}</ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column field="created_at" title="Created Date" [width]="170" [filterable]="false">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          {{ dataItem.created_at ? (dataItem.created_at | date: 'MM-dd-yyyy') : '-' }}
+        </ng-template>
+      </kendo-grid-column>
+
+      <!-- ── Actions ──────────────────────────────────────────────── -->
+      <kendo-grid-column title="Actions" [width]="110" [filterable]="false" [sortable]="false">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div class="ma-table-actions">
+            <button
+              class="ma-btn-icon-sm"
+              type="button"
+              ngbTooltip="View"
+              placement="top"
+              [attr.aria-label]="'View ' + (dataItem.team_name || '')"
+              (click)="viewTeam(dataItem)"
+            >
+              <i class="fa-regular fa-eye"></i>
+            </button>
+            @if (perms.can(PERMISSION_MODULE.AnalyticTeam, PERMISSION_ACTION.Delete)) {
+              <button
+                class="ma-btn-icon-sm"
+                type="button"
+                ngbTooltip="Delete"
+                placement="top"
+                [attr.aria-label]="'Delete ' + (dataItem.team_name || '')"
+                (click)="deleteTeam(dataItem)"
+              >
+                <i class="fa-regular fa-trash-can"></i>
+              </button>
+            }
+          </div>
+        </ng-template>
+      </kendo-grid-column>
+
+      <ng-template kendoGridNoRecordsTemplate>
+        <div class="ma-grid-empty">No teams match your current filters.</div>
+      </ng-template>
+    </kendo-grid>
+  </div>
+</section>

@@ -179,16 +179,36 @@ export class ProviderManagement implements OnInit {
   }
 
   /**
-   * Edit Provider — `ProviderForm` fetches the provider by id itself via
-   * `GET_PROVIDER_BY_ID`. The `:id` route param is AES-GCM encrypted so the
-   * raw provider id is never exposed in the URL.
+   * View Provider — opens the read-only provider detail page, which itself
+   * links into `ProviderForm` (edit mode) via its "Edit Provider" button.
+   * The `:id` route param is AES-GCM encrypted so the raw provider id is
+   * never exposed in the URL.
+   */
+  async openProviderView(row: any): Promise<void> {
+    const encId = await this.crypto.encryptId(String(row?.id));
+    this.router.navigate(['/provider-management/view', encId]);
+  }
+
+  /**
+   * Edit Provider — opens `ProviderForm` directly from the grid. The `:id`
+   * route param is AES-GCM encrypted so the raw provider id is never exposed
+   * in the URL.
    */
   async editProvider(row: any): Promise<void> {
     const encId = await this.crypto.encryptId(String(row?.id));
     this.router.navigate(['/provider-management/edit-provider', encId]);
   }
 
-  
+  /**
+   * Provider Analytics — opens the provider-scoped Power BI dashboard,
+   * reached by clicking a provider's name in the grid. Navigates with the
+   * row's business `provider_id` (not the internal `id` guid) — that's the
+   * field the embed endpoint expects — AES-GCM encrypted, same as `openProviderView`.
+   */
+  async openProviderAnalytic(row: any): Promise<void> {
+    const encId = await this.crypto.encryptId(String(row?.provider_id));
+    this.router.navigate(['/provider-management/provider-analytic', encId]);
+  }
 
   /** Provider Patients — encrypts the id before it lands in the URL. */
   async viewProviderPatients(row: any): Promise<void> {

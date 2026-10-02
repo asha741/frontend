@@ -3,50 +3,18 @@
   min-width: 0;
 }
 
-// Kendo styles its own input shell; these rules restate the app's
-// .form-control / .form-select look so the field is indistinguishable from the
-// plain inputs beside it (see "INPUT / SELECT" in assets/css/style.css).
+// The field's look — height, border, radius, type scale, focus and invalid
+// states — comes from the shared `kendo-autocomplete.k-autocomplete` block in
+// styles.scss, alongside every other Kendo picker. Only what is specific to
+// this component lives here; restating the shared rules is what let this
+// control drift away from the multiselect and the grid's filter dropdown.
 kendo-autocomplete.ma-search-autocomplete {
   width: 100%;
-  min-height: 45px;
-  padding: 0;
-  border: 1px solid #e2e8f0;
-  border-radius: 8px;
-  background-color: #fff;
-  font-size: 14px;
-  color: #0f172a;
-  transition: all 0.25s ease;
-
-  // Flat blue border on focus — Kendo's default glow/ring is dropped.
-  &.k-focus,
-  &:focus-within {
-    border-color: #4a76fd;
-    box-shadow: none;
-  }
-
-  &.is-invalid {
-    border-color: var(--bs-form-invalid-border-color, #dc3545);
-  }
-
-  // The actual <input> Kendo renders inside the shell.
-  ::ng-deep .k-input-inner {
-    padding: 8px 16px;
-    font-size: 14px;
-    line-height: 1.5;
-    color: #0f172a;
-
-    &::placeholder {
-      color: rgba(100, 116, 139, 0.5);
-      opacity: 1;
-      font-size: 14px;
-      font-weight: 400;
-    }
-  }
 }
 
 .ma-search-autocomplete__hint {
-  padding: 0.5rem 0.75rem;
-  font-size: 0.85rem;
+  padding: 8px 16px;
+  font-size: 13px;
   color: #64748b;
   text-align: center;
 }

@@ -1,0 +1,58 @@
+<div class="modal-header">
+  <h2 class="modal-title h5 mb-0">Edit Threshold</h2>
+  <button type="button" class="btn-close" aria-label="Close" (click)="cancel()"></button>
+</div>
+
+<form [formGroup]="form" (ngSubmit)="onSubmit()">
+  <div class="modal-body">
+    <!-- Rule name and unit are fixed by the backend — context, not fields. -->
+    <div class="ma-threshold-rule">
+      <span class="ma-threshold-rule__label">Rule</span>
+      <span class="ma-threshold-rule__value">{{ rule?.rule_name || '-' }}</span>
+    </div>
+
+    <div class="ma-form-group mb-0">
+      <label class="ma-form-label" for="maThresholdValue">
+        Threshold Value <span class="ma-required">*</span>
+      </label>
+      <div class="input-group">
+        <input
+          id="maThresholdValue"
+          type="number"
+          class="form-control"
+          formControlName="threshold_value"
+          placeholder="Enter threshold value"
+          min="0"
+          step="any"
+          [class.is-invalid]="isSubmitted() && f['threshold_value'].errors"
+        />
+        @if (rule?.thresold_suffix) {
+          <span class="input-group-text">{{ rule.thresold_suffix }}</span>
+        }
+      </div>
+      @if (isSubmitted() && f['threshold_value'].errors) {
+        <div class="invalid-feedback d-block">
+          @if (f['threshold_value'].hasError('required')) {
+            Threshold value is required.
+          } @else {
+            Threshold value cannot be negative.
+          }
+        </div>
+      }
+    </div>
+  </div>
+
+  <div class="modal-footer">
+    <button
+      type="button"
+      class="btn ma-btn btn-outline-primary btn-grey-btn"
+      (click)="cancel()"
+      [disabled]="saving()"
+    >
+      Cancel
+    </button>
+    <button type="submit" class="btn ma-btn btn-primary" [disabled]="saving()">
+      {{ saving() ? 'Saving…' : 'Save' }}
+    </button>
+  </div>
+</form>

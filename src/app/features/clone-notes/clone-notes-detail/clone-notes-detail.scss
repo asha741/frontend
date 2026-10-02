@@ -1,0 +1,70 @@
+// `.ma-label-value` (global .claim-analyst-page styling) is a flex column
+// with no `min-width`, so a flex item defaults to its content's intrinsic
+// width — a long value like a file name never wraps and instead overflows
+// past its Bootstrap column, overlapping the next one. Constrain it here so
+// long values wrap inside their own column instead.
+.ma-label-value {
+  min-width: 0;
+}
+
+.ma-value {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+// Long file names wrap to 2 lines with an ellipsis instead of pushing the
+// card taller — the full name is still available via the `title` tooltip.
+.ma-value--clamp {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+::ng-deep .ma-kendo-grid {
+  height: auto !important;
+  max-height: none !important;
+
+  .k-grid-content,
+  .k-grid-content-locked {
+    overflow-y: visible !important;
+    height: auto !important;
+    max-height: none !important;
+  }
+}
+
+:host ::ng-deep .ma-master-table--clone-notes-extract {
+  table {
+    table-layout: fixed;
+    width: 100%;
+  }
+
+  th .k-column-title {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
+
+.ma-status-info-icon {
+  margin-left: 6px;
+  color: var(--bs-danger, #dc3545);
+  cursor: pointer;
+}
+
+.ma-cell-wrap {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+  white-space: normal;
+  overflow-wrap: break-word;
+  word-break: normal;
+  line-height: 1.3;
+}
+
+.table-responsive {
+  overflow-y: visible !important;
+  height: auto !important;
+  max-height: none !important;
+}

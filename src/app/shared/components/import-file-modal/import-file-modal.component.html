@@ -5,6 +5,31 @@
 
 <div class="modal-body">
   <div class="ma-upload-wrapper">
+    <!-- Optional title field — only imports that store a title (Power BI
+         analytics) ask for one; the rest leave `titleLabel` unset. -->
+    @if (titleLabel) {
+      <div class="ma-form-group ma-import-title">
+        <label class="ma-form-label" for="maImportFileTitle">
+          {{ titleLabel }} <span class="ma-required">*</span>
+        </label>
+        <input
+          id="maImportFileTitle"
+          type="text"
+          class="form-control"
+          [placeholder]="titlePlaceholder || titleLabel"
+          [ngModel]="fileTitle()"
+          (ngModelChange)="fileTitle.set($event)"
+          (input)="onTitleInput()"
+          [disabled]="importing() || !!importSummary()"
+          appTrimWhitespace
+          maxlength="100"
+        />
+        @if (titleError()) {
+          <div class="invalid-feedback d-block">{{ titleError() }}</div>
+        }
+      </div>
+    }
+
     @if (!selectedFile()) {
       <div
         class="ma-upload-box"
@@ -52,6 +77,13 @@
 
     @if (importSummary()) {
       <div class="ma-import-summary">
+        @if (summaryMessage()) {
+          <div class="ma-import-alert">
+            <span class="ma-import-alert__icon"><i class="fa-solid fa-circle-exclamation"></i></span>
+            <span class="ma-import-alert__text">{{ summaryMessage() }}</span>
+          </div>
+        }
+
         <div class="ma-import-summary__stats">
           <span class="ma-import-stat ma-import-stat--total">
             Total Rows <strong>{{ importSummary()!.total_rows ?? '-' }}</strong>
@@ -59,8 +91,25 @@
           <span class="ma-import-stat ma-import-stat--created">
             Created <strong>{{ importSummary()!.created ?? 0 }}</strong>
           </span>
-          <span class="ma-import-stat ma-import-stat--skipped">
+          <!-- Restored / updated are reported only by imports that support them
+               (patients, providers); the BHS matrix import has no such concept,
+               so don't show it a permanent zero. -->
+          @if (importSummary()!.restored != null) {
+            <span class="ma-import-stat ma-import-stat--restored">
+              Restored <strong>{{ importSummary()!.restored }}</strong>
+            </span>
+          }
+          @if (importSummary()!.updated != null) {
+            <span class="ma-import-stat ma-import-stat--updated">
+              Updated <strong>{{ importSummary()!.updated }}</strong>
+            </span>
+          }
+          <!-- Skipped stat hidden on the agency side — not currently reported for these imports. -->
+          <!-- <span class="ma-import-stat ma-import-stat--skipped">
             Skipped <strong>{{ importSummary()!.skipped ?? 0 }}</strong>
+          </span> -->
+          <span class="ma-import-stat ma-import-stat--failed">
+            Failed <strong>{{ errorCount() }}</strong>
           </span>
         </div>
 
@@ -81,7 +130,7 @@
                     <td data-label="Row">{{ result.row ?? '-' }}</td>
                     <td data-label="Status">
                       <span class="ma-import-status" [class.ma-import-status--ok]="result.ok">
-                        {{ result.ok ? 'Success' : 'Error' }}
+                        {{ statusLabel(result) }}
                       </span>
                     </td>
                     <td data-label="Field">

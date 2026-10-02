@@ -48,7 +48,12 @@ export class TravelTimeDetail implements OnInit {
   /** The id exactly as it sits in the URL — reused when linking to the result sub-page. */
   private encryptedBatchId = '';
 
-  readonly batchLabel = computed(() => this.pick(['travel_batch_id']) || this.batchId());
+  /**
+   * The human-readable batch reference. Deliberately NOT falling back to the
+   * raw id: until the detail response lands this is empty and the heading
+   * reads just 'Batch Detail', rather than flashing the internal UUID.
+   */
+  readonly batchLabel = computed(() => this.pick(['travel_batch_id']));
   readonly fileName = computed(() => this.pick(['file_name']));
   readonly fileSize = computed(() => this.pick(['file_size']));
   readonly uploadedAt = computed(() => this.pick(['uploaded_at']));

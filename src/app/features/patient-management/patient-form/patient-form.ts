@@ -1,5 +1,5 @@
 import { Component, Input, OnInit, signal } from '@angular/core';
-import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators, AbstractControl, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { NgbDatepickerModule, NgbDateStruct } from '@ng-bootstrap/ng-bootstrap';
 
@@ -11,6 +11,19 @@ import { noWhitespaceValidator } from '../../../core/utils/validators.util';
 import { PhoneMaskDirective } from '../../../shared/directives/phone-mask.directive';
 import { TrimWhitespaceDirective } from '../../../shared/directives/trim-whitespace.directive';
 
+function diagnosisCountValidator(): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors | null => {
+    const values = ['diagnosis_problem_1', 'diagnosis_problem_2', 'diagnosis_problem_3', 'diagnosis_problem_4', 'diagnosis_problem_5']
+      .map((field) => String(control.get(field)?.value ?? '').trim())
+      .filter((value) => value.length > 0);
+
+    if (values.length === 0) {
+      return null;
+    }
+
+    return values.length === 5 ? null : { diagnosisCount: true };
+  };
+}
 
 @Component({
   selector: 'app-patient-form',
@@ -61,27 +74,27 @@ export class PatientForm implements OnInit {
 
     this.form = this.fb.group({
       patient_id: ['', [Validators.required, Validators.maxLength(16), noWhitespaceValidator()]],
-      external_id: ['', [Validators.maxLength(16)]],
-      first_name: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50), noWhitespaceValidator()]],
-      middle_initial: ['', [Validators.minLength(1), Validators.maxLength(1)]],
-      last_name: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50), noWhitespaceValidator()]],
+      external_id: ['', [Validators.maxLength(16), noWhitespaceValidator()]],
+      first_name: ['', [Validators.required, Validators.minLength(1), Validators.maxLength(50), noWhitespaceValidator()]],
+      middle_initial: ['', [Validators.minLength(1), Validators.maxLength(50), noWhitespaceValidator()]],
+      last_name: ['', [Validators.required, Validators.minLength(1), Validators.maxLength(50), noWhitespaceValidator()]],
       gender: ['', [Validators.required]],
-      date_of_birth: [null as NgbDateStruct | null, [Validators.required]],
-      email: ['', [Validators.required, Validators.maxLength(100), Validators.pattern(emailRegex)]],
-      contact_number: ['', [Validators.required, Validators.pattern(/^\(\d{3}\) \d{3}-\d{4}$/)]],
-      home_phone: ['', [Validators.pattern(/^\(\d{3}\) \d{3}-\d{4}$/)]],
-      state: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(100), noWhitespaceValidator()]],
-      city: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(100), noWhitespaceValidator()]],
-      pin_code: ['', [Validators.required, Validators.minLength(3), Validators.maxLength(10), Validators.pattern(/^\d+$/)]],
-      address_1: ['', [Validators.required, Validators.minLength(5), Validators.maxLength(250), noWhitespaceValidator()]],
-      address_2: ['', [Validators.maxLength(250)]],
-      diagnosis_problem_1: ['', [Validators.maxLength(250)]],
-      diagnosis_problem_2: ['', [Validators.maxLength(250)]],
-      diagnosis_problem_3: ['', [Validators.maxLength(250)]],
-      diagnosis_problem_4: ['', [Validators.maxLength(250)]],
-      diagnosis_problem_5: ['', [Validators.maxLength(250)]],
+      date_of_birth: [null as NgbDateStruct | null],
+      email: ['', [Validators.maxLength(100), noWhitespaceValidator()]],
+      contact_number: ['', [Validators.maxLength(30), noWhitespaceValidator()]],
+      home_phone: ['', [Validators.maxLength(30), noWhitespaceValidator()]],
+      state: ['', [Validators.maxLength(100), noWhitespaceValidator()]],
+      city: ['', [Validators.maxLength(100), noWhitespaceValidator()]],
+      pin_code: ['', [Validators.maxLength(20), noWhitespaceValidator(), Validators.pattern(/^[0-9-]+$/)]],
+      address_1: ['', [Validators.maxLength(500), noWhitespaceValidator()]],
+      address_2: ['', [Validators.maxLength(500), noWhitespaceValidator()]],
+      diagnosis_problem_1: ['', [Validators.maxLength(250), noWhitespaceValidator()]],
+      diagnosis_problem_2: ['', [Validators.maxLength(250), noWhitespaceValidator()]],
+      diagnosis_problem_3: ['', [Validators.maxLength(250), noWhitespaceValidator()]],
+      diagnosis_problem_4: ['', [Validators.maxLength(250), noWhitespaceValidator()]],
+      diagnosis_problem_5: ['', [Validators.maxLength(250), noWhitespaceValidator()]],
       status: [true],
-    });
+    }, { validators: [diagnosisCountValidator()] });
   }
 
   get f() {
@@ -184,34 +197,45 @@ export class PatientForm implements OnInit {
   /** Validates and submits the form, creating or updating the patient depending on `isEdit`. */
   async onSave(): Promise<void> {
     this.isSubmitted.set(true);
+    this.form.updateValueAndValidity();
+
     if (this.form.invalid || this.submitting()) return;
 
     this.submitting.set(true);
     const raw = this.form.getRawValue();
+
+    const diagnosisValues = [
+      raw.diagnosis_problem_1 ?? '',
+      raw.diagnosis_problem_2 ?? '',
+      raw.diagnosis_problem_3 ?? '',
+      raw.diagnosis_problem_4 ?? '',
+      raw.diagnosis_problem_5 ?? '',
+    ].map((value) => String(value).trim());
+
+    const suppliedDiagnosis = diagnosisValues.filter((value) => value.length > 0);
+    if (suppliedDiagnosis.length > 0 && suppliedDiagnosis.length !== 5) {
+      this.form.setErrors({ diagnosisCount: true });
+      this.submitting.set(false);
+      return;
+    }
+
     const payload: any = {
       patient_id: raw.patient_id,
-      external_id: raw.external_id,
+      external_id: raw.external_id || '',
       first_name: raw.first_name,
-      middle_initial: raw.middle_initial,
+      middle_initial: raw.middle_initial || '',
       last_name: raw.last_name,
       gender: raw.gender,
       date_of_birth: raw.date_of_birth ? this.toDateStr(raw.date_of_birth) : '',
-      email: raw.email,
-      // Strip mask formatting → send the raw 10 digits.
-      contact_number: raw.contact_number?.replace(/\D/g, ''),
-      home_phone: raw.home_phone?.replace(/\D/g, '') || '',
-      state: raw.state,
-      city: raw.city,
-      pin_code: raw.pin_code,
-      address_1: raw.address_1,
-      address_2: raw.address_2,
-      diagnosis: [
-        raw.diagnosis_problem_1 || '',
-        raw.diagnosis_problem_2 || '',
-        raw.diagnosis_problem_3 || '',
-        raw.diagnosis_problem_4 || '',
-        raw.diagnosis_problem_5 || '',
-      ],
+      email: raw.email || '',
+      contact_number: raw.contact_number ? raw.contact_number.replace(/\D/g, '').slice(0, 30) : '',
+      home_phone: raw.home_phone ? raw.home_phone.replace(/\D/g, '').slice(0, 30) : '',
+      state: raw.state || '',
+      city: raw.city || '',
+      pin_code: raw.pin_code || '',
+      address_1: raw.address_1 || '',
+      address_2: raw.address_2 || '',
+      diagnosis: suppliedDiagnosis.length === 5 ? diagnosisValues : [],
       status: raw.status ? 'Active' : 'Inactive',
     };
 

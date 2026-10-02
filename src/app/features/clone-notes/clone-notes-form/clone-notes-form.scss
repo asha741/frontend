@@ -1,0 +1,87 @@
+.ma-upload-box {
+  cursor: pointer;
+
+  input[type='file'] {
+    display: none;
+  }
+
+  &.is-disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+}
+
+.ma-file-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+// Selected-file row: [icon] [name / size] ............... [remove]
+// Same markup/styling as bulk-upload-form's single-row equivalent.
+.ma-file-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  transition: border-color 0.2s ease;
+
+  &:hover {
+    border-color: rgba(74, 118, 253, 0.35);
+  }
+}
+
+.ma-file-row__icon {
+  flex: 0 0 auto;
+  font-size: 20px;
+  line-height: 1;
+  color: #dc3545;
+}
+
+.ma-file-row__meta {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.ma-file-row__name {
+  font-size: 13px;
+  font-weight: 500;
+  color: #0f172a;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ma-file-row__size {
+  font-size: 12px;
+  color: #64748b;
+}
+
+.ma-file-row__remove {
+  flex: 0 0 auto;
+  width: 30px;
+  height: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  color: #64748b;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background: #fef2f2;
+    border-color: #dc3545;
+    color: #dc3545;
+  }
+}
+

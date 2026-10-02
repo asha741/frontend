@@ -1,0 +1,130 @@
+<!-- ══ Workload rules card ══════════════════════════════════════════ -->
+<section class="ma-surface-card ma-master-card mt-3">
+  <div class="ma-master-card__head">
+    <h3 class="ma-master-card__title">Dashboard Thresholds</h3>
+    <p class="ma-master-card__subtitle">
+      Limits used to flag workload, hours and schedule patterns in uploaded service data.
+    </p>
+  </div>
+
+  <!-- ══ Filters ═══════════════════════════════════════════════════ -->
+  <section class="ma-filter-wrap p-3">
+    <div class="row g-2 align-items-center ma-filter-grid">
+      <!-- Search input -->
+      <div class="col-12 col-sm-6 col-lg-4 col-xl-3">
+        <div class="ma-input-group ma-filter-item ma-filter-item--search">
+          <i class="fa-solid fa-magnifying-glass ma-input-icon"></i>
+          <input
+            type="text"
+            class="form-control"
+            placeholder="Search rules"
+            aria-label="Search threshold rules"
+            [(ngModel)]="search"
+            appTrimWhitespace
+            maxlength="100"
+            (keydown.enter)="onSearch()"
+          />
+        </div>
+      </div>
+
+      <!-- Search & Reset buttons -->
+      <div class="col-12 col-lg-auto d-flex gap-2">
+        <button
+          type="button"
+          class="btn ma-btn btn-primary"
+          (click)="onSearch()"
+          style="min-height: 45px; padding: 0 20px"
+        >
+          Search
+        </button>
+        <button
+          type="button"
+          class="btn ma-btn btn-outline-secondary"
+          (click)="clearSearch()"
+          style="min-height: 45px; padding: 0 20px"
+        >
+          Reset
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <div class="table-responsive pb-3">
+    <kendo-grid
+      class="ma-kendo-grid table"
+      [data]="rulesData()"
+      [group]="group"
+      [sortable]="false"
+      [filterable]="false"
+      [pageable]="false"
+      [scrollable]="'none'"
+    >
+
+      <!-- Hidden columns exist only to render group headers as the bare value, without the "field: " prefix. -->
+      <kendo-grid-column field="dashboard_category" [hidden]="true">
+        <ng-template kendoGridGroupHeaderTemplate let-value="value">{{ value }}</ng-template>
+      </kendo-grid-column>
+      <kendo-grid-column field="sub_category" [hidden]="true">
+        <ng-template kendoGridGroupHeaderTemplate let-value="value">{{ value }}</ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column field="rule_name" title="Rule Name" [width]="320" [filterable]="false">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div class="ma-cell-wrap" [ngbTooltip]="dataItem.rule_name">
+            {{ dataItem.rule_name || '-' }}
+          </div>
+        </ng-template>
+      </kendo-grid-column>
+
+      <!-- Threshold and its unit read as one value, e.g. "40 hours". -->
+      <kendo-grid-column
+        field="threshold_value"
+        title="Threshold"
+        [width]="180"
+        [filterable]="false"
+      >
+        <ng-template kendoGridCellTemplate let-dataItem>
+          {{ dataItem.threshold_value ?? '-' }}
+          @if (dataItem.thresold_suffix) {
+            <span class="ma-threshold-suffix">{{ dataItem.thresold_suffix }}</span>
+          }
+        </ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column
+        field="last_updated"
+        title="Last Updated"
+        [width]="180"
+        [filterable]="false"
+      >
+        <ng-template kendoGridCellTemplate let-dataItem>
+          {{ dataItem.last_updated ? (dataItem.last_updated | date: 'MM-dd-yyyy hh:mm a') : '-' }}
+        </ng-template>
+      </kendo-grid-column>
+
+      <!-- ── Actions ──────────────────────────────────────────────── -->
+      @if (perms.can(PERMISSION_MODULE.AnalyticWorkload, PERMISSION_ACTION.Update)) {
+        <kendo-grid-column title="Actions" [width]="100" [filterable]="false" [sortable]="false">
+          <ng-template kendoGridCellTemplate let-dataItem>
+            <div class="ma-table-actions">
+              <button
+                class="ma-btn-icon-sm"
+                type="button"
+                ngbTooltip="Edit threshold"
+                placement="top"
+                [attr.aria-label]="'Edit threshold for ' + (dataItem.rule_name || '')"
+                (click)="editThreshold(dataItem)"
+              >
+                <i class="fa-regular fa-pen-to-square"></i>
+              </button>
+            </div>
+          </ng-template>
+        </kendo-grid-column>
+      }
+
+      <ng-template kendoGridNoRecordsTemplate>
+        <div class="ma-grid-empty">No threshold rules match your current filters.</div>
+      </ng-template>
+    </kendo-grid>
+  </div>
+</section>

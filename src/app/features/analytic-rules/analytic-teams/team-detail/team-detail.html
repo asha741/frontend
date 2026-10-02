@@ -1,0 +1,72 @@
+<app-loader [show]="loading()" />
+
+<div class="ma-page-header">
+  <div class="ma-page-header__meta">
+    <div class="ma-back-header">
+      <h2 class="ma-page-title">Team Detail</h2>
+    </div>
+  </div>
+</div>
+
+@if (team(); as detail) {
+  <div class="ma-card mb-3">
+    <div class="ma-card-header">
+      <div class="ma-card-title-wrap">
+        <h2 class="ma-card-title">Team Information</h2>
+      </div>
+    </div>
+    <div class="ma-card-body">
+      <div class="row g-3">
+        <div class="col-12 col-md-6">
+          <div class="ma-detail-field">
+            <span class="ma-detail-field__label">Team Name</span>
+            <span class="ma-detail-field__value">{{ detail.team_name || '-' }}</span>
+          </div>
+        </div>
+        <div class="col-12 col-md-6">
+          <div class="ma-detail-field">
+            <span class="ma-detail-field__label">Supervisor{{ detail.supervisors.length > 1 ? 's' : '' }}</span>
+            <span class="ma-detail-field__value">
+              @for (supervisor of detail.supervisors; track supervisor.id; let last = $last) {
+                {{ supervisor.name }}{{ last ? '' : ', ' }}
+              } @empty {
+                -
+              }
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ma-card">
+    <div class="ma-card-header">
+      <div class="ma-card-title-wrap">
+        <h2 class="ma-card-title">Team Members ({{ detail.providers.length }})</h2>
+      </div>
+    </div>
+    <div class="ma-card-body">
+      @if (detail.providers.length) {
+        <ul class="ma-provider-list">
+          @for (provider of detail.providers; track provider.id) {
+            <li class="ma-provider-list__item">{{ provider.name }}</li>
+          }
+        </ul>
+      } @else {
+        <p class="ma-detail-empty mb-0">No providers are assigned to this team.</p>
+      }
+    </div>
+  </div>
+} @else if (!loading()) {
+  <div class="ma-card">
+    <div class="ma-card-body">
+      <p class="ma-detail-empty mb-0">This team could not be loaded.</p>
+    </div>
+  </div>
+}
+
+<div class="ma-btn-group justify-content-end mt-3">
+  <a routerLink="/analytic-rules" [queryParams]="{ tab: 'teams' }" class="btn ma-btn btn-outline-primary btn-grey-btn">
+    Back
+  </a>
+</div>

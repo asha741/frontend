@@ -1,0 +1,235 @@
+<div class="ma-page-header">
+  <div class="ma-page-header__meta">
+    <h2 class="ma-page-title">Clone Notes</h2>
+    <p class="ma-page-subtitle">Detect duplicated (cloned) content across progress notes</p>
+  </div>
+</div>
+
+<!-- ══ Filters ═══════════════════════════════════════════════════════ -->
+<section class="ma-filter-wrap mt-3">
+  <div class="row g-2 align-items-center ma-filter-grid">
+    <!-- Search input -->
+    <div class="col-12 col-sm-6 col-lg-4 col-xl-2">
+      <div class="ma-input-group ma-filter-item ma-filter-item--search">
+        <i class="fa-solid fa-magnifying-glass ma-input-icon"></i>
+        <input
+          type="text"
+          class="form-control"
+          placeholder="Search"
+          aria-label="Search clone notes batches"
+          [(ngModel)]="search"
+          appTrimWhitespace
+          maxlength="100"
+          (keydown.enter)="onSearch()"
+        />
+      </div>
+    </div>
+
+    <!-- Uploaded Date From -->
+    <div class="col-12 col-sm-6 col-lg-4 col-xl-2">
+      <div class="ma-input-group is-calendar ma-filter-item ma-filter-item--date">
+        <input
+          class="form-control bg-white"
+          placeholder="From date"
+          aria-label="From date"
+          readonly
+          ngbDatepicker
+          #fromPicker="ngbDatepicker"
+          [(ngModel)]="fromDate"
+          [maxDate]="$any(toDate)"
+          (click)="fromPicker.toggle()"
+        />
+        <i
+          class="fa-regular fa-calendar ma-input-icon"
+          role="button"
+          aria-label="Open from-date picker"
+          (click)="fromPicker.toggle()"
+        ></i>
+      </div>
+    </div>
+
+    <!-- Uploaded Date To -->
+    <div class="col-12 col-sm-6 col-lg-4 col-xl-2">
+      <div class="ma-input-group is-calendar ma-filter-item ma-filter-item--date">
+        <input
+          class="form-control bg-white"
+          placeholder="To date"
+          aria-label="To date"
+          readonly
+          ngbDatepicker
+          #toPicker="ngbDatepicker"
+          [(ngModel)]="toDate"
+          [minDate]="$any(fromDate)"
+          (click)="toPicker.toggle()"
+        />
+        <i
+          class="fa-regular fa-calendar ma-input-icon"
+          role="button"
+          aria-label="Open to-date picker"
+          (click)="toPicker.toggle()"
+        ></i>
+      </div>
+    </div>
+
+    <!-- Search & Reset buttons -->
+    <div class="col-12 col-lg-auto d-flex gap-2">
+      <button type="button" class="btn ma-btn btn-primary" (click)="onSearch()" style="min-height: 45px; padding: 0 20px">
+        Search
+      </button>
+      <button type="button" class="btn ma-btn btn-outline-secondary" (click)="clearSearch()" style="min-height: 45px; padding: 0 20px">
+        Reset
+      </button>
+    </div>
+
+    <!-- Validate Notes — starting a new batch needs CloneNotes: Create. -->
+    @if (perms.can(PERMISSION_MODULE.CloneNotes, PERMISSION_ACTION.Create)) {
+      <div class="col-12 col-lg-auto ms-lg-auto">
+        <div class="ma-filter-actions ma-filter-item ma-filter-item--action">
+          <a
+            routerLink="/clone-notes/upload"
+            class="btn ma-btn btn-primary ma-btn-inline-icon"
+            aria-label="Validate Notes"
+            style="white-space: nowrap; min-height: 45px"
+          >
+            <span>Validate Notes</span>
+            <i class="fa-solid fa-upload" aria-hidden="true"></i>
+          </a>
+        </div>
+      </div>
+    }
+  </div>
+</section>
+
+<!-- ══ Batches grid ══════════════════════════════════════════════════ -->
+<section class="ma-surface-card ma-users-section-card ma-user-list-card mt-4">
+  <div class="table-responsive">
+    <kendo-grid
+      class="ma-kendo-grid table ma-master-table--clone-notes"
+      [data]="batchesData()"
+      [pageSize]="state.take"
+      [skip]="state.skip"
+      [sortable]="false"
+      filterable="menu"
+      [filter]="state.filter"
+      [pageable]="{ buttonCount: 3, type: 'numeric', pageSizes: pageSizes }"
+      [scrollable]="'none'"
+      (dataStateChange)="dataStateChange($event)"
+    >
+      <!-- ── Sr. No. ──────────────────────────────────────────────── -->
+      <kendo-grid-column title="Sr. No." [width]="80" [filterable]="false" [sortable]="false">
+        <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+          {{ dataItem.sr_no ?? rowIndex + 1 }}
+        </ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column field="clone_batch_id" title="Clone Batch ID" [width]="170" [filterable]="false">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div class="ma-cell-wrap" [ngbTooltip]="dataItem.clone_batch_id">{{ dataItem.clone_batch_id || '-' }}</div>
+        </ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column field="progress_notes" title="Progress Notes" [width]="150" [filterable]="false">
+        <ng-template kendoGridCellTemplate let-dataItem>{{ dataItem.progress_notes ?? '-' }}</ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column field="total_provider" title="Total Provider" [width]="140" [filterable]="false">
+        <ng-template kendoGridCellTemplate let-dataItem>{{ dataItem.total_provider ?? '-' }}</ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column field="total_patient" title="Total Patient" [width]="140" [filterable]="false">
+        <ng-template kendoGridCellTemplate let-dataItem>{{ dataItem.total_patient ?? '-' }}</ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column field="file_size" title="File Size" [width]="120" [filterable]="false">
+        <ng-template kendoGridCellTemplate let-dataItem>{{ dataItem.file_size || '-' }}</ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column field="uploaded_date" title="Uploaded Date" [width]="160" [filterable]="false">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          {{ dataItem.uploaded_date ? (dataItem.uploaded_date | date: 'MM-dd-yyyy') : '-' }}
+        </ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column field="extraction_status" title="Extraction Status" [width]="140" [sortable]="false">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          @if (dataItem.extraction_status) {
+            <span class="ma-badge" [class]="dataItem.extraction_status | badgeClass">{{ dataItem.extraction_status }}</span>
+            @if (isFailedStatus(dataItem.extraction_status) && dataItem.failure_reason) {
+              <i class="fa-solid fa-circle-info ma-status-info-icon" [ngbTooltip]="dataItem.failure_reason"
+                triggers="hover click" container="body" aria-label="Failure reason"></i>
+            }
+          } @else {
+            -
+          }
+        </ng-template>
+        <ng-template
+          kendoGridFilterMenuTemplate
+          let-filter
+          let-column="column"
+          let-filterService="filterService"
+        >
+          <dropdownlist-filter
+            [isPrimitive]="true"
+            [field]="column.field"
+            [currentFilter]="filter"
+            [filterService]="filterService"
+            textField="label"
+            valueField="value"
+            [data]="extractionStatusOptions"
+          >
+          </dropdownlist-filter>
+        </ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column field="clone_notes_status" title="Clone Notes Status" [width]="140" [sortable]="false">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <span class="ma-badge" [class]="dataItem.clone_notes_status | badgeClass">{{ dataItem.clone_notes_status || '-' }}</span>
+        </ng-template>
+        <ng-template
+          kendoGridFilterMenuTemplate
+          let-filter
+          let-column="column"
+          let-filterService="filterService"
+        >
+          <dropdownlist-filter
+            [isPrimitive]="true"
+            [field]="column.field"
+            [currentFilter]="filter"
+            [filterService]="filterService"
+            textField="label"
+            valueField="value"
+            [data]="cloneNotesStatusOptions"
+          >
+          </dropdownlist-filter>
+        </ng-template>
+      </kendo-grid-column>
+
+      <!-- ── Actions ── View opens a batch, so it rides on CloneNotes: Read;
+           the column is dropped entirely when that isn't granted. ────── -->
+      @if (perms.can(PERMISSION_MODULE.CloneNotes, PERMISSION_ACTION.Read)) {
+        <kendo-grid-column title="Action" [width]="90" [filterable]="false" [sortable]="false">
+          <ng-template kendoGridCellTemplate let-dataItem>
+            <div class="ma-table-actions">
+              @if (dataItem.action_accessible) {
+                <button
+                  class="ma-btn-icon-sm"
+                  type="button"
+                  [ngbTooltip]="'View'"
+                  placement="top"
+                  [attr.aria-label]="'View ' + (dataItem.clone_batch_id || '')"
+                  (click)="viewBatch(dataItem)"
+                >
+                  <i class="fa-regular fa-eye"></i>
+                </button>
+              }
+            </div>
+          </ng-template>
+        </kendo-grid-column>
+      }
+
+      <ng-template kendoGridNoRecordsTemplate>
+        <div class="ma-grid-empty">No clone notes batches match your current filters.</div>
+      </ng-template>
+    </kendo-grid>
+  </div>
+</section>

@@ -24,8 +24,8 @@
             <select class="form-select" id="filterYear" name="filterYear"
                     [(ngModel)]="year" (ngModelChange)="onYearChange()">
               <option value="">Year</option>
-              @for (y of years; track y) {
-                <option [value]="y">{{ y }}</option>
+              @for (opt of yearOptions; track opt.value) {
+                <option [value]="opt.value">{{ opt.label }}</option>
               }
             </select>
           </div>

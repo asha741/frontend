@@ -259,9 +259,28 @@
             <ng-template kendoGridCellTemplate let-dataItem>{{ dataItem.document_count ?? '-' }}</ng-template>
           </kendo-grid-column>
 
-          <kendo-grid-column field="ai_status" title="AI Status" [width]="140" [filterable]="false">
+          <kendo-grid-column field="ai_status" title="AI Status" [width]="190" [filterable]="false">
             <ng-template kendoGridCellTemplate let-dataItem>
               <span class="ma-badge" [class]="dataItem.ai_status | badgeClass">{{ dataItem.ai_status || '-' }}</span>
+              <!-- Still running: how far along this claim is, and which stage it
+                   is in. The tab re-reads /claims/status every 20 seconds until
+                   the AI finishes. -->
+              @if (isAiInProgress(dataItem.ai_status)) {
+                <div
+                  class="ma-ai-progress"
+                  [attr.aria-label]="'AI processing ' + aiProgress(dataItem) + '% complete'"
+                >
+                  <div class="ma-ai-progress__track">
+                    <span class="ma-ai-progress__fill" [style.width.%]="aiProgress(dataItem)"></span>
+                  </div>
+                  <span class="ma-ai-progress__value">{{ aiProgress(dataItem) }}%</span>
+                </div>
+                @if (dataItem.ai_processing_stage) {
+                  <small class="ma-ai-stage" [ngbTooltip]="dataItem.ai_processing_stage">{{
+                    dataItem.ai_processing_stage
+                  }}</small>
+                }
+              }
             </ng-template>
           </kendo-grid-column>
 

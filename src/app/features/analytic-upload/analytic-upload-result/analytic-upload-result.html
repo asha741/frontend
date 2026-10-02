@@ -1,0 +1,129 @@
+<main class="claim-analyst-page">
+<!-- ══ Header ════════════════════════════════════════════════════════ -->
+<div class="ma-page-header">
+  <div class="ma-page-header__meta">
+    <div class="ma-back-header">
+      <h2 class="ma-page-title">Import Result</h2>
+    </div>
+    <p class="ma-page-subtitle">Row-level errors and successes for this Power BI data file import</p>
+  </div>
+</div>
+
+<div class="ma-import-result-page mt-3">
+  @if (summary()) {
+    <!-- ══ Import Summary ══════════════════════════════════════════════ -->
+    <div class="ma-stat-grid">
+      <article class="ma-stat-card">
+        <div class="ma-stat-content">
+          <p class="ma-stat-title">Total Rows</p>
+          <h2 class="ma-stat-value">{{ summary()!.total_rows ?? '-' }}</h2>
+        </div>
+      </article>
+      <article class="ma-stat-card">
+        <div class="ma-stat-content">
+          <p class="ma-stat-title">Created</p>
+          <h2 class="ma-stat-value">{{ summary()!.created ?? 0 }}</h2>
+        </div>
+      </article>
+      @if (summary()!.updated != null) {
+        <article class="ma-stat-card">
+          <div class="ma-stat-content">
+            <p class="ma-stat-title">Updated</p>
+            <h2 class="ma-stat-value">{{ summary()!.updated }}</h2>
+          </div>
+        </article>
+      }
+      <!-- <article class="ma-stat-card">
+        <div class="ma-stat-content">
+          <p class="ma-stat-title">Skipped</p>
+          <h2 class="ma-stat-value">{{ summary()!.skipped ?? 0 }}</h2>
+        </div>
+      </article> -->
+      <article class="ma-stat-card">
+        <div class="ma-stat-content">
+          <p class="ma-stat-title">Failed</p>
+          <h2 class="ma-stat-value">{{ summary()!.skipped ?? 0 }}</h2>
+        </div>
+      </article>
+    </div>
+
+    @if (resultGridData().total) {
+      <!-- ══ Row-level details ═══════════════════════════════════════════ -->
+      <section class="ma-surface-card ma-users-section-card ma-user-list-card mt-3">
+        <div class="table-responsive">
+          <kendo-grid
+            class="ma-kendo-grid table ma-import-error-table"
+            [data]="resultGridData()"
+            [pageSize]="state.take"
+            [skip]="state.skip"
+            [sortable]="false"
+            [filterable]="false"
+            [pageable]="{ buttonCount: 3, type: 'numeric', pageSizes: pageSizes }"
+            [scrollable]="'none'"
+            [loading]="loading()"
+            (dataStateChange)="onGridStateChange($event)"
+          >
+            <kendo-grid-column title="Sr. No." [width]="80" [filterable]="false" [sortable]="false">
+              <ng-template kendoGridCellTemplate let-rowIndex="rowIndex">
+                {{ rowIndex + 1 }}
+              </ng-template>
+            </kendo-grid-column>
+
+            <kendo-grid-column field="row" title="Row" [width]="90" [filterable]="false" [sortable]="false">
+              <ng-template kendoGridCellTemplate let-dataItem>{{ dataItem.row ?? '-' }}</ng-template>
+            </kendo-grid-column>
+
+            <kendo-grid-column title="Status" [width]="120" [filterable]="false" [sortable]="false">
+              <ng-template kendoGridCellTemplate let-dataItem>
+                <span class="ma-import-status" [class.ma-import-status--ok]="dataItem.ok">
+                  {{ statusLabel(dataItem) }}
+                </span>
+              </ng-template>
+            </kendo-grid-column>
+
+            <kendo-grid-column field="field" title="Field" [filterable]="false" [sortable]="false">
+              <ng-template kendoGridCellTemplate let-dataItem>
+                @if (dataItem.field) {
+                  <div class="ma-import-field-chips">
+                    @for (f of splitFields(dataItem.field); track $index) {
+                      <span class="ma-import-field-chip">{{ f }}</span>
+                    }
+                  </div>
+                } @else {
+                  -
+                }
+              </ng-template>
+            </kendo-grid-column>
+
+            <kendo-grid-column field="message" title="Message" [filterable]="false" [sortable]="false">
+              <ng-template kendoGridCellTemplate let-dataItem>
+                @if (dataItem.message) {
+                  <div class="ma-import-error-messages">
+                    @for (m of splitMessages(dataItem.message); track $index) {
+                      <div class="ma-import-error-messages__item">{{ m }}</div>
+                    }
+                  </div>
+                } @else {
+                  -
+                }
+              </ng-template>
+            </kendo-grid-column>
+
+            <ng-template kendoGridNoRecordsTemplate>
+              <div class="ma-grid-empty">No row-level details were returned for this import.</div>
+            </ng-template>
+          </kendo-grid>
+        </div>
+      </section>
+    } @else if (!loading()) {
+      <div class="ma-empty-state">
+        <p class="ma-empty-state__text">No row-level details were returned for this import.</p>
+      </div>
+    }
+  } @else if (!loading()) {
+    <div class="ma-empty-state">
+      <p class="ma-empty-state__text">{{ loadError() || 'No result data found for this import.' }}</p>
+    </div>
+  }
+</div>
+</main>

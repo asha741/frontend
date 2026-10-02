@@ -1,0 +1,113 @@
+<div class="ma-page-header">
+  <div class="ma-page-header__meta">
+    <h2 class="ma-page-title">Provider Details</h2>
+  </div>
+  @if (perms.can(PERMISSION_MODULE.Provider, PERMISSION_ACTION.Update)) {
+    <div class="ma-page-header__actions">
+      <button type="button" class="btn ma-btn btn-primary" (click)="editProvider()">
+        <i class="fa-regular fa-pen-to-square me-2"></i> Edit Provider
+      </button>
+    </div>
+  }
+</div>
+
+<!-- ══ Hero ═══════════════════════════════════════════════════════════ -->
+<div class="ma-provider-hero mt-3">
+  @if (provider()?.status) {
+    <span class="ma-badge ma-provider-hero__status" [class]="provider()?.status | badgeClass">{{
+      provider()?.status
+    }}</span>
+  }
+  <div class="ma-provider-hero__main">
+    <div class="ma-provider-hero__avatar">{{ initials() }}</div>
+    <div>
+      <h3 class="ma-provider-hero__name">{{ fullName() }}</h3>
+      <p class="ma-provider-hero__subtitle">{{ provider()?.designation }}</p>
+    </div>
+  </div>
+  <div class="ma-provider-hero__meta">
+    <div>
+      <span class="ma-provider-hero__meta-label">Provider ID</span>
+      <span class="ma-provider-hero__meta-value">{{ provider()?.provider_id || '-' }}</span>
+    </div>
+    <div>
+      <span class="ma-provider-hero__meta-label">External ID</span>
+      <span class="ma-provider-hero__meta-value">{{ provider()?.external_id || '-' }}</span>
+    </div>
+    <div>
+      <span class="ma-provider-hero__meta-label">Created Date</span>
+      <span class="ma-provider-hero__meta-value">{{
+        provider()?.created_at ? (provider()?.created_at | date: 'MM-dd-yyyy') : '-'
+      }}</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══ Contact Information ═══════════════════════════════════════════ -->
+<div class="ma-card mt-3">
+  <div class="ma-card-header">
+    <div class="chart-card__header mb-0">
+      <h3 class="chart-card__title">
+        <i class="fa-solid fa-id-card ma-card-header-icon me-2"></i>Contact Information
+      </h3>
+    </div>
+  </div>
+  <div class="ma-card-body">
+    <div class="row g-4">
+      <div class="col-6 col-md-3">
+        <div class="ma-label-value">
+          <span class="ma-label">Email</span>
+          <span class="ma-value">{{ provider()?.email || '-' }}</span>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="ma-label-value">
+          <span class="ma-label">Contact Number</span>
+          <span class="ma-value">{{ (provider()?.contact_number | usPhone) || '-' }}</span>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="ma-label-value">
+          <span class="ma-label">Designation</span>
+          <span class="ma-value">{{ provider()?.designation || '-' }}</span>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="ma-label-value">
+          <span class="ma-label">Patients Attended</span>
+          <span class="ma-value">{{ provider()?.patients_attended ?? '-' }}</span>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="ma-label-value">
+          <span class="ma-label">Performance Score</span>
+          <span class="ma-value">{{
+            provider()?.performance_score != null ? provider()?.performance_score + '%' : '-'
+          }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ License & Credentials ═══════════════════════════════════════════ -->
+<div class="ma-card mt-3">
+  <div class="ma-card-header">
+    <div class="chart-card__header mb-0">
+      <h3 class="chart-card__title">
+        <i class="fa-solid fa-certificate ma-card-header-icon me-2"></i>License
+      </h3>
+    </div>
+  </div>
+  <div class="ma-card-body">
+    @if (licenseList().length) {
+      <ol class="ma-diagnosis-list">
+        @for (l of licenseList(); track l) {
+          <li>{{ l }}</li>
+        }
+      </ol>
+    } @else {
+      <span class="ma-value">No license on file.</span>
+    }
+  </div>
+</div>

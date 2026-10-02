@@ -1,0 +1,122 @@
+// `.ma-label-value` / `.ma-label` / `.ma-value` have no styling outside their
+// owning page scopes elsewhere in the app, so this component defines its own
+// look — same treatment as the sibling `patient-view` component.
+
+.ma-label-value {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.ma-label {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: #94a3b8;
+}
+
+.ma-value {
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.5;
+  color: #0f172a;
+  overflow-wrap: anywhere;
+}
+
+.ma-card-header-icon {
+  color: #4a76fd;
+  font-size: 15px;
+}
+
+.ma-diagnosis-list {
+  margin: 0;
+  padding-left: 1.25rem;
+
+  li {
+    font-size: 15px;
+    font-weight: 600;
+    color: #0f172a;
+    padding: 4px 0;
+  }
+}
+
+// ── Hero card ─────────────────────────────────────────────────────────
+// Flat brand blue — the same `#4A76FD` used by the sidebar/primary buttons.
+.ma-provider-hero {
+  position: relative;
+  border-radius: 12px;
+  padding: 24px 28px;
+  background: #4a76fd;
+  color: #fff;
+  overflow: hidden;
+}
+
+.ma-provider-hero__status {
+  position: absolute;
+  top: 20px;
+  right: 24px;
+}
+
+.ma-provider-hero__main {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.ma-provider-hero__avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: #fff;
+  color: #4a76fd;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.ma-provider-hero__name {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.ma-provider-hero__subtitle {
+  margin: 4px 0 0;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.ma-provider-hero__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 32px;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.25);
+
+  > div {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+}
+
+.ma-provider-hero__meta-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.ma-provider-hero__meta-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+}

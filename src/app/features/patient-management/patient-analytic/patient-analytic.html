@@ -1,0 +1,19 @@
+<app-loader [show]="loading()" />
+
+<div class="ma-page-header">
+  <div class="ma-page-header__meta">
+    <div class="ma-back-header">
+      <h2 class="ma-page-title">{{ title() }}</h2>
+    </div>
+    <p class="ma-page-subtitle">Power BI analytics for this patient</p>
+  </div>
+</div>
+
+<section #reportCard class="ma-surface-card ma-report-card mt-3" [style.height.px]="reportHeight() || null">
+  <!-- The Power BI client embeds its iframe into this element. -->
+  <div #reportHost class="ma-report-host" [hidden]="!!errorMessage()"></div>
+
+  @if (errorMessage()) {
+    <div class="ma-report-message">{{ errorMessage() }}</div>
+  }
+</section>

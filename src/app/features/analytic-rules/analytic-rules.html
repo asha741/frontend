@@ -1,0 +1,44 @@
+<div class="ma-page-header">
+  <div class="ma-page-header__meta">
+    <h2 class="ma-page-title">Threshold Configuration</h2>
+    <p class="ma-page-subtitle">Meridian Behavioral Health Network</p>
+  </div>
+</div>
+
+<div class="ma-tabs">
+  <ul class="nav nav-tabs" role="tablist">
+    @if (perms.canAccessMenu(MenuType.AnalyticTeam)) {
+      <li class="nav-item" role="presentation">
+        <button
+          type="button"
+          class="nav-link"
+          [class.active]="activeTab() === 'teams'"
+          (click)="switchTab('teams')"
+        >
+          Team &amp; Supervisor
+        </button>
+      </li>
+    }
+    @if (perms.canAccessMenu(MenuType.AnalyticWorkload)) {
+      <li class="nav-item" role="presentation">
+        <button
+          type="button"
+          class="nav-link"
+          [class.active]="activeTab() === 'thresholds'"
+          (click)="switchTab('thresholds')"
+        >
+          Thresholds
+        </button>
+      </li>
+    }
+  </ul>
+</div>
+
+<div class="tab-content">
+  @if (activeTab() === 'teams' && perms.canAccessMenu(MenuType.AnalyticTeam)) {
+    <app-analytic-teams />
+  }
+  @if (activeTab() === 'thresholds' && perms.canAccessMenu(MenuType.AnalyticWorkload)) {
+    <app-analytic-workload />
+  }
+</div>

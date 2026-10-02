@@ -149,7 +149,7 @@
         </div>
         <div class="col-12 col-md-4">
           <div class="ma-form-group mb-0">
-            <label class="ma-form-label" for="maPatientDob">Date of Birth <span class="ma-required">*</span></label>
+            <label class="ma-form-label" for="maPatientDob">Date of Birth</label>
             <div class="ma-input-group is-calendar">
               <input
                 id="maPatientDob"
@@ -168,13 +168,13 @@
               <i class="fa-regular fa-calendar ma-input-icon" role="button" aria-label="Open date of birth picker" (click)="dobPicker.toggle()"></i>
             </div>
             @if (isSubmitted() && f['date_of_birth'].errors) {
-              <div class="invalid-feedback d-block">Date of Birth is required.</div>
+              <div class="invalid-feedback d-block">Please enter a valid date in MM/DD/YYYY or MM-DD-YYYY format.</div>
             }
           </div>
         </div>
         <div class="col-12 col-md-4">
           <div class="ma-form-group mb-0">
-            <label class="ma-form-label" for="maPatientEmail">Email Address <span class="ma-required">*</span></label>
+            <label class="ma-form-label" for="maPatientEmail">Email Address</label>
             <input
               id="maPatientEmail"
               type="email"
@@ -187,9 +187,9 @@
             />
             @if (isSubmitted() && f['email'].errors) {
               <div class="invalid-feedback d-block">
-                @if (f['email'].hasError('required')) { Email Address is required. }
-                @else if (f['email'].hasError('emailExists')) { Email address already exists. }
+                @if (f['email'].hasError('emailExists')) { Email address already exists. }
                 @else if (f['email'].hasError('maxlength')) { Maximum 100 characters allowed. }
+                @else if (f['email'].hasError('whitespace')) { Email Address cannot be blank. }
                 @else { Please enter a valid Email Address. }
               </div>
             }
@@ -197,7 +197,7 @@
         </div>
         <div class="col-12 col-md-4">
           <div class="ma-form-group mb-0">
-            <label class="ma-form-label" for="maPatientContact">Contact Number <span class="ma-required">*</span></label>
+            <label class="ma-form-label" for="maPatientContact">Contact Number</label>
             <input
               id="maPatientContact"
               type="tel"
@@ -205,11 +205,11 @@
               formControlName="contact_number"
               placeholder="(123) 456-7890"
               appPhoneMask
-              maxlength="14"
+              maxlength="30"
               [class.is-invalid]="isSubmitted() && f['contact_number'].errors"
             />
             @if (isSubmitted() && f['contact_number'].errors) {
-              <div class="invalid-feedback d-block">Contact Number is required.</div>
+              <div class="invalid-feedback d-block">Maximum 30 characters allowed.</div>
             }
           </div>
         </div>
@@ -245,7 +245,7 @@
       <div class="row g-3">
         <div class="col-12">
           <div class="ma-form-group mb-0">
-            <label class="ma-form-label" for="maPatientAddress1">Address 1 <span class="ma-required">*</span></label>
+            <label class="ma-form-label" for="maPatientAddress1">Address 1</label>
             <input
               id="maPatientAddress1"
               type="text"
@@ -258,9 +258,8 @@
             />
             @if (isSubmitted() && f['address_1'].errors) {
               <div class="invalid-feedback d-block">
-                @if (f['address_1'].hasError('required') || f['address_1'].hasError('whitespace')) { Address 1 is required. }
-                @else if (f['address_1'].hasError('minlength')) { Minimum 5 characters required. }
-                @else if (f['address_1'].hasError('maxlength')) { Maximum 250 characters allowed. }
+                @if (f['address_1'].hasError('whitespace')) { Address 1 cannot be blank. }
+                @else if (f['address_1'].hasError('maxlength')) { Maximum 500 characters allowed. }
                 @else { Please enter a valid Address 1. }
               </div>
             }
@@ -280,13 +279,13 @@
               [class.is-invalid]="isSubmitted() && f['address_2'].errors"
             />
             @if (isSubmitted() && f['address_2'].errors) {
-              <div class="invalid-feedback d-block">Maximum 250 characters allowed.</div>
+              <div class="invalid-feedback d-block">Maximum 500 characters allowed.</div>
             }
           </div>
         </div>
         <div class="col-12 col-md-4">
           <div class="ma-form-group mb-0">
-            <label class="ma-form-label" for="maPatientState">State <span class="ma-required">*</span></label>
+            <label class="ma-form-label" for="maPatientState">State</label>
             <input
               id="maPatientState"
               type="text"
@@ -299,8 +298,7 @@
             />
             @if (isSubmitted() && f['state'].errors) {
               <div class="invalid-feedback d-block">
-                @if (f['state'].hasError('required') || f['state'].hasError('whitespace')) { State is required. }
-                @else if (f['state'].hasError('minlength')) { Minimum 2 characters required. }
+                @if (f['state'].hasError('whitespace')) { State cannot be blank. }
                 @else if (f['state'].hasError('maxlength')) { Maximum 100 characters allowed. }
                 @else { Please enter a valid State. }
               </div>
@@ -309,7 +307,7 @@
         </div>
         <div class="col-12 col-md-4">
           <div class="ma-form-group mb-0">
-            <label class="ma-form-label" for="maPatientCity">City <span class="ma-required">*</span></label>
+            <label class="ma-form-label" for="maPatientCity">City</label>
             <input
               id="maPatientCity"
               type="text"
@@ -322,8 +320,7 @@
             />
             @if (isSubmitted() && f['city'].errors) {
               <div class="invalid-feedback d-block">
-                @if (f['city'].hasError('required') || f['city'].hasError('whitespace')) { City is required. }
-                @else if (f['city'].hasError('minlength')) { Minimum 2 characters required. }
+                @if (f['city'].hasError('whitespace')) { City cannot be blank. }
                 @else if (f['city'].hasError('maxlength')) { Maximum 100 characters allowed. }
                 @else { Please enter a valid City. }
               </div>
@@ -332,7 +329,7 @@
         </div>
         <div class="col-12 col-md-4">
           <div class="ma-form-group mb-0">
-            <label class="ma-form-label" for="maPatientPinCode">Pin Code <span class="ma-required">*</span></label>
+            <label class="ma-form-label" for="maPatientPinCode">Pin Code</label>
             <input
               id="maPatientPinCode"
               type="text"
@@ -347,10 +344,9 @@
             />
             @if (isSubmitted() && f['pin_code'].errors) {
               <div class="invalid-feedback d-block">
-                @if (f['pin_code'].hasError('required')) { Pin Code is required. }
-                @else if (f['pin_code'].hasError('minlength')) { Minimum 3 digits required. }
-                @else if (f['pin_code'].hasError('maxlength')) { Maximum 10 digits allowed. }
-                @else if (f['pin_code'].hasError('pattern')) { Pin Code must contain digits only. }
+                @if (f['pin_code'].hasError('maxlength')) { Maximum 20 characters allowed. }
+                @else if (f['pin_code'].hasError('pattern')) { Pin Code may contain digits and hyphens only. }
+                @else if (f['pin_code'].hasError('whitespace')) { Pin Code cannot be blank. }
                 @else { Please enter a valid Pin Code. }
               </div>
             }
@@ -368,6 +364,11 @@
     </div>
     <div class="ma-card-body">
       <div class="row g-3">
+        @if (isSubmitted() && form.hasError('diagnosisCount')) {
+          <div class="col-12">
+            <div class="invalid-feedback d-block">If diagnosis is supplied, exactly 5 diagnosis entries are required.</div>
+          </div>
+        }
         <div class="col-12 col-md-6">
           <div class="ma-form-group mb-0">
             <label class="ma-form-label" for="maPatientDiagnosis1">Problem 1</label>

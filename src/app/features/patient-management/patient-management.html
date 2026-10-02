@@ -232,9 +232,14 @@
         [filterable]="false"
       >
         <ng-template kendoGridCellTemplate let-dataItem>
-          <div class="k-text-ellipsis" [ngbTooltip]="patientName(dataItem)">
+          <button
+            type="button"
+            class="ma-link-btn k-text-ellipsis"
+            [ngbTooltip]="'View analytics for ' + patientName(dataItem)"
+            (click)="openPatientAnalytic(dataItem)"
+          >
             {{ patientName(dataItem) }}
-          </div>
+          </button>
         </ng-template>
       </kendo-grid-column>
 
@@ -308,18 +313,30 @@
       </kendo-grid-column>
 
       <!-- ── Actions ──────────────────────────────────────────────── -->
-      @if (perms.canAny(PERMISSION_MODULE.Patient, PERMISSION_ACTION.Update, PERMISSION_ACTION.Delete)) {
-        <kendo-grid-column title="Actions" [width]="110" [filterable]="false" [sortable]="false">
+      @if (perms.canAny(PERMISSION_MODULE.Patient, PERMISSION_ACTION.Read, PERMISSION_ACTION.Update, PERMISSION_ACTION.Delete)) {
+        <kendo-grid-column title="Actions" [width]="150" [filterable]="false" [sortable]="false">
           <ng-template kendoGridCellTemplate let-dataItem>
             <div class="ma-table-actions">
+              @if (perms.can(PERMISSION_MODULE.Patient, PERMISSION_ACTION.Read)) {
+                <button
+                  class="ma-btn-icon-sm"
+                  type="button"
+                  ngbTooltip="View Patient"
+                  placement="top"
+                  [attr.aria-label]="'View Patient ' + (dataItem.patient_id || '')"
+                  (click)="openPatientView(dataItem)"
+                >
+                  <i class="fa-regular fa-eye"></i>
+                </button>
+              }
               @if (perms.can(PERMISSION_MODULE.Patient, PERMISSION_ACTION.Update)) {
                 <button
                   class="ma-btn-icon-sm"
                   type="button"
-                  ngbTooltip="Patient Profile"
+                  ngbTooltip="Edit Patient"
                   placement="top"
-                  [attr.aria-label]="'Patient Profile ' + (dataItem.patient_id || '')"
-                  (click)="openPatientProfile(dataItem)"
+                  [attr.aria-label]="'Edit Patient ' + (dataItem.patient_id || '')"
+                  (click)="editPatient(dataItem)"
                 >
                   <i class="fa-regular fa-pen-to-square"></i>
                 </button>

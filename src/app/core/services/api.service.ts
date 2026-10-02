@@ -57,7 +57,8 @@ export class ApiService {
     private authService: AuthService,
     private config: ConfigService
   ) {
-    this.baseUrl = this.config.apiUrl;
+    // this.baseUrl = this.config.apiUrl;
+    this.baseUrl = 'https://hkdevapi-apccfxfnfwgvcta5.eastus2-01.azurewebsites.net/api/v1';
   }
 
   /**
@@ -298,7 +299,13 @@ export class ApiService {
 
   /** Pull the display message out of a decrypted response envelope. */
   private messageFromEnvelope(envelope: any): string | null {
-    if (Array.isArray(envelope?.error) && envelope.error[0]?.detail) return envelope.error[0].detail;
+    const detail = Array.isArray(envelope?.error) ? envelope.error[0]?.detail : null;
+    if (typeof detail === 'string' && detail) return detail;
+    // Import endpoints send `detail` as an object — the headline sits on
+    // `detail.message` with the row-level summary beside it.
+    if (detail && typeof detail === 'object' && typeof detail.message === 'string' && detail.message) {
+      return detail.message;
+    }
     if (typeof envelope?.message === 'string' && envelope.message) return envelope.message;
     return null;
   }
@@ -309,7 +316,11 @@ export class ApiService {
     if (body) {
       if (typeof body === 'string') return body;
       if (typeof body.message === 'string' && body.message) return body.message;
-      if (Array.isArray(body.error) && body.error[0]?.detail) return body.error[0].detail;
+      const detail = Array.isArray(body.error) ? body.error[0]?.detail : null;
+      if (typeof detail === 'string' && detail) return detail;
+      if (detail && typeof detail === 'object' && typeof detail.message === 'string' && detail.message) {
+        return detail.message;
+      }
       if (typeof body.detail === 'string') return body.detail;
       if (Array.isArray(body.detail) && body.detail[0]?.msg) return body.detail[0].msg;
     }

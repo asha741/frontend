@@ -115,7 +115,19 @@
     color: #10b981;
   }
 
+  &--restored strong {
+    color: #0ea5e9;
+  }
+
+  &--updated strong {
+    color: #f59e0b;
+  }
+
   &--skipped strong {
+    color: #64748b;
+  }
+
+  &--failed strong {
     color: #dc3545;
   }
 }
@@ -309,4 +321,9 @@
       }
     }
   }
+}
+
+// Optional title field above the drop zone (Power BI analytic uploads).
+.ma-import-title {
+  margin-bottom: 16px;
 }

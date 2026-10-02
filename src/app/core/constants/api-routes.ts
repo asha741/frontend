@@ -57,6 +57,7 @@ export const API_ROUTES = {
   DOWNLOAD_PROVIDERS_SAMPLE: '/organization/providers/sample-file',
   GET_PROVIDER_CLAIMS: '/organization/providers/claims',
   GET_PROVIDER_CLAIM_DETAIL: '/organization/providers/claims/detail',
+  GET_PROVIDER_POWERBI_EMBED: '/organization/providers/powerbi-embed',
 
   // ── Patients ──
   GET_PATIENTS: '/organization/patients/list',
@@ -71,6 +72,7 @@ export const API_ROUTES = {
   GET_PATIENT_DOCUMENTS: '/organization/patients/documents',
   GET_PATIENT_CLAIMS: '/organization/patients/claims',
   GET_PATIENT_CLAIM_DETAIL: '/organization/patients/claims/detail',
+  GET_PATIENT_POWERBI_EMBED: '/organization/patients/powerbi-embed',
 
   // ── Claims ──
   GET_CLAIMS: '/organization/claims/list',
@@ -78,8 +80,10 @@ export const API_ROUTES = {
   GET_PROVIDER_LOOKUP: '/organization/providers/lookup',
   GET_PATIENT_LOOKUP: '/organization/patients/lookup',
   GET_CLAIM_DETAIL: '/organization/claims/detail',
+  GET_CLAIM_STATUS: '/organization/claims/status',
   REVIEW_CLAIM: '/organization/claims/review',
   DELETE_CLAIM: '/organization/claims/delete',
+  EXPORT_CLAIM_AUDIT_REPORT: '/organization/claims/audit-report/export',
 
   // ── Claim Data Analytics ──
   GET_CLAIM_BATCHES: '/organization/claims/batches',
@@ -111,6 +115,13 @@ export const API_ROUTES = {
   // following the section's naming convention; confirm with backend before relying on it.
   TRAVEL_TIME_SUBMIT: '/organization/travel-time/submit',
 
+  // ── Clone Notes ──
+  CLONE_NOTES_UPLOAD_PROCESS: '/organization/clone-notes/upload-process',
+  CLONE_NOTES_STATUS: '/organization/clone-notes/status',
+  GET_CLONE_NOTES_BATCHES: '/organization/clone-notes/batches',
+  GET_CLONE_NOTES_DETAIL: '/organization/clone-notes/detail',
+  GET_CLONE_NOTES_PROVIDER_RESULTS: '/organization/clone-notes/provider-results',
+
   // ── Masters ──
   GET_MASTERS_LIST: '/organization/masters/list',
   GET_MASTERS_DETAIL: '/organization/masters/detail',
@@ -138,6 +149,31 @@ export const API_ROUTES = {
   EXPORT_EMPLOYEE_PERFORMANCE: '/organization/reports-analytics/employee-performance/export',
   GET_RULE_FAILURE_ANALYSIS: '/organization/reports-analytics/rule-failure-analysis',
   EXPORT_RULE_FAILURE_ANALYSIS: '/organization/reports-analytics/rule-failure-analysis/export',
+
+  // ── Power BI analytics — embedded reports ──
+  // Returns { accessToken, embedToken, embedUrl, reportId } for one dashboard
+  // type: client | employee | organization | supervisor.
+  GET_POWERBI_EMBED_INFO: '/organization/powerbi/embed-info',
+
+  // ── Power BI analytics — uploads ──
+  // IMPORT_POWERBI is JSON, not multipart: the file goes to Azure Blob first
+  // (FileUploadService) and only its blob name is posted here.
+  GET_POWERBI_UPLOADS: '/organization/powerbi/list',
+  IMPORT_POWERBI: '/organization/powerbi/import',
+  DOWNLOAD_POWERBI_SAMPLE: '/organization/powerbi/download-sample-file',
+  DOWNLOAD_POWERBI_FILE: '/organization/powerbi/download-file',
+  GET_POWERBI_RESULT: '/organization/powerbi/result',
+
+  // ── Power BI analytics — analytic rules ──
+  GET_ANALYTIC_WORKLOAD_RULES: '/organization/powerbi/analytic-rules/workload/list',
+  ADD_ANALYTIC_WORKLOAD_RULE: '/organization/powerbi/analytic-rules/workload/',
+  UPDATE_ANALYTIC_WORKLOAD_RULE: '/organization/powerbi/analytic-rules/workload/',
+  GET_ANALYTIC_SUPERVISORS: '/organization/powerbi/analytic-rules/teams/supervisors',
+  GET_ANALYTIC_TEAM_OPTIONS: '/organization/powerbi/analytic-rules/teams/team-options',
+  GET_ANALYTIC_TEAMS:'/organization/powerbi/analytic-rules/teams/list',
+  ADD_ANALYTIC_TEAM: '/organization/powerbi/analytic-rules/teams/create',
+  GET_ANALYTIC_TEAM_DETAIL: '/organization/powerbi/analytic-rules/teams/detail',
+  DELETE_ANALYTIC_TEAM: '/organization/powerbi/analytic-rules/teams/',
 
   // ── Audit logs ──
   GET_AUDIT_LOGS: '/organization/audit/list',

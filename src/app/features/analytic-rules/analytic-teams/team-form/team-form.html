@@ -1,0 +1,151 @@
+<div class="ma-page-header">
+  <div class="ma-page-header__meta">
+    <div class="ma-back-header">
+      <h2 class="ma-page-title">Add Team</h2>
+    </div>
+  </div>
+</div>
+
+<form class="ma-form" [formGroup]="form" (ngSubmit)="onSubmit()" novalidate appFocusFirstInput>
+  <div class="ma-card mb-3">
+    <div class="ma-card-header">
+      <div class="ma-card-title-wrap">
+        <h2 class="ma-card-title">Team Information</h2>
+      </div>
+    </div>
+    <div class="ma-card-body">
+      <div class="row g-3">
+        <div class="col-12 col-md-6">
+          <div class="ma-form-group mb-0">
+            <label class="ma-form-label" for="maTeamSelect">Team Name <span class="ma-required">*</span></label>
+            <select
+              id="maTeamSelect"
+              class="form-select"
+              formControlName="team_option"
+              (change)="onTeamChange()"
+              [class.is-invalid]="isSubmitted() && f['team_option'].errors"
+            >
+              <option value="" hidden>Select team</option>
+              <option [value]="NEW_TEAM">+ Add Team</option>
+              @for (option of teamOptions; track option.value) {
+                <option [value]="option.value">{{ option.label }}</option>
+              }
+            </select>
+            @if (isSubmitted() && f['team_option'].errors) {
+              <div class="invalid-feedback d-block">Team Name is required.</div>
+            }
+          </div>
+        </div>
+
+        @if (isNewTeam()) {
+          <div class="col-12 col-md-6">
+            <div class="ma-form-group mb-0">
+              <label class="ma-form-label" for="maTeamName">New Team Name <span class="ma-required">*</span></label>
+              <input
+                id="maTeamName"
+                type="text"
+                class="form-control"
+                formControlName="team_name"
+                placeholder="Enter team name"
+                appTrimWhitespace
+                maxlength="100"
+                [class.is-invalid]="isSubmitted() && f['team_name'].errors"
+              />
+              @if (isSubmitted() && f['team_name'].errors) {
+                <div class="invalid-feedback d-block">
+                  @if (f['team_name'].hasError('maxlength')) { Maximum 100 characters allowed. }
+                  @else { New Team Name is required. }
+                </div>
+              }
+            </div>
+          </div>
+        }
+
+        <div class="col-12 col-md-6">
+          <div class="ma-form-group mb-0">
+            <label class="ma-form-label" for="maTeamSupervisor">Supervisor <span class="ma-required">*</span></label>
+            <select
+              id="maTeamSupervisor"
+              class="form-select"
+              formControlName="supervisor_id"
+              (change)="onSupervisorChange()"
+              [class.is-invalid]="isSubmitted() && f['supervisor_id'].errors"
+            >
+              <option value="" hidden>Select supervisor</option>
+              <!-- The API also accepts a brand-new supervisor by name. -->
+              <option [value]="NEW_SUPERVISOR">+ Add New Supervisor</option>
+              @for (option of supervisorOptions; track option.value) {
+                <option [value]="option.value">{{ option.label }}</option>
+              }
+            </select>
+            @if (isSubmitted() && f['supervisor_id'].errors) {
+              <div class="invalid-feedback d-block">Supervisor is required.</div>
+            }
+          </div>
+        </div>
+
+        @if (isNewSupervisor()) {
+          <div class="col-12 col-md-6">
+            <div class="ma-form-group mb-0">
+              <label class="ma-form-label" for="maNewSupervisorName">
+                New Supervisor Name <span class="ma-required">*</span>
+              </label>
+              <input
+                id="maNewSupervisorName"
+                type="text"
+                class="form-control"
+                formControlName="new_supervisor_name"
+                placeholder="Enter supervisor name"
+                appTrimWhitespace
+                maxlength="100"
+                [class.is-invalid]="isSubmitted() && f['new_supervisor_name'].errors"
+              />
+              @if (isSubmitted() && f['new_supervisor_name'].errors) {
+                <div class="invalid-feedback d-block">
+                  @if (f['new_supervisor_name'].hasError('maxlength')) { Maximum 100 characters allowed. }
+                  @else { New Supervisor Name is required. }
+                </div>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+
+  <div class="ma-card">
+    <div class="ma-card-header">
+      <div class="ma-card-title-wrap">
+        <h2 class="ma-card-title">Team Members</h2>
+      </div>
+    </div>
+    <div class="ma-card-body">
+      <div class="ma-form-group mb-0">
+        <label class="ma-form-label" for="maTeamProviders">Providers <span class="ma-required">*</span></label>
+        <kendo-multiselect
+          id="maTeamProviders"
+          formControlName="provider_ids"
+          [data]="providerOptions"
+          textField="label"
+          valueField="value"
+          [valuePrimitive]="true"
+          [filterable]="true"
+          placeholder="Select providers"
+          [class.is-invalid]="isSubmitted() && f['provider_ids'].errors"
+        ></kendo-multiselect>
+        @if (isSubmitted() && f['provider_ids'].errors) {
+          <div class="invalid-feedback d-block">Select at least one provider.</div>
+        }
+      </div>
+    </div>
+  </div>
+
+  <div class="ma-btn-group justify-content-end mt-3">
+    <a routerLink="/analytic-rules" [queryParams]="{ tab: 'teams' }" class="btn ma-btn btn-outline-primary btn-grey-btn">
+      Cancel
+    </a>
+    <button type="submit" class="btn ma-btn btn-primary" [disabled]="saving()">
+      {{ saving() ? 'Saving…' : 'Save' }}
+    </button>
+  </div>
+</form>

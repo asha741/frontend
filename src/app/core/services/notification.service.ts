@@ -15,7 +15,7 @@ export interface NotificationItem {
 /** Silent options for background polling — no toaster, no global loader spinner. */
 const SILENT = { showToaster: false, showLoader: false };
 
-const POLL_INTERVAL_MS = 60_000;
+const POLL_INTERVAL_MS = 20_000;
 
 /** Notifications fetched per page — the panel loads this many at a time as it's scrolled. */
 const PAGE_SIZE = 10;

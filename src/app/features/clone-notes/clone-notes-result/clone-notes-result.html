@@ -1,0 +1,72 @@
+<main class="claim-analyst-page">
+<!-- ══ Header ════════════════════════════════════════════════════════ -->
+<div class="ma-page-header">
+  <div class="ma-page-header__meta">
+    <div class="ma-back-header">
+      <h2 class="ma-page-title">Clone Notes – Result</h2>
+    </div>
+    <p class="ma-page-subtitle d-flex align-items-center gap-2 flex-wrap">
+      <span>Clone Batch ID: <strong>{{ batchLabel() || '-' }}</strong></span>
+      <span>Provider Name: <strong>{{ providerName() || '-' }}</strong></span>
+    </p>
+  </div>
+</div>
+
+<!-- ══ KPI Cards ═════════════════════════════════════════════════════ -->
+<div class="ma-stat-grid" style="grid-template-columns: repeat(3, 1fr)">
+  <article class="ma-stat-card">
+    <div class="ma-stat-content">
+      <p class="ma-stat-title">Total Notes</p>
+      <h2 class="ma-stat-value">{{ totalNotes() }}</h2>
+    </div>
+  </article>
+  <article class="ma-stat-card">
+    <div class="ma-stat-content">
+      <p class="ma-stat-title">Clone Notes</p>
+      <h2 class="ma-stat-value">{{ cloneNotesCount() }}</h2>
+    </div>
+  </article>
+  <article class="ma-stat-card">
+    <div class="ma-stat-content">
+      <p class="ma-stat-title">Clone Notes %</p>
+      <h2 class="ma-stat-value">{{ cloneNotesPercent() || '-' }}</h2>
+    </div>
+  </article>
+</div>
+
+<!-- ══ Clone Notes Result table ═════════════════════════════════════ -->
+<section class="ma-surface-card ma-users-section-card ma-user-list-card mt-3">
+  <div class="table-responsive">
+    <kendo-grid class="ma-kendo-grid table ma-master-table--clone-notes-result" [data]="resultsGridData()"
+      [sortable]="false" [pageable]="false" [scrollable]="'none'">
+      <kendo-grid-column title="Sr. No." [width]="80" [filterable]="false" [sortable]="false">
+        <ng-template kendoGridCellTemplate let-dataItem let-rowIndex="rowIndex">
+          {{ dataItem.sr_no ?? rowIndex + 1 }}
+        </ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column field="visit_ids" title="Visit ID's" [width]="180" [filterable]="false">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div class="ma-cell-wrap" [ngbTooltip]="dataItem.visit_ids">{{ dataItem.visit_ids || '-' }}</div>
+        </ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column field="patient_names" title="Patient Name's" [width]="220" [filterable]="false">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div class="ma-cell-wrap" [ngbTooltip]="dataItem.patient_names">{{ dataItem.patient_names || '-' }}</div>
+        </ng-template>
+      </kendo-grid-column>
+
+      <kendo-grid-column field="clone_notes_description" title="Clone Notes Description" [width]="420" [filterable]="false">
+        <ng-template kendoGridCellTemplate let-dataItem>
+          <div class="ma-clone-description">{{ dataItem.clone_notes_description || '-' }}</div>
+        </ng-template>
+      </kendo-grid-column>
+
+      <ng-template kendoGridNoRecordsTemplate>
+        <div class="ma-grid-empty">No cloned notes were found for this provider.</div>
+      </ng-template>
+    </kendo-grid>
+  </div>
+</section>
+</main>

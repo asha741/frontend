@@ -1,0 +1,144 @@
+// `.ma-label-value` / `.ma-label` / `.ma-value` have no styling outside their
+// owning page scopes elsewhere in the app, so this component defines its own
+// look — matching the read-only detail-card treatment used by the sibling
+// claim-record-detail component.
+
+.ma-label-value {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.ma-label {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: #94a3b8;
+}
+
+.ma-value {
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.5;
+  color: #0f172a;
+  overflow-wrap: anywhere;
+}
+
+.ma-diagnosis-list {
+  margin: 0;
+  padding-left: 1.25rem;
+
+  li {
+    font-size: 15px;
+    font-weight: 600;
+    color: #0f172a;
+    padding: 4px 0;
+  }
+}
+
+.ma-card-header-icon {
+  color: #4a76fd;
+  font-size: 15px;
+}
+
+// Address 1 / Address 2 read as one mailing address, so they sit close
+// together; the city/state/pin row is a distinct group, set off below a
+// divider rather than sharing the same tight rhythm.
+.ma-address-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.ma-address-divider {
+  margin: 20px 0;
+  border-top: 1px solid #e2e8f0;
+}
+
+// Wider than any built-in `.g-*` gutter (they stop at `.g-5`'s 48px) —
+// City/State/Pin Code need more breathing room once City/State wrap to two lines.
+.ma-address-city-row {
+  --bs-gutter-x: 8rem;
+}
+
+// ── Hero card ─────────────────────────────────────────────────────────
+// Flat brand blue — the same `#4A76FD` used by the sidebar/primary buttons —
+// instead of an invented gradient, so this reads as part of the same product.
+.ma-patient-hero {
+  position: relative;
+  border-radius: 12px;
+  padding: 24px 28px;
+  background: #4a76fd;
+  color: #fff;
+  overflow: hidden;
+}
+
+.ma-patient-hero__status {
+  position: absolute;
+  top: 20px;
+  right: 24px;
+}
+
+.ma-patient-hero__main {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.ma-patient-hero__avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: #fff;
+  color: #4a76fd;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.ma-patient-hero__name {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.ma-patient-hero__subtitle {
+  margin: 4px 0 0;
+  font-size: 14px;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+.ma-patient-hero__meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 32px;
+  margin-top: 20px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(255, 255, 255, 0.25);
+
+  > div {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+}
+
+.ma-patient-hero__meta-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.ma-patient-hero__meta-value {
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+}

@@ -27,12 +27,6 @@ const MONTHS = [
 
 const WEEKS = ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5'];
 
-/** Reporting years — current year plus the two following, per the user story. */
-function reportYears(): number[] {
-  const current = new Date().getFullYear();
-  return [current, current + 1, current + 2];
-}
-
 /** The export formats offered on each report's export button. */
 type ExportFormat = 'excel' | 'pdf';
 
@@ -96,8 +90,10 @@ export class ReportsAnalytics implements OnInit {
 
   readonly months = MONTHS;
   readonly weeks = WEEKS;
-  readonly years = reportYears();
   readonly pageSizes = [10, 25, 50];
+
+  /** Year options loaded from /meta/enums (typeId 11) — same source as the dashboard's year filter. */
+  yearOptions: { label: string; value: number }[] = [];
 
   // ── Global filters ───────────────────────────────────────────────
   year = String(new Date().getFullYear());
@@ -120,7 +116,26 @@ export class ReportsAnalytics implements OnInit {
   readonly exporting = signal(false);
 
   async ngOnInit(): Promise<void> {
+    await this.loadYearOptions();
     await this.loadAll();
+  }
+
+  // ── Dropdown options ───────────────────────────────────────────────
+
+  /** POST /meta/enums { typeIds: [11] } — year options for the Year filter, same source as the dashboard. */
+  async loadYearOptions(): Promise<void> {
+    const res = await this.api.request('POST', API_ROUTES.GET_MASTER_LIST, { typeIds: [11] }, {
+      showToaster: false,
+    });
+    if (res?.status && Array.isArray(res.data)) {
+      const yearType = res.data.find((d: any) => d.typeId === 11);
+      if (yearType && Array.isArray(yearType.options)) {
+        this.yearOptions = yearType.options.map((o: any) => ({
+          label: String(o.label ?? o.value ?? ''),
+          value: Number(o.value ?? o.label),
+        }));
+      }
+    }
   }
 
   // ── Filter handling ──────────────────────────────────────────────

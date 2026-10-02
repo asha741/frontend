@@ -80,15 +80,33 @@
         </div>
         <div class="ma-card-body">
           <div class="row g-3">
-            <div class="col-sm-6">
+            <div class="col-sm-4">
               <div class="ma-label-value">
                 <span class="ma-label">Claim ID</span>
                 <span class="ma-value">{{ claim()?.claim_id }}</span>
               </div>
+            </div>
+            <div class="col-sm-4">
+              <div class="ma-label-value">
+                <span class="ma-label">Patient Name</span>
+                <span class="ma-value">{{ claim()?.patient_name }}</span>
+              </div>
+            </div>
+            <div class="col-sm-4">
+              <div class="ma-label-value">
+                <span class="ma-label">Upload Date</span>
+                <span class="ma-value">{{
+                  claim()?.uploaded_at ? (claim()?.uploaded_at | date: 'MM-dd-yyyy') : '-'
+                }}</span>
+              </div>
+            </div>
+            <div class="col-sm-4">
               <div class="ma-label-value">
                 <span class="ma-label">Provider Name</span>
                 <span class="ma-value">{{ claim()?.provider_name }}</span>
               </div>
+            </div>
+            <div class="col-sm-4">
               <div class="ma-label-value">
                 <span class="ma-label">Review Status</span>
                 <span class="ma-badge" [class]="claim()?.review_status | badgeClass">{{
@@ -96,22 +114,30 @@
                 }}</span>
               </div>
             </div>
-            <div class="col-sm-6">
-              <div class="ma-label-value">
-                <span class="ma-label">Patient Name</span>
-                <span class="ma-value">{{ claim()?.patient_name }}</span>
-              </div>
-              <div class="ma-label-value">
-                <span class="ma-label">Upload Date</span>
-                <span class="ma-value">{{
-                  claim()?.uploaded_at ? (claim()?.uploaded_at | date: 'MM-dd-yyyy') : '-'
-                }}</span>
-              </div>
+            <div class="col-sm-4">
               <div class="ma-label-value">
                 <span class="ma-label">AI Status</span>
-                <span class="ma-badge" [class]="claim()?.ai_status | badgeClass">{{
-                  claim()?.ai_status
-                }}</span>
+                <span class="ma-value">
+                  <span class="ma-badge" [class]="claim()?.ai_status | badgeClass">{{
+                    claim()?.ai_status
+                  }}</span>
+                  <!-- Still validating: how far along the AI is. Refreshed from
+                       /claims/status every 2 minutes until it finishes. -->
+                  @if (isAiInProgress()) {
+                    <span
+                      class="ma-ai-progress ma-ai-progress--inline"
+                      [attr.aria-label]="'AI processing ' + aiProgress() + '% complete'"
+                    >
+                      <span class="ma-ai-progress__track">
+                        <span class="ma-ai-progress__fill" [style.width.%]="aiProgress()"></span>
+                      </span>
+                      <span class="ma-ai-progress__value">{{ aiProgress() }}%</span>
+                    </span>
+                    @if (claim()?.ai_processing_stage) {
+                      <small class="ma-ai-stage">{{ claim()?.ai_processing_stage }}</small>
+                    }
+                  }
+                </span>
               </div>
             </div>
           </div>
@@ -169,16 +195,22 @@
 
   <!-- SECTION 3: AI FINDINGS & ANALYSIS -->
   <div class="ma-table-card h-100">
-    <div class="ma-table-card-head">
-      <h2 class="ma-table-title">AI Findings & Analysis</h2>
-      @if (claim()?.compliance_score != null) {
-        <button class="btn ma-btn btn-outline-primary btn-sm" style="pointer-events: none;">
-          <span class="ma-grey-text">Compliance Score</span>{{ claim()?.compliance_score }}%
-        </button>
-      }
-    </div>
-    <!-- TABS -->
-    <div class="ma-tabs mb-0">
+    <!-- Sticky while the findings table scrolls beneath it -->
+    <div class="ma-sticky-head">
+      <div class="ma-table-card-head">
+        <h2 class="ma-table-title">AI Findings & Analysis</h2>
+        <div class="d-flex align-items-center gap-2">
+          @if (claim()?.compliance_score != null) {
+            <button class="btn ma-btn btn-outline-primary btn-sm" style="pointer-events: none;">
+              <span class="ma-grey-text">Compliance Score</span>{{ claim()?.compliance_score }}%
+            </button>
+          }
+          <button type="button" class="btn ma-btn btn-primary btn-sm" (click)="openReviewModal()">
+            Review Status
+          </button>
+        </div>
+      </div>
+      <!-- TABS -->
       <div class="ma-tabs-header">
         <button
           class="ma-tab-button"
@@ -213,23 +245,39 @@
           <span class="ma-tab-badge ma-tab-badge--info">{{ ruleCounts().low }}</span>
         </button>
       </div>
+    </div>
+    <div class="ma-tabs mb-0">
       <div class="ma-tab-pane active">
         <div class="table-responsive ma-table-bnone">
           <table class="table align-middle ma-data-table ma-findings-table">
             <thead>
               <tr>
+                <th width="110" class="text-center">Failed Notes</th>
                 <th width="110">Rule ID</th>
                 <th width="180">Rule Name</th>
                 <th width="90">Status</th>
                 <th width="110">Red Flags</th>
                 <th>Failure Reason</th>
                 <th>Recommendation</th>
-                <th width="110" class="text-center">Failed Notes</th>
               </tr>
             </thead>
             <tbody>
               @for (rule of filteredRules(); track rule.rule_id) {
                 <tr>
+                  <td data-label="Failed Notes" class="text-center">
+                    @if (rule.failure_reason || rule.failed_notes?.length) {
+                      <button
+                        type="button"
+                        class="btn btn-sm ma-icon-btn"
+                        title="View Failed Notes"
+                        (click)="viewFailedNotes(rule.rule_id)"
+                      >
+                        <i class="fa-regular fa-eye"></i>
+                      </button>
+                    } @else {
+                      ——
+                    }
+                  </td>
                   <td data-label="Rule ID">{{ rule.rule_id }}</td>
                   <td data-label="Rule Name">{{ rule.rule_name }}</td>
                   <td data-label="Status">
@@ -277,20 +325,6 @@
                       ——
                     }
                   </td>
-                  <td data-label="Failed Notes" class="text-center">
-                    @if (rule.failure_reason || rule.failed_notes?.length) {
-                      <button
-                        type="button"
-                        class="btn btn-sm ma-icon-btn"
-                        title="View Failed Notes"
-                        (click)="viewFailedNotes(rule.rule_id)"
-                      >
-                        <i class="fa-regular fa-eye"></i>
-                      </button>
-                    } @else {
-                      ——
-                    }
-                  </td>
                 </tr>
               } @empty {
                 <tr class="ma-empty-state">
@@ -303,35 +337,32 @@
       </div>
     </div>
   </div>
-  <!-- SECTION 4: REVIEWER ACTION(S) -->
-  @if (isReadOnly()) {
-    <div class="ma-card mt-4">
-      <div class="ma-card-header">
-        <div class="chart-card__header mb-0">
-          <h3 class="chart-card__title">Reviewer Action</h3>
-        </div>
-      </div>
-      <div class="ma-card-body">
+  <!-- SECTION 4: REVIEWER ACTIONS MODAL — opened from the "Review Status" button above -->
+  <ng-template #reviewModalTpl>
+    <div class="modal-header">
+      <h3 class="chart-card__title mb-0">Reviewer Actions</h3>
+      <button type="button" class="btn-close" aria-label="Close" (click)="closeReviewModal()"></button>
+    </div>
+    @if (isReadOnly()) {
+      <!-- Opened from the Patient Claims tab — display-only, no edits. -->
+      <div class="modal-body">
         <div class="ma-form-group mb-3">
           <label class="form-label">Reviewer Notes</label>
           <div class="form-control ma-readonly-field">{{ claim()?.reviewer_notes || '—' }}</div>
         </div>
-
         <div class="ma-form-group mb-0">
           <label class="form-label d-block">Review Status</label>
           <span class="ma-badge" [class]="claim()?.review_status | badgeClass">{{ claim()?.review_status || '-' }}</span>
         </div>
       </div>
-    </div>
-  } @else {
-    <div class="ma-card mt-4">
-      <div class="ma-card-header">
-        <div class="chart-card__header mb-0">
-          <h3 class="chart-card__title">Reviewer Actions</h3>
-        </div>
+      <div class="modal-footer">
+        <button type="button" class="btn ma-btn btn-outline-primary btn-grey-btn" (click)="closeReviewModal()">
+          Close
+        </button>
       </div>
-      <div class="ma-card-body">
-        <form [formGroup]="reviewForm" (ngSubmit)="approveClaim()" appFocusFirstInput>
+    } @else {
+      <div class="modal-body">
+        <form [formGroup]="reviewForm" (ngSubmit)="submitReview()" appFocusFirstInput>
           <div class="ma-form-group mb-3">
             <label for="reviewerNotes" class="form-label">Reviewer Notes</label>
             <textarea
@@ -347,19 +378,9 @@
             @if (isSubmitted() && f['reviewer_notes'].errors) {
               <div class="invalid-feedback d-block">Reviewer notes cannot exceed 250 characters.</div>
             }
-            <div class="ma-btn-group justify-content-end mt-2">
-              <button
-                type="button"
-                class="btn ma-btn btn-primary"
-                (click)="saveNotes()"
-                [disabled]="savingNotes() || submitting() || !isAiComplete()"
-              >
-                {{ savingNotes() ? 'Saving...' : 'Save Notes' }}
-              </button>
-            </div>
           </div>
 
-          <div class="ma-form-group mb-3">
+          <div class="ma-form-group mb-0 ats-assign-field">
             <label for="reviewStatus" class="form-label">
               Review Status <span class="ma-required">*</span>
             </label>
@@ -378,18 +399,17 @@
               <div class="invalid-feedback d-block">Review status is required.</div>
             }
           </div>
-
-          <div class="ma-btn-group">
-            <button type="button" class="btn ma-btn btn-outline-primary btn-grey-btn" (click)="cancelReview()">
-              Cancel
-            </button>
-            <!-- Disabled until AI validation has finished and a status is picked. -->
-            <button type="submit" class="btn ma-btn btn-primary" [disabled]="!canApprove()">
-              {{ submitting() ? 'Approving...' : 'Approve Claim' }}
-            </button>
-          </div>
         </form>
       </div>
-    </div>
-  }
+      <div class="modal-footer">
+        <button type="button" class="btn ma-btn btn-outline-primary btn-grey-btn" (click)="closeReviewModal()">
+          Cancel
+        </button>
+        <!-- Disabled until AI validation has finished and a status is picked. -->
+        <button type="button" class="btn ma-btn btn-primary" [disabled]="!canApprove()" (click)="submitReview()">
+          {{ submitting() ? 'Saving...' : 'Save' }}
+        </button>
+      </div>
+    }
+  </ng-template>
 </main>

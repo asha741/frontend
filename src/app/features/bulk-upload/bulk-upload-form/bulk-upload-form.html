@@ -3,17 +3,32 @@
     <h2 class="ma-page-title">Bulk Upload</h2>
     <p class="ma-page-subtitle">Upload documents and extract patient / provider data before submitting for claim
       validation.</p>
+    <!-- Batch id, status badge, progress bar and the polling note read as one
+         line, wrapping onto the next only when the viewport can't hold them. -->
     @if (batchId()) {
-    <p class="ma-page-subtitle d-flex align-items-center gap-2 flex-wrap">
-      <span>Batch ID: <strong>{{ batchCode() || '-' }}</strong></span>
+    <div class="ma-page-subtitle ma-batch-status">
+      <span class="ma-batch-status__id">Batch ID: <strong>{{ batchCode() || '-' }}</strong></span>
+
       @if (batchStatus()) {
       <span class="ma-badge" [class]="batchStatus() | badgeClass">{{ batchStatus() }}</span>
-      }
+
+      <span
+        class="ma-ai-progress ma-ai-progress--inline"
+        [attr.aria-label]="'Progress ' + batchProgress() + '% complete'"
+      >
+        <span class="ma-ai-progress__track">
+          <span class="ma-ai-progress__fill" [style.width.%]="batchProgress()"></span>
+        </span>
+        <span class="ma-ai-progress__value">{{ batchProgress() }}%</span>
+      </span>
+
       @if (polling()) {
-      <span class="text-muted"><i class="fa-solid fa-rotate fa-spin me-1"></i>Extracting — this page updates
-        itself.</span>
+      <span class="ma-batch-status__note text-muted">
+        <i class="fa-solid fa-rotate fa-spin me-1"></i>Extracting — this page updates itself.
+      </span>
       }
-    </p>
+      }
+    </div>
     }
   </div>
 </div>

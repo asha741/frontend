@@ -11730,7 +11730,7 @@ strong, b {
   height: 16px;
 }
 .ma-dashboard .ma-sidebar {
-  width: 250px;
+  width: 270px;
   min-height: 100vh;
   background: #4A76FD;
   color: #FFFFFF;
@@ -11943,7 +11943,7 @@ strong, b {
 }
 @media (max-width: 1199.98px) {
   .ma-dashboard .ma-sidebar {
-    width: 250px;
+    width: 270px;
     transform: translateX(-100%);
     z-index: 1046;
   }
@@ -15010,7 +15010,7 @@ textarea.form-control {
   background: #F8FAFC;
 }
 .ma-dashboard .ma-main {
-  margin-left: 250px;
+  margin-left: 270px;
   min-height: 100vh;
   transition: all 0.28s ease;
 }

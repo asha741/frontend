@@ -19,6 +19,32 @@
     overflow: hidden;
   }
 }
+
+// Provider name cell — looks like a link, opens that provider's analytics.
+.ma-link-btn {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  text-align: left;
+  color: #0d6efd;
+  text-decoration: none;
+  cursor: pointer;
+
+  &:hover,
+  &:focus-visible {
+    text-decoration: underline;
+  }
+}
+
+// Patients Attended cell — same normal/hover-underline treatment as
+// .ma-link-btn, but inline rather than a full-width block since it sits
+// alongside a plain number, not filling the whole cell.
+.ma-link-btn--inline {
+  display: inline;
+  width: auto;
+}
 // provider-management.scss
 ::ng-deep .ma-master-table--provider {
   .k-grid-header {

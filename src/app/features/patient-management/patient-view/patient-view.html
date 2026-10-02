@@ -1,0 +1,157 @@
+<div class="ma-page-header">
+  <div class="ma-page-header__meta">
+    <h2 class="ma-page-title">Patient Details</h2>
+  </div>
+  @if (perms.can(PERMISSION_MODULE.Patient, PERMISSION_ACTION.Update)) {
+    <div class="ma-page-header__actions">
+      <button type="button" class="btn ma-btn btn-primary" (click)="editPatient()">
+        <i class="fa-regular fa-pen-to-square me-2"></i> Edit Patient
+      </button>
+    </div>
+  }
+</div>
+
+<!-- ══ Hero ═══════════════════════════════════════════════════════════ -->
+<div class="ma-patient-hero mt-3">
+  @if (patient()?.status) {
+    <span class="ma-badge ma-patient-hero__status" [class]="patient()?.status | badgeClass">{{
+      patient()?.status
+    }}</span>
+  }
+  <div class="ma-patient-hero__main">
+    <div class="ma-patient-hero__avatar">{{ initials() }}</div>
+    <div>
+      <h3 class="ma-patient-hero__name">{{ fullName() }}</h3>
+      <p class="ma-patient-hero__subtitle">{{ heroSubtitle() }}</p>
+    </div>
+  </div>
+  <div class="ma-patient-hero__meta">
+    <div>
+      <span class="ma-patient-hero__meta-label">Patient ID</span>
+      <span class="ma-patient-hero__meta-value">{{ patient()?.patient_id || '-' }}</span>
+    </div>
+    <div>
+      <span class="ma-patient-hero__meta-label">External ID</span>
+      <span class="ma-patient-hero__meta-value">{{ patient()?.external_id || '-' }}</span>
+    </div>
+    <div>
+      <span class="ma-patient-hero__meta-label">Created Date</span>
+      <span class="ma-patient-hero__meta-value">{{
+        patient()?.created_at ? (patient()?.created_at | date: 'MM-dd-yyyy') : '-'
+      }}</span>
+    </div>
+  </div>
+</div>
+
+<!-- ══ Demographics & contact information ═══════════════════════════════ -->
+<div class="ma-card mt-3">
+  <div class="ma-card-header">
+    <div class="chart-card__header mb-0">
+      <h3 class="chart-card__title">
+        <i class="fa-solid fa-id-card ma-card-header-icon me-2"></i>Contact Information
+      </h3>
+    </div>
+  </div>
+  <div class="ma-card-body">
+    <div class="row g-4">
+      <div class="col-6 col-md-3">
+        <div class="ma-label-value">
+          <span class="ma-label">Date of Birth</span>
+          <span class="ma-value">{{
+            patient()?.date_of_birth ? (patient()?.date_of_birth | date: 'MM-dd-yyyy') : '-'
+          }}</span>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="ma-label-value">
+          <span class="ma-label">Phone</span>
+          <span class="ma-value">{{ (patient()?.contact_number | usPhone) || '-' }}</span>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="ma-label-value">
+          <span class="ma-label">Email</span>
+          <span class="ma-value">{{ patient()?.email || '-' }}</span>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="ma-label-value">
+          <span class="ma-label">Gender</span>
+          <span class="ma-value">{{ patient()?.gender || '-' }}</span>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="ma-label-value">
+          <span class="ma-label">Home Phone</span>
+          <span class="ma-value">{{ (patient()?.home_phone | usPhone) || '-' }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ Address ═══════════════════════════════════════════════════════ -->
+<div class="ma-card mt-3">
+  <div class="ma-card-header">
+    <div class="chart-card__header mb-0">
+      <h3 class="chart-card__title">
+        <i class="fa-solid fa-location-dot ma-card-header-icon me-2"></i>Address
+      </h3>
+    </div>
+  </div>
+  <div class="ma-card-body">
+    <div class="ma-address-lines">
+      <div class="ma-label-value">
+        <span class="ma-label">Address 1</span>
+        <span class="ma-value">{{ patient()?.address_1 || '-' }}</span>
+      </div>
+      <div class="ma-label-value">
+        <span class="ma-label">Address 2</span>
+        <span class="ma-value">{{ patient()?.address_2 || '-' }}</span>
+      </div>
+    </div>
+    <div class="ma-address-divider"></div>
+    <div class="row ma-address-city-row">
+      <div class="col-6 col-md-4">
+        <div class="ma-label-value">
+          <span class="ma-label">City</span>
+          <span class="ma-value">{{ patient()?.city || '-' }}</span>
+        </div>
+      </div>
+      <div class="col-6 col-md-4">
+        <div class="ma-label-value">
+          <span class="ma-label">State</span>
+          <span class="ma-value">{{ patient()?.state || '-' }}</span>
+        </div>
+      </div>
+      <div class="col-6 col-md-4">
+        <div class="ma-label-value">
+          <span class="ma-label">Pin Code</span>
+          <span class="ma-value">{{ patient()?.pin_code || '-' }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ Diagnosis ══════════════════════════════════════════════════════ -->
+<div class="ma-card mt-3">
+  <div class="ma-card-header">
+    <div class="chart-card__header mb-0">
+      <h3 class="chart-card__title">
+        <i class="fa-solid fa-notes-medical ma-card-header-icon me-2"></i>Diagnosis
+      </h3>
+    </div>
+  </div>
+  <div class="ma-card-body">
+    @if (diagnosisList().length) {
+      <ol class="ma-diagnosis-list">
+        @for (d of diagnosisList(); track d) {
+          <li>{{ d }}</li>
+        }
+      </ol>
+    } @else {
+      <span class="ma-value">No diagnosis on file.</span>
+    }
+  </div>
+</div>

@@ -65,6 +65,7 @@
     "markdown-it": "^14.3.0",
     "ng-otp-input": "^2.0.10",
     "ngx-cookie-service": "^21.3.1",
+    "powerbi-client": "^2.24.1",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "uuid": "^13.0.2",

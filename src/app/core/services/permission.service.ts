@@ -6,13 +6,13 @@ import { MenuType, PERMISSION_ACTION, PermissionAction, PermissionModule } from 
 /** One granted permission, as issued alongside the access token at login. */
 export interface MenuPermission {
   id: string;
-  /** The action, e.g. `Create` — half of what the UI gates on. */
+  /** The action, e.g. `Create` — half of what `can()` gates on. */
   name: string;
-  /** The module, e.g. `Provider` — the other half. */
+  /** Display-only label (`Provider Management`); never compared against. */
   module: string;
   /** Backend-only (`provider:create`). The UI never reads this. */
   code?: string;
-  /** The module's menu id — what routes and the sidebar key off. */
+  /** The module's menu id — the other half of what `can()`, routes, and the sidebar key off. */
   menuType: number;
 }
 
@@ -33,12 +33,7 @@ export class PermissionService {
   /** The granted permissions. Templates gate on `can()`, not on this directly. */
   readonly permissions = signal<MenuPermission[]>([]);
 
-  /** `module::name` keys — rebuilt once per permission change, not per check. */
-  private readonly byModule = computed(
-    () => new Set(this.permissions().map((p) => `${norm(p.module)}::${norm(p.name)}`)),
-  );
-
-  /** `menuType::name` keys, for menu and route checks. */
+  /** `menuType::name` keys, for menu, route, and `can()` checks. */
   private readonly byMenuType = computed(
     () => new Set(this.permissions().map((p) => `${p.menuType}::${norm(p.name)}`)),
   );
@@ -75,15 +70,17 @@ export class PermissionService {
   }
 
   /**
-   * The check every template uses: was this action granted on this module?
+   * The check every template uses: was this action granted on this menu?
    *
    *   @if (perms.can(PERMISSION_MODULE.Provider, PERMISSION_ACTION.Create)) { ... }
    *
-   * Typed to the constants rather than `string` so that, with strictTemplates,
-   * a typo is a build error instead of a silently-false check.
+   * `PERMISSION_MODULE.X` resolves to a `MenuType` id, not a display string —
+   * see the comment on `PERMISSION_MODULE` for why. Typed to the constants
+   * rather than `string` so that, with strictTemplates, a typo is a build
+   * error instead of a silently-false check.
    */
   can(module: PermissionModule, action: PermissionAction): boolean {
-    return this.byModule().has(`${norm(module)}::${norm(action)}`);
+    return this.byMenuType().has(`${module}::${norm(action)}`);
   }
 
   /** True when any one of the actions was granted on the module. */

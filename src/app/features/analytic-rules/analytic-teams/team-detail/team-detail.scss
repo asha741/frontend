@@ -1,0 +1,42 @@
+// Label-over-value pairs for the read-only header fields.
+.ma-detail-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ma-detail-field__label {
+  font-size: 12px;
+  color: #64748b;
+}
+
+.ma-detail-field__value {
+  font-size: 14px;
+  font-weight: 600;
+  color: #0f172a;
+  overflow-wrap: break-word;
+}
+
+// Members read as chips rather than a grid — the payload is just names.
+.ma-provider-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ma-provider-list__item {
+  padding: 6px 12px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 999px;
+  font-size: 13px;
+  color: #0f172a;
+}
+
+.ma-detail-empty {
+  font-size: 13px;
+  color: #64748b;
+}

@@ -173,13 +173,35 @@ export class PatientManagement implements OnInit {
   }
 
   /**
-   * Patient Profile — opens the tabbed profile page (Edit Patient / Patient
-   * Documents / Patient Claims). The `:id` route param is AES-GCM encrypted
-   * so the raw patient id is never exposed in the URL.
+   * View Patient — opens the read-only patient detail page, which itself
+   * links into the tabbed Patient Profile (Edit Patient / Patient Documents /
+   * Patient Claims) via its "Edit Patient" button. The `:id` route param is
+   * AES-GCM encrypted so the raw patient id is never exposed in the URL.
    */
-  async openPatientProfile(row: any): Promise<void> {
+  async openPatientView(row: any): Promise<void> {
+    const encId = await this.crypto.encryptId(String(row?.id));
+    this.router.navigate(['/patient-management/view', encId]);
+  }
+
+  /**
+   * Edit Patient — opens the tabbed Patient Profile (Edit Patient / Patient
+   * Documents / Patient Claims) directly from the grid. The `:id` route param
+   * is AES-GCM encrypted so the raw patient id is never exposed in the URL.
+   */
+  async editPatient(row: any): Promise<void> {
     const encId = await this.crypto.encryptId(String(row?.id));
     this.router.navigate(['/patient-management/profile', encId]);
+  }
+
+  /**
+   * Patient Analytics — opens the patient-scoped Power BI dashboard, reached
+   * by clicking a patient's name in the grid. Navigates with the row's
+   * business `patient_id` (not the internal `id` guid) — that's the field the
+   * embed endpoint expects — AES-GCM encrypted, same as `openPatientView`.
+   */
+  async openPatientAnalytic(row: any): Promise<void> {
+    const encId = await this.crypto.encryptId(String(row?.patient_id));
+    this.router.navigate(['/patient-management/patient-analytic', encId]);
   }
 
   /** Confirms via modal, then deletes the given patient row and refreshes the grid. */

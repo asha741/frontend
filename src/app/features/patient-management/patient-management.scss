@@ -19,3 +19,21 @@
     overflow: hidden;
   }
 }
+
+// Patient name cell — looks like a link, opens that patient's analytics.
+.ma-link-btn {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  text-align: left;
+  color: #0d6efd;
+  text-decoration: none;
+  cursor: pointer;
+
+  &:hover,
+  &:focus-visible {
+    text-decoration: underline;
+  }
+}

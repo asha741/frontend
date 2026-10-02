@@ -2,6 +2,7 @@ import { Component, OnInit, computed, signal } from '@angular/core';
 import { DecimalPipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { NgbDateStruct, NgbDatepickerModule } from '@ng-bootstrap/ng-bootstrap';
+import { RouterLink } from '@angular/router';
 import { ChartsModule } from '@progress/kendo-angular-charts';
 import { ApiService } from '../../core/services/api.service';
 import { API_ROUTES } from '../../core/constants/api-routes';
@@ -47,7 +48,7 @@ const RANGE_OPTIONS = [
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [ChartsModule, FormsModule, NgbDatepickerModule, DecimalPipe, EmptyStateComponent],
+  imports: [ChartsModule, FormsModule, NgbDatepickerModule, DecimalPipe, EmptyStateComponent, RouterLink],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.scss',
 })

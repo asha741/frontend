@@ -16,6 +16,7 @@ import { BadgeClassPipe } from '../../../shared/pipes/badge-class.pipe';
 import { PermissionService } from '../../../core/services/permission.service';
 import { PERMISSION_ACTION, PERMISSION_MODULE } from '../../../core/constants/permissions';
 import type { FailedPage } from '../bulk-upload-detail/bulk-upload-detail';
+import { aiProgressPercent } from '../../../core/utils/ai-status.util';
 
 /** One row of the Documents tab, as returned by the parse endpoint. */
 interface BulkUploadDocument {
@@ -66,8 +67,11 @@ const ALLOWED_EXTENSIONS = ['pdf'];
 /** Recommended processing capacity: total file size allowed per upload batch. */
 const MAX_BATCH_SIZE_BYTES = 2 * 1024 * 1024 * 1024;
 
-/** How often the batch is re-checked while it is still being extracted. */
-const STATUS_POLL_MS = 3000;
+/**
+ * How often the batch is re-checked while it is still being extracted —
+ * 20 seconds, the project-wide polling cadence.
+ */
+const STATUS_POLL_MS = 20 * 1000;
 
 /**
  * Safety net for a batch that never leaves "Processing" — polling stops after
@@ -138,6 +142,8 @@ export class BulkUploadForm implements OnInit, OnDestroy {
   readonly batchStatus = signal<string>('');
   /** Human-readable batch reference (e.g. "BCH-2026-010"), shown instead of the id. */
   readonly batchCode = signal<string>('');
+  /** Extraction progress (0-100) from the status endpoint, shown next to the title while processing. */
+  readonly batchProgress = signal<number>(0);
   readonly submitting = signal(false);
 
   /**
@@ -145,8 +151,6 @@ export class BulkUploadForm implements OnInit, OnDestroy {
    * `verified_pairs` when the batch is submitted for claim validation.
    */
   private patientProviderPairs: any[] = [];
-  /** True while the very first status response is still outstanding. */
-  readonly statusLoading = signal(false);
   /** True while the 3s poll loop is running, so the UI can say it's live. */
   readonly polling = signal(false);
 
@@ -193,10 +197,10 @@ export class BulkUploadForm implements OnInit, OnDestroy {
     }
 
     this.batchId.set(batchId);
-    this.statusLoading.set(true);
     this.pollDeadline = performance.now() + STATUS_POLL_TIMEOUT_MS;
-    await this.loadStatus();
-    this.statusLoading.set(false);
+    // The page opens empty, so the first read is worth waiting on visibly.
+    // Every read after it is a background refresh — see loadStatus().
+    await this.loadStatus(true);
   }
 
   ngOnDestroy(): void {
@@ -207,8 +211,12 @@ export class BulkUploadForm implements OnInit, OnDestroy {
   /**
    * One status read. Refreshes both tabs, then either schedules the next poll
    * (still processing) or stops (finished / timed out / component gone).
+   *
+   * `showLoader` is set only for the opening read, where the user is waiting
+   * on an empty page. The polls that follow are silent — a loader flashing on
+   * every background refresh would make the page unusable.
    */
-  private async loadStatus(): Promise<void> {
+  private async loadStatus(showLoader = false): Promise<void> {
     const batchId = this.batchId();
     if (!batchId || this.destroyed) return;
 
@@ -216,8 +224,7 @@ export class BulkUploadForm implements OnInit, OnDestroy {
       'POST',
       API_ROUTES.BULK_UPLOAD_STATUS,
       { batch_id: batchId },
-      // Silent: this runs every 3s, so no global loader or toaster.
-      { showToaster: false, showLoader: false },
+      { showToaster: false, showLoader },
     );
     if (this.destroyed) return;
 
@@ -225,6 +232,7 @@ export class BulkUploadForm implements OnInit, OnDestroy {
       const d = res.data;
       this.batchStatus.set(d?.status ?? '');
       this.batchCode.set(d?.batch_code ?? '');
+      this.batchProgress.set(aiProgressPercent(d?.progress));
       // Otherwise this page's crumb repeats the listing's "Bulk Upload".
       this.crumbLabels.setLabel(`/bulk-upload/${this.encryptedBatchId}`, this.batchCode());
       this.allDocuments = d?.documents ?? [];
@@ -426,14 +434,20 @@ export class BulkUploadForm implements OnInit, OnDestroy {
     const order: string[] = [];
     const groups = new Map<string, ExtractDisplayRow[]>();
 
-    for (const row of rows) {
-      const key = String(row.patient_name ?? row.client_id ?? '');
+    rows.forEach((row, index) => {
+      // Grouped on the client id, not the name: two different clients can
+      // share a name, and merging those would show one patient's providers
+      // under the other's. The name is only the fallback for a row the
+      // extraction could not tie to a client, and a row carrying neither gets
+      // a key of its own — otherwise every unidentified row (what a failed
+      // extraction produces) would collapse into a single merged block.
+      const key = String(row.client_id || row.patient_name || `row-${index}`);
       if (!groups.has(key)) {
         groups.set(key, []);
         order.push(key);
       }
       groups.get(key)!.push({ ...row, isGroupStart: false, groupSize: 0 });
-    }
+    });
 
     return order.map((key) => {
       const group = groups.get(key)!;
